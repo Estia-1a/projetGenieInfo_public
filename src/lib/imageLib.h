@@ -1,0 +1,27 @@
+#ifndef IMAGE_LIB_H
+#define IMAGE_LIB_H
+
+#include "stb_image.h"
+#include "stb_image_write.h"
+
+//Defined in image lib
+#define RGB_COMP 3 
+
+/**
+ * Return some data about an image file
+ * @param[in] filename Name of the file to be open
+ * @param[out] data Reference to the pointer that points to the pixel array
+ * @param[out] width Width of the image
+ * @param[out] height Height of the image
+ * @param[out] nbChannels Number of channels
+ * @param[out] nbChannels Number of channels
+ */
+int readImage(const char *filename, unsigned char **data, int *width, int *height, int *nbChannels);
+
+/**
+ * Frees stbi-related buffers and resources
+ * @param[in] data The stbi-allocated buffer to be freed
+ */
+int freeImage(unsigned char *data);
+
+#endif
