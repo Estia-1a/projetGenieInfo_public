@@ -9,6 +9,15 @@ int readImage(const char *filename, unsigned char **data, int *width, int *heigh
     return 0; //TODO : Put defensive programming checkups everywhere
 }
 
+int writeImage(const char *filename, unsigned char *data, int width, int height)
+{
+    // TODO: consider if we also allow changing the file type, quality or encoding
+
+    stbi_write_jpg(filename, width, height, RGB_COMP, data, 85);
+
+    return 0;
+}
+
 int freeImage(unsigned char *data)
 {
     stbi_image_free(data);

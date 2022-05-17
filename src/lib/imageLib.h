@@ -19,6 +19,15 @@
 int readImage(const char *filename, unsigned char **data, int *width, int *height, int *nbChannels);
 
 /**
+ * Writes into a png image file
+ * @param[in] filename Name of the file to be written into
+ * @param[in] data Reference to the pixel array to be written
+ * @param[in] width Width of the image
+ * @param[in] height Height of the image
+ */
+int writeImage(const char *filename, unsigned char *data, int width, int height);
+
+/**
  * Frees stbi-related buffers and resources
  * @param[in] data The stbi-allocated buffer to be freed
  */
