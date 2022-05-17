@@ -5,7 +5,7 @@
 #include "stb_image_write.h"
 
 //Defined in image lib
-#define RGB_COMP 3 
+#define RGB_COMP 3
 
 /**
  * Return some data about an image file

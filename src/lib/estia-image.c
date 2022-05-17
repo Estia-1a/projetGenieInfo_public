@@ -1,6 +1,6 @@
 #define STB_IMAGE_WRITE_IMPLEMENTATION
 #define STB_IMAGE_IMPLEMENTATION
-#include "imageLib.h"
+#include "estia-image.h"
 
 int readImage(const char *filename, unsigned char **data, int *width, int *height, int *nbChannels)
 {
@@ -24,4 +24,3 @@ int freeImage(unsigned char *data)
 
     return 0;
 }
-
