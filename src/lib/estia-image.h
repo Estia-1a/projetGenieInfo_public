@@ -1,9 +1,6 @@
 #ifndef IMAGE_LIB_H
 #define IMAGE_LIB_H
 
-#include "stb_image.h"
-#include "stb_image_write.h"
-
 //Defined in image lib
 #define RGB_COMP 3
 
