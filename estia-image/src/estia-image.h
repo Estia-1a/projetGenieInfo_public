@@ -10,10 +10,9 @@
  * @param[out] data Reference to the pointer that points to the pixel array
  * @param[out] width Width of the image
  * @param[out] height Height of the image
- * @param[out] nbChannels Number of channels
- * @param[out] nbChannels Number of channels
+ * @param[out] channel_count Number of channels
  */
-int readImage(const char *filename, unsigned char **data, int *width, int *height, int *nbChannels);
+int read_image_data(const char *filename, unsigned char **data, int *width, int *height, int *channel_count);
 
 /**
  * Writes into a png image file
@@ -22,12 +21,12 @@ int readImage(const char *filename, unsigned char **data, int *width, int *heigh
  * @param[in] width Width of the image
  * @param[in] height Height of the image
  */
-int writeImage(const char *filename, unsigned char *data, int width, int height);
+int write_image_data(const char *filename, unsigned char *data, int width, int height);
 
 /**
  * Frees stbi-related buffers and resources
- * @param[in] data The stbi-allocated buffer to be freed
+ * @param[in] data The buffer allocated by readImageData buffer to be freed
  */
-int freeImage(unsigned char *data);
+int free_image_data(unsigned char *data);
 
 #endif

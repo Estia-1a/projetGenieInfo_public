@@ -4,14 +4,14 @@
 #include "stb_image_write.h"
 #include "estia-image.h"
 
-int readImage(const char *filename, unsigned char **data, int *width, int *height, int *nbChannels)
+int read_image_data(const char *filename, unsigned char **data, int *width, int *height, int *nbChannels)
 {
     *data = stbi_load(filename, width, height, nbChannels, 0);
 
     return 0; //TODO : Put defensive programming checkups everywhere
 }
 
-int writeImage(const char *filename, unsigned char *data, int width, int height)
+int write_image_data(const char *filename, unsigned char *data, int width, int height)
 {
     // TODO: consider if we also allow changing the file type, quality or encoding
 
@@ -20,7 +20,7 @@ int writeImage(const char *filename, unsigned char *data, int width, int height)
     return 0;
 }
 
-int freeImage(unsigned char *data)
+int free_image_data(unsigned char *data)
 {
     stbi_image_free(data);
 
