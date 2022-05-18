@@ -8,6 +8,7 @@
  * @param[out] width Width of the image
  * @param[out] height Height of the image
  * @param[out] channel_count Number of channels
+ * @return 0 on failure and non-0 on success.
  */
 int read_image_data(const char *filename, unsigned char **data, int *width, int *height, int *channel_count);
 
@@ -24,7 +25,8 @@ int write_image_data(const char *filename, unsigned char *data, int width, int h
 /**
  * Frees stbi-related buffers and resources
  * @param[in] data The buffer allocated by readImageData buffer to be freed
+ * @return 0: success, !0: error
  */
-int free_image_data(unsigned char *data);
+void free_image_data(unsigned char *data);
 
 #endif

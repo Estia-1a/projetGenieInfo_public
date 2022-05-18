@@ -15,8 +15,7 @@
 int read_image_data(const char *filename, unsigned char **data, int *width, int *height, int *nbChannels)
 {
     *data = stbi_load(filename, width, height, nbChannels, 0);
-
-    return 0; //TODO : Put defensive programming checkups everywhere
+    return ( *data != NULL ) ;
 }
 
 int write_image_data(const char *filename, unsigned char *data, int width, int height)
@@ -42,9 +41,7 @@ int write_image_data(const char *filename, unsigned char *data, int width, int h
     return 0;
 }
 
-int free_image_data(unsigned char *data)
+void free_image_data(unsigned char *data)
 {
     stbi_image_free(data);
-
-    return 0;
 }
