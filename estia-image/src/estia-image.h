@@ -25,7 +25,6 @@ int write_image_data(const char *filename, unsigned char *data, int width, int h
 /**
  * Frees stbi-related buffers and resources
  * @param[in] data The buffer allocated by readImageData buffer to be freed
- * @return 0: success, !0: error
  */
 void free_image_data(unsigned char *data);
 
