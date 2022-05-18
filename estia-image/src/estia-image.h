@@ -1,9 +1,6 @@
 #ifndef IMAGE_LIB_H
 #define IMAGE_LIB_H
 
-//Defined in image lib
-#define RGB_COMP 3
-
 /**
  * Return some data about an image file
  * @param[in] filename Name of the file to be open
@@ -20,6 +17,7 @@ int read_image_data(const char *filename, unsigned char **data, int *width, int 
  * @param[in] data Reference to the pixel array to be written
  * @param[in] width Width of the image
  * @param[in] height Height of the image
+ * @return 0 on failure and non-0 on success.
  */
 int write_image_data(const char *filename, unsigned char *data, int width, int height);
 
