@@ -13,5 +13,5 @@ A clear and concise description of what the feature is.
 **Describe tips for implementing feature**
 Advises, tips: library to use, functions to reuse, ...
 
-**Additional context**
-Add any other context or screenshots about the feature request here.
+**Additional information**
+Add any other information or screenshots about the feature here.
