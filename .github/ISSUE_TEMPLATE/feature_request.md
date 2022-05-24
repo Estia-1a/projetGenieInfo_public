@@ -1,0 +1,17 @@
+---
+name: Feature request
+about: Project feature to implement
+title: "[Feature]"
+labels: project_feature
+assignees: ''
+
+---
+
+**Feature description**
+A clear and concise description of what the feature is. 
+
+**Describe tips for implementing feature**
+Advises, tips: library to use, functions to reuse, ...
+
+**Additional context**
+Add any other context or screenshots about the feature request here.
