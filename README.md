@@ -8,6 +8,16 @@ This repository contains all about the projet Genie Informatique but :
 
 The wiki contains the information about the project for the students
 
+## Image Data Structure
+
+To manipulate image, you will have to use an 'unsigned char *' which points to the pixel data. 
+The pixel data consists of HEIGHT lines of WIDTH pixels, with each pixel consisting of N components. 
+In our case, we will use N = 3 for RGB components.
+The first pixel pointed to is top-left-most in the image.
+
+<img src="https://user-images.githubusercontent.com/16139930/171210679-1f662b91-2963-4258-8088-f3242b540dee.png" width="550">
+
+
 # Issues
 
 Issues are used by : 
