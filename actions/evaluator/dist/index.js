@@ -1,6 +1,35 @@
 require('./sourcemap-register.js');/******/ (() => { // webpackBootstrap
 /******/ 	var __webpack_modules__ = ({
 
+/***/ 218:
+/***/ ((module) => {
+
+ /**
+ * Same as Promise.all(items.map(item => task(item))), but it waits for
+ * the first {batchSize} promises to finish before starting the next batch.
+ * https://stackoverflow.com/questions/37213316/execute-batch-of-promises-in-series-once-promise-all-is-done-go-to-the-next-bat
+ * David Veszelovszki
+ * @template A
+ * @template B
+ * @param {function(A): B} task The task to run for each item.
+ * @param {A[]} items Arguments to pass to the task for each call.
+ * @param {int} batchSize
+ * @returns {B[]}
+ */
+module.exports = async function batchPromise(task, items, batchSize) {
+    let position = 0;
+    let results = [];
+    while (position < items.length) {
+        const itemsForBatch = items.slice(position, position + batchSize);
+        results = [...results, ...await Promise.all(itemsForBatch.map(item => task(item)))];
+        position += batchSize;
+    }
+    return results;
+}
+
+
+/***/ }),
+
 /***/ 351:
 /***/ (function(__unused_webpack_module, exports, __nccwpck_require__) {
 
@@ -3214,6 +3243,58 @@ exports.debug = debug; // for test
 
 /***/ }),
 
+/***/ 368:
+/***/ ((module) => {
+
+module.exports = {} ;
+module.exports.test1 = {
+  feature : "Dimension",
+  name : "Dimension 64x64",
+  description: "Test if the dimension feature is working",
+  type: "stdout",
+  input: ["input/a_64x64.bmp"],
+  options: ["-o", "dimension"],
+  output : "dimension[s]*\\s*:\\s*64\\s*,\\s*64"
+}
+
+module.exports.test2 = {
+  feature : "Dimension",
+  name : "Dimension 1x1",
+  description: "Test if the dimension feature is working for one by one files",
+  type: "stdout",
+  input: ["input/a_1x1.bmp"],
+  options: ["-o", "dimension"],
+  output : "dimension[s]*\\s*:\\s*1\\s*,\\s*1"
+}
+
+
+/***/ }),
+
+/***/ 534:
+/***/ ((module, __unused_webpack_exports, __nccwpck_require__) => {
+
+const dimension = __nccwpck_require__( 368 ) ;
+const statistiques = [ dimension.test1, dimension.test2 ];
+statistiques.forEach( e=> e.milestone = "statistiques");
+module.exports = statistiques ;
+
+
+/***/ }),
+
+/***/ 825:
+/***/ ((module, __unused_webpack_exports, __nccwpck_require__) => {
+
+const statistiques = __nccwpck_require__( 534);
+
+module.exports = {
+  milestones : {
+    statistiques: statistiques
+  }
+}
+
+
+/***/ }),
+
 /***/ 357:
 /***/ ((module) => {
 
@@ -3359,23 +3440,31 @@ module.exports = require("util");
 var __webpack_exports__ = {};
 // This entry need to be wrapped in an IIFE because it need to be isolated against other modules in the chunk.
 (() => {
-const core = __nccwpck_require__(186);
+const core = __nccwpck_require__(186 );
 const exec = __nccwpck_require__(514);
 const path = __nccwpck_require__(622);
-
+const testsObject = __nccwpck_require__(825) ;
+const batchPromise = __nccwpck_require__(218) ;
 
 // most @actions toolkit packages have async methods
 async function run() {
   try {
     const buildDirectory = core.getInput('buildDirectory');
     const testsDirectory = core.getInput('testsDirectory');
-    const entryPoint = core.getInput('entryPoint');
     const executableName = core.getInput('executableName');
+    runTestInParallel( path.resolve(buildDirectory) , path.resolve(buildDirectory, executableName ), path.resolve(testsDirectory) ) ;
+    core.setOutput('grade',  12 );
+  } catch (error) {
+    core.setFailed(error.message);
+  }
+}
 
 
+
+async function runTest( buildDirectory, executablePath, testPath, test ) {
+  try {
     let myOutput = '';
     let myError = '';
-
     const options = {};
     options.listeners = {
       stdout: (data) => {
@@ -3385,27 +3474,34 @@ async function run() {
         myError += data.toString();
       }
     };
+    options.silent = true;
     options.cwd = path.resolve( buildDirectory ) ;
 
-    console.log( buildDirectory ) ;
-    console.log( path.resolve(buildDirectory, executableName ));
-    core.info(path.resolve( testsDirectory, entryPoint ));
-
-    await exec.exec( path.resolve(buildDirectory, executableName ),
-      ['--debug'
-      , '-f', testsDirectory +  'imput/image.jpeg'
-      , '-o blue'
-      , '--jpg']
+    await exec.exec( executablePath,
+      [ '-f', path.resolve( buildDirectory, test.input[0] )//Todo: change for multiple input test
+      , test.options
+      ]
     , options);
-
-
-    core.info(myOutput);
-    core.debug(myError); // debug is only output if you set the secret `ACTIONS_RUNNER_DEBUG` to true
-    core.setOutput('grade',  12 );
-  } catch (error) {
-    core.setFailed(error.message);
+    //Todo: change if not stdout
+    test.result = myOutput ;
+    test.error = myError ;
+    return test ;
+  } catch(error) {
+    test.error = error ;
+    return test
   }
 }
+
+
+async function runTestInParallel( buildDirectory, executablePath, testPath) {
+  const runner = (test) => runTest(buildDirectory,executablePath, testPath, test ) ;
+  const data = await batchPromise(runner, Object.values( testsObject.milestones ).flat() , 10 ) ;
+  console.log( data ) ;
+  return data ;
+}
+// function computeScore() {}
+// function outputScore() {}
+
 run();
 
 })();
