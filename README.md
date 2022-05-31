@@ -17,11 +17,20 @@ The first pixel pointed to is top-left-most in the image.
 
 <img src="https://user-images.githubusercontent.com/16139930/171210679-1f662b91-2963-4258-8088-f3242b540dee.png" width="550">
 
-Data is stored in a unsigned char buffer in row-order of a (WIDTH * HEIGHT * N) size.
+Data is stored in an unsigned char buffer in row-order of a (WIDTH * HEIGHT * N) size.
 
 <img src="https://user-images.githubusercontent.com/16139930/171215394-31282ff2-4c9e-479f-9d59-b709cc91c287.png" width="550">
 
-
+You have to use predefined functions to read and write images. 
+```c
+int read_image_data(const char *filename, unsigned char **data, int *width, int *height, int *nbChannels);
+int write_image_data(const char *filename, unsigned char *data, int width, int height);
+```
+- filename: image file path
+- data: unsigned char buffer in row-order of a (WIDTH * HEIGHT * nbChannels) size
+- width: image width
+- height: image height
+- nbChannels: N components of each pixel
 
 # Issues
 
