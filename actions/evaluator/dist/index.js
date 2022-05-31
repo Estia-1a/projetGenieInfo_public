@@ -3453,38 +3453,31 @@ async function run() {
     const testsDirectory = core.getInput('testsDirectory');
     const executableName = core.getInput('executableName');
     runTestInParallel( path.resolve(buildDirectory) , path.resolve(buildDirectory, executableName ), path.resolve(testsDirectory) ) ;
-    core.setOutput('grade',  12 );
+    core.setOutput('grade',  computeScore() );
   } catch (error) {
     core.setFailed(error.message);
   }
 }
 
 
+function listenerOutput( test, type ) {
+  test[type] = ""
+  return ( data ) => test[type] += data ;
+}
 
 async function runTest( buildDirectory, executablePath, testPath, test ) {
   try {
-    let myOutput = '';
-    let myError = '';
     const options = {};
-    options.listeners = {
-      stdout: (data) => {
-        myOutput += data.toString();
-      },
-      stderr: (data) => {
-        myError += data.toString();
-      }
-    };
+    options.listeners = {}
+    options.listeners.stdout = listenerOutput( test, "stdout") ;
+    options.listeners.stderr = listenerOutput( test, "stderr") ;
     options.silent = true;
     options.cwd = path.resolve( buildDirectory ) ;
-
     await exec.exec( executablePath,
-      [ '-f', path.resolve( buildDirectory, test.input[0] )//Todo: change for multiple input test
-      , test.options
+      [ '-f', path.resolve( testPath, test.input[0] )//Todo: change for multiple input test
+      , ...test.options
       ]
     , options);
-    //Todo: change if not stdout
-    test.result = myOutput ;
-    test.error = myError ;
     return test ;
   } catch(error) {
     test.error = error ;
@@ -3496,8 +3489,20 @@ async function runTest( buildDirectory, executablePath, testPath, test ) {
 async function runTestInParallel( buildDirectory, executablePath, testPath) {
   const runner = (test) => runTest(buildDirectory,executablePath, testPath, test ) ;
   const data = await batchPromise(runner, Object.values( testsObject.milestones ).flat() , 10 ) ;
-  console.log( data ) ;
   return data ;
+}
+
+function evalTest( test ) {
+  if( test.type === "stdout" ) {
+    test.score = RegExp(test.output).test( test.stdout ) ? 1 : 0  ;
+  } else {
+    test.score = 0 ;
+  }
+  return test.score ;
+}
+
+function computeScore( ) {
+  return Object.values( testsObject.milestones ).flat().reduce( (accumlateur,test)=> accumlateur+evalTest(test),0);
 }
 // function computeScore() {}
 // function outputScore() {}

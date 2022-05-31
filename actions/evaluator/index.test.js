@@ -23,12 +23,6 @@ afterEach(() => {
   })
 })
 // shows how the runner will run a javascript action with env / stdout protocol
-test('test runs', () => {
-  const ip = path.join(__dirname, 'dist', 'index.js');
-  const result = cp.execSync(`node ${ip}`, {env: process.env}).toString();
-  console.log(result);
-})
-
 test('load test files', () => {
   expect(tests).toEqual( expect.objectContaining( { milestones : { statistiques: expect.any(Array)} })) ;
 })
@@ -36,7 +30,13 @@ test('load test files', () => {
 test('batchPromises', async () => {
   const data = await batchPromises(
    (e) => {return new Promise((res) => setTimeout(() => res(e), e))},
-    Array(100).fill(1).map(()=>Math.random()*1000),
-    50 );
+    Array(10).fill(1).map(()=>Math.random()*1000),
+    10 );
   expect(data).toEqual( expect.any(Array) )
+})
+
+test('test runs', () => {
+  const ip = path.join(__dirname, 'dist', 'index.js');
+  const result = cp.execSync(`node ${ip}`, {env: process.env}).toString();
+  console.log(result);
 })
