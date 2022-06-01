@@ -1,0 +1,15 @@
+name: Import issues from Template
+
+on:
+  project:
+    types: [created]
+  workflow_dispatch:
+
+jobs:
+  copy:
+    name: Copy Issues
+    runs-on: ubuntu-latest
+    steps:
+      - uses: Estia-1a/projetGenieInfo_public/actions/issue-mover@issues-v2022
+        with:
+          destination-repo: ${{ github.repository }}
