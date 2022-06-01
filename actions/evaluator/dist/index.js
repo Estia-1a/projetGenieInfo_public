@@ -4287,6 +4287,9 @@ async function run() {
 async function printReport(testsObject) {
   core.startGroup("print report");
   const timestamp = timeString();
+
+  core.setOutput("date", dateString())
+
   await io.mkdirP(`result/${timestamp}`);
   await promises_namespaceObject.writeFile(
     `result/${timestamp}/log_${timeString()}.json`,
@@ -4350,6 +4353,21 @@ function timeString() {
     "-"+
     `0${d.getHours()}`.slice(-2) +
     `0${d.getMinutes()}`.slice(-2) +
+    `0${d.getSeconds()}`.slice(-2)
+  );
+}
+
+function dateString() {
+  const d = new Date();
+  return (
+    `0${d.getUTCDate()}`.slice(-2) +
+    "/"+
+    `0${d.getUTCMonth() + 1}`.slice(-2) +
+    "-"+
+    `0${d.getHours()}`.slice(-2) +
+    ":"+
+    `0${d.getMinutes()}`.slice(-2) +
+    ":"+
     `0${d.getSeconds()}`.slice(-2)
   );
 }

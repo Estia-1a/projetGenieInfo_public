@@ -41,6 +41,9 @@ async function run() {
 async function printReport(testsObject) {
   core.startGroup("print report");
   const timestamp = timeString();
+
+  core.setOutput("date", dateString())
+
   await io.mkdirP(`result/${timestamp}`);
   await fs.writeFile(
     `result/${timestamp}/log_${timeString()}.json`,
@@ -87,9 +90,9 @@ async function printReport(testsObject) {
         "missed tests": feature.missedTest.join("<br>")
       }))
     );
-    markdown += "## Related issues\n"
-    markdown += "close #24\n"
-    markdown += "open #17\n"
+    // markdown += "## Related issues\n"
+    // markdown += "close #24\n"
+    // markdown += "open #17\n"
   });
   core.setOutput("markdown", markdown );
   await fs.writeFile(`result/${timestamp}/Readme.md`, markdown, "utf8");
@@ -104,6 +107,21 @@ function timeString() {
     "-"+
     `0${d.getHours()}`.slice(-2) +
     `0${d.getMinutes()}`.slice(-2) +
+    `0${d.getSeconds()}`.slice(-2)
+  );
+}
+
+function dateString() {
+  const d = new Date();
+  return (
+    `0${d.getUTCDate()}`.slice(-2) +
+    "/"+
+    `0${d.getUTCMonth() + 1}`.slice(-2) +
+    " - "+
+    `0${d.getHours()}`.slice(-2) +
+    ":"+
+    `0${d.getMinutes()}`.slice(-2) +
+    ":"+
     `0${d.getSeconds()}`.slice(-2)
   );
 }
