@@ -65,7 +65,7 @@ def main(argv):
     g = Github(git_token)
 
     # get the template repo
-    repo = g.get_repo("Estia-1a/projetGenieInfo_prof")
+    repo = g.get_repo("Estia-1a/projetGenieInfo_template")
     
     # and all issues
     # sort = **"created"**, "updated", "comments"
