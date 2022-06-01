@@ -8,9 +8,26 @@ env:
   PUBLIC_URL: https://github.com/Estia-1a/projetGenieInfo_public/archive/refs/heads/evaluator.zip
 jobs:
   cmake-build-and-test:
+
     name: Automatic Evaluation
     runs-on: ubuntu-latest
     steps:
+      - name: Create cache file
+        run: |
+          mkdir ${{ runner.workspace }}/check-SHA
+          echo ${{ github.sha }} > ${{ runner.workspace }}/check-SHA/github-sha.txt
+      - name: Check SHA
+        id: check_sha
+        uses: actions/cache@v3
+        with:
+          path: ${{ runner.workspace }}/check-SHA
+          key: check-SHA-${{ github.sha }}
+      - name: abort
+        id: abort
+        if: steps.check_sha.outputs.cache-hit == 'true'
+        run: |
+          echo ::notice:: No modifications since last evaluation
+          exit 1
       - name: Checkout your code
         uses: actions/checkout@v3
 
@@ -24,8 +41,11 @@ jobs:
         id: cache-libraries
         uses: actions/cache@v3
         with:
-          path: public
-          key: public-evaluator
+          path: |
+            ${{ runner.workspace }}/public
+            ${{ runner.workspace }}/lib/estia_image
+            ${{ runner.workspace }}/lib/getopt
+          key: public-evaluator2
       - if: steps.cache-libraries.outputs.cache-hit != 'true'
         name: Build Estia-image Lib
         uses: ashutoshvarma/action-cmake-build@master
@@ -55,13 +75,24 @@ jobs:
           install-build: true
       - name: Run tests
         id: runTests
-        uses: Estia-1a/projetGenieInfo_public/actions/evaluator@v3
+        uses: Estia-1a/projetGenieInfo_public/actions/evaluator@evaluator
         with:
           buildDirectory: ./dist/
-          testDirectory: ${{ runner.workspace }}/public/images
-      - name: Comment PR
-        uses: thollander/actions-comment-pull-request@v1
-        if: github.event_name == 'pull_request'
+          testsDirectory: ${{ runner.workspace }}/public/images
+      - name: Summary
+        run: |
+          echo "${{steps.runTests.outputs.markdown}}" > $GITHUB_STEP_SUMMARY
+      - name: Create Pull Request
+        uses: peter-evans/create-pull-request@v4
         with:
-          message: ${{steps.runTests.outputs.grade}}
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+           add-paths: result
+           commit-message: Automatic Evaluation from ${{steps.runTests.outputs.date}}
+           branch: Evaluation/Daily
+           branch-suffix: timestamp
+           delete-branch: true
+           title: Daily Evaluation ${{steps.runTests.outputs.date}}
+           body: ${{steps.runTests.outputs.markdown}}
+      - name: handle no modification
+        if: ${{ failure() && steps.abort.conclusion == 'failure' }}
+        run: |
+          echo "# No evaluation needed" > $GITHUB_STEP_SUMMARY

@@ -4319,7 +4319,7 @@ async function printReport(testsObject) {
     feature.count += 1;
     if (test.score < 0.5) feature.missedTest.push(test.name);
   });
-  let markdown = "# Daily Evaluation " + timestamp.slice(0,4) + "\n" ;
+  let markdown = "# Daily Evaluation " + dateString() + "\n" ;
   markdown += "You can find below how you did for each feature. \n You should merge the pull request to keep the eval and automatically close and open the issues you have finished!\n"
   Object.entries(resultat).forEach(([milestone, data]) => {
     markdown += `# ${milestone}\n`;
@@ -4336,9 +4336,9 @@ async function printReport(testsObject) {
         "missed tests": feature.missedTest.join("<br>")
       }))
     );
-    markdown += "## Related issues\n"
-    markdown += "close #24\n"
-    markdown += "open #17\n"
+    // markdown += "## Related issues\n"
+    // markdown += "close #24\n"
+    // markdown += "open #17\n"
   });
   core.setOutput("markdown", markdown );
   await promises_namespaceObject.writeFile(`result/${timestamp}/Readme.md`, markdown, "utf8");
@@ -4363,7 +4363,7 @@ function dateString() {
     `0${d.getUTCDate()}`.slice(-2) +
     "/"+
     `0${d.getUTCMonth() + 1}`.slice(-2) +
-    "-"+
+    " - "+
     `0${d.getHours()}`.slice(-2) +
     ":"+
     `0${d.getMinutes()}`.slice(-2) +

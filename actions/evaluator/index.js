@@ -73,7 +73,7 @@ async function printReport(testsObject) {
     feature.count += 1;
     if (test.score < 0.5) feature.missedTest.push(test.name);
   });
-  let markdown = "# Daily Evaluation " + timestamp.slice(0,4) + "\n" ;
+  let markdown = "# Daily Evaluation " + dateString() + "\n" ;
   markdown += "You can find below how you did for each feature. \n You should merge the pull request to keep the eval and automatically close and open the issues you have finished!\n"
   Object.entries(resultat).forEach(([milestone, data]) => {
     markdown += `# ${milestone}\n`;
