@@ -45,5 +45,3 @@ target_link_libraries( freud PUBLIC ${EXTRA_LIBS})
 install(TARGETS freud
         RUNTIME DESTINATION ${CMAKE_SOURCE_DIR}/dist
 )
-/home/runner/work/projetGenieInfo_prof/projetGenieInfo_prof/student_source
-/home/runner/work/projetGenieInfo_prof/student_source/CMakeLists.txt
