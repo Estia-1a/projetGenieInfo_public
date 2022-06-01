@@ -10,7 +10,7 @@
  * @param {int} batchSize
  * @returns {B[]}
  */
-module.exports = async function batchPromise(task, items, batchSize) {
+export default async function batchPromise(task, items, batchSize) {
     let position = 0;
     let results = [];
     while (position < items.length) {

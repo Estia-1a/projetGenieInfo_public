@@ -20,6 +20,8 @@ inputs:
 outputs:
   grade: # output will be available to future steps
     description: 'The final grade'
+  markdown: # output will be available to future steps
+    description: 'A summary of the evaluation'
 runs:
   using: 'node16'
   main: 'dist/index.js'

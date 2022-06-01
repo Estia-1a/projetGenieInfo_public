@@ -1,8 +1,16 @@
-const core = require("@actions/core");
-const exec = require("@actions/exec");
-const path = require("path");
-const testsObject = require("./tests/tests.js");
-const batchPromise = require("./batchPromise");
+import core from "@actions/core";
+import exec from "@actions/exec";
+import io from "@actions/io";
+import fs from "fs/promises";
+
+import path from "path";
+import tablemark from "tablemark";
+
+import testsObject from "./tests/tests.js";
+import batchPromise from "./batchPromise.js";
+
+const testsObjectToArray = testsObject =>
+  Object.values(testsObject.milestones).flat();
 
 // most @actions toolkit packages have async methods
 async function run() {
@@ -13,14 +21,16 @@ async function run() {
     const executablePath = path.resolve(buildDirectory, executableName);
 
     await testFreudVersion(executablePath);
-    await loadTest() ;
+    await loadTest();
     await runTestInParallel(
       path.resolve(buildDirectory),
       executablePath,
       path.resolve(testsDirectory)
     );
-    const score = computeScore()
-    core.setOutput("grade", score );
+    const score = computeScore();
+    core.setOutput("grade", score);
+
+    printReport(testsObject);
   } catch (error) {
     core.endGroup();
     core.setFailed(error.message);
@@ -28,11 +38,79 @@ async function run() {
   }
 }
 
+async function printReport(testsObject) {
+  core.startGroup("print report");
+  const timestamp = timeString();
+  await io.mkdirP(`result/${timestamp}`);
+  await fs.writeFile(
+    `result/${timestamp}/log_${timeString()}.json`,
+    JSON.stringify(testsObject),
+    "utf8"
+  );
+  const resultat = {};
+  testsObjectToArray(testsObject).forEach(test => {
+    resultat[test.milestone] = resultat[test.milestone] ?? {
+      scoreTotal: 0,
+      count: 0,
+      features: []
+    };
+    resultat[test.milestone].features[test.feature] = resultat[test.milestone]
+      .features[test.feature] ?? {
+      feature: test.feature,
+      score: 0,
+      count: 0,
+      missedTest: []
+    };
+    const feature = resultat[test.milestone].features[test.feature];
+    // Count the test for the milestone
+    resultat[test.milestone].scoreTotal += test.score;
+    resultat[test.milestone].count++;
+    // Count the test for the feature
+    feature.score += test.score;
+    feature.count += 1;
+    if (test.score < 0.5) feature.missedTest.push(test.name);
+  });
+  let markdown = "";
+
+  Object.entries(resultat).forEach(([milestone, data]) => {
+    markdown += `# ${milestone}\n`;
+    markdown += `Score : ${data.scoreTotal}/${data.count} :  ${Math.floor(
+      (100 * data.scoreTotal) / data.count
+    )}%\n`;
+    markdown += `## Detail\n`;
+    markdown += tablemark(
+      Object.values(data.features).map(feature => ({
+        name: feature.feature,
+        score: `${feature.score}/${feature.count} :  ${Math.floor(
+          (100 * data.scoreTotal) / data.count
+        )}%\n`,
+        "missed tests": feature.missedTest.join("<br>")
+      }))
+    );
+  });
+  //Black magic to allow multiline output...
+  core.setOutput("markdown", markdown.replace(/%/g,"%25").replace(/\n/g,"%0A").replace(/\r/g,"%0D"));
+  await fs.writeFile(`result/${timestamp}/Readme.md`, markdown, "utf8");
+  core.endGroup()
+}
+
+function timeString() {
+  const d = new Date();
+  return (
+    `0${d.getUTCFullYear()}`.slice(-2) +
+    `0${d.getUTCMonth()}`.slice(-2) +
+    `0${d.getUTCDate()}`.slice(-2) +
+    `0${d.getUTCHours()}`.slice(-2) +
+    `0${d.getHours()}`.slice(-2) +
+    `0${d.getMinutes()}`.slice(-2) +
+    `0${d.getSeconds()}`.slice(-2)
+  );
+}
+
 function listenerOutput(test, type) {
   test[type] = "";
   return data => (test[type] += data);
 }
-
 
 //Check if freud is accessible by running freud --version.
 async function testFreudVersion(executablePath) {
@@ -61,7 +139,7 @@ async function loadTest() {
   core.endGroup();
 }
 
-//Run a test TODO: implement test that compare a file 
+//Run a test TODO: implement test that compare a file
 async function runTest(buildDirectory, executablePath, testPath, test) {
   try {
     const options = {};
@@ -98,7 +176,6 @@ async function runTestInParallel(buildDirectory, executablePath, testPath) {
   );
   core.endGroup();
   return data;
-
 }
 
 function evalTest(test) {
@@ -111,20 +188,27 @@ function evalTest(test) {
 }
 
 function computeScore() {
-
-  const tests = Object.values(testsObject.milestones).flat()
-  tests.forEach(test => evalTest(test))
+  const tests = Object.values(testsObject.milestones).flat();
+  tests.forEach(test => evalTest(test));
   core.startGroup("tests results");
-  tests.forEach(test => core.info( `Feature ${test.name} : ${test.score}`) )
+  tests.forEach(test => core.info(`Feature ${test.name} : ${test.score}`));
   core.endGroup();
   core.startGroup("Feature grading");
-  Object.entries(tests.reduce( (accumulator,test)=> {accumulator[test.feature] = (accumulator[ test.feature ]??0)+ test.score ; return accumulator }, {} ))
-        .forEach( ([feature,score]) => core.info( `Feature ${feature} : ${score}`) )
+  Object.entries(
+    tests.reduce((accumulator, test) => {
+      accumulator[test.feature] = (accumulator[test.feature] ?? 0) + test.score;
+      return accumulator;
+    }, {})
+  ).forEach(([feature, score]) => core.info(`Feature ${feature} : ${score}`));
   core.endGroup();
+
   return tests.reduce((accumlateur, test) => accumlateur + test.score, 0);
 }
 
-Array.prototype.each = (fn)=>{this.forEach(fn);return this}
+Array.prototype.each = fn => {
+  this.forEach(fn);
+  return this;
+};
 // function computeScore() {}
 // function outputScore() {}
 
