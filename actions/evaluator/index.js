@@ -70,8 +70,8 @@ async function printReport(testsObject) {
     feature.count += 1;
     if (test.score < 0.5) feature.missedTest.push(test.name);
   });
-  let markdown = "";
-
+  let markdown = "# Daily Evaluation " + timestamp.slice(0,4) + "\n" ;
+  markdown += "You can find below how you did for each feature. \n You should merge the pull request to keep the eval and automatically close and open the issues you have finished!\n"
   Object.entries(resultat).forEach(([milestone, data]) => {
     markdown += `# ${milestone}\n`;
     markdown += `Score : ${data.scoreTotal}/${data.count} :  ${Math.floor(
@@ -87,9 +87,11 @@ async function printReport(testsObject) {
         "missed tests": feature.missedTest.join("<br>")
       }))
     );
+    markdown += "## Related issues\n"
+    markdown += "close #24\n"
+    markdown += "open #17\n"
   });
-  //Black magic to allow multiline output...
-  core.setOutput("markdown", markdown.replace(/%/g,"%25").replace(/\n/g,"%0A").replace(/\r/g,"%0D"));
+  core.setOutput("markdown", markdown );
   await fs.writeFile(`result/${timestamp}/Readme.md`, markdown, "utf8");
   core.endGroup()
 }
@@ -97,10 +99,9 @@ async function printReport(testsObject) {
 function timeString() {
   const d = new Date();
   return (
-    `0${d.getUTCFullYear()}`.slice(-2) +
-    `0${d.getUTCMonth()}`.slice(-2) +
+    `0${d.getUTCMonth() + 1}`.slice(-2) +
     `0${d.getUTCDate()}`.slice(-2) +
-    `0${d.getUTCHours()}`.slice(-2) +
+    "-"+
     `0${d.getHours()}`.slice(-2) +
     `0${d.getMinutes()}`.slice(-2) +
     `0${d.getSeconds()}`.slice(-2)
