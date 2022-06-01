@@ -41,8 +41,9 @@ def main(argv):
     git_repo = ""
 
     try:
-        opts, args = getopt.getopt(argv,"ht:r",["token=","repo="])
-    except getopt.GetoptError:
+        opts, args = getopt.getopt(argv,"ht:r:",["token=","repo="])
+    except getopt.GetoptError as e:
+        print(e)
         PrintHelp()
         sys.exit(2)
     for opt, arg in opts:
@@ -64,7 +65,7 @@ def main(argv):
     g = Github(git_token)
 
     # get the template repo
-    repo = g.get_repo(git_repo)
+    repo = g.get_repo("Estia-1a/projetGenieInfo_template")
     
     # and all issues
     # sort = **"created"**, "updated", "comments"
@@ -73,7 +74,7 @@ def main(argv):
     
     
     # get the student repo
-    repo_target = g.get_repo("Estia-1a/test-issues")
+    repo_target = g.get_repo(git_repo)
 
     # default label for created issues
     try:
@@ -120,7 +121,7 @@ def main(argv):
                 print("creating " + val.title, val.number)
             else:
                 val = [x for x in target_issues if x.title == gi.title][0]
-                
+
             # keep track of issue index / feature index
             # for .github/issues.json
             cmd = re.findall("Command\s*\|\s*`-c\s*(.*?)\s*`", val.body)
