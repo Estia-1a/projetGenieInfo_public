@@ -1,210 +1,5 @@
-require('./sourcemap-register.js');/******/ (() => { // webpackBootstrap
-/******/ 	var __webpack_modules__ = ({
-
-/***/ 218:
-/***/ ((module) => {
-
- /**
- * Same as Promise.all(items.map(item => task(item))), but it waits for
- * the first {batchSize} promises to finish before starting the next batch.
- * https://stackoverflow.com/questions/37213316/execute-batch-of-promises-in-series-once-promise-all-is-done-go-to-the-next-bat
- * David Veszelovszki
- * @template A
- * @template B
- * @param {function(A): B} task The task to run for each item.
- * @param {A[]} items Arguments to pass to the task for each call.
- * @param {int} batchSize
- * @returns {B[]}
- */
-module.exports = async function batchPromise(task, items, batchSize) {
-    let position = 0;
-    let results = [];
-    while (position < items.length) {
-        const itemsForBatch = items.slice(position, position + batchSize);
-        results = [...results, ...await Promise.all(itemsForBatch.map(item => task(item)))];
-        position += batchSize;
-    }
-    return results;
-}
-
-
-/***/ }),
-
-/***/ 932:
-/***/ (function(__unused_webpack_module, __unused_webpack_exports, __nccwpck_require__) {
-
-const core = __nccwpck_require__(186);
-const exec = __nccwpck_require__(514);
-const io = __nccwpck_require__(436);
-const fs = __nccwpck_require__(225);
-
-const path = __nccwpck_require__(622);
-const tableMark = __nccwpck_require__(567);
-const testsObject = __nccwpck_require__(825);
-const batchPromise = __nccwpck_require__(218);
-
-const testsObjectToArray= ( testsObject ) => Object.values(testsObject.milestones).flat();
-
-// most @actions toolkit packages have async methods
-async function run() {
-  try {
-    const buildDirectory = core.getInput("buildDirectory");
-    const testsDirectory = core.getInput("testsDirectory");
-    const executableName = core.getInput("executableName");
-    const executablePath = path.resolve(buildDirectory, executableName);
-
-    await testFreudVersion(executablePath);
-    await loadTest();
-    await runTestInParallel(
-      path.resolve(buildDirectory),
-      executablePath,
-      path.resolve(testsDirectory)
-    );
-    const score = computeScore();
-    core.setOutput("grade", score);
-
-    const timestamp = timeString();
-    await io.mkdirP(`result/${timestamp}`);
-    fs.writeFile(
-      `result/${timestamp}/log_${timeString()}.json`,
-      JSON.stringify(testsObject),
-      "utf8"
-    );
-    fs.writeFile(
-      `result/${timestamp}/Readme.md`,
-      tableMark.tablemark( testsObjectToArray(testsObject), {columns:["milestones", "feature", "name", "score", "description" ]}),
-      "utf8"
-    );
-  } catch (error) {
-    core.endGroup();
-    core.setFailed(error.message);
-    core.setOutput("grade", 0);
-  }
-}
-
-function timeString() {
-  const d = new Date();
-  return (
-    `0${d.getUTCFullYear()}`.slice(-2) +
-    `0${d.getUTCMonth()}`.slice(-2) +
-    `0${d.getUTCDate()}`.slice(-2) +
-    `0${d.getUTCHours()}`.slice(-2) +
-    `0${d.getHours()}`.slice(-2) +
-    `0${d.getMinutes()}`.slice(-2) +
-    `0${d.getSeconds()}`.slice(-2)
-  );
-}
-
-function listenerOutput(test, type) {
-  test[type] = "";
-  return data => (test[type] += data);
-}
-
-//Check if freud is accessible by running freud --version.
-async function testFreudVersion(executablePath) {
-  core.startGroup("Find Freud");
-  const { exitCode, stdout } = await exec.getExecOutput(
-    executablePath,
-    ["--version"],
-    { silent: true }
-  );
-  if (exitCode === 0) {
-    core.info("Freud has been found" + stdout.trim());
-  } else {
-    core.info("Freud returned an error when run with --version");
-    throw new Error("Freud not working properly");
-  }
-  core.endGroup();
-}
-
-//Get the tests. TODO: Load the Manifest and prune tests for feature not implemented
-async function loadTest() {
-  core.startGroup("Load Tests");
-  core.info(`Manifest not loaded`);
-  core.info(
-    `Loaded ${Object.values(testsObject.milestones).flat().length} tests`
-  );
-  core.endGroup();
-}
-
-//Run a test TODO: implement test that compare a file
-async function runTest(buildDirectory, executablePath, testPath, test) {
-  try {
-    const options = {};
-    options.listeners = {};
-    options.listeners.stdout = listenerOutput(test, "stdout");
-    options.listeners.stderr = listenerOutput(test, "stderr");
-    options.silent = true;
-    options.cwd = path.resolve(buildDirectory);
-    core.info("Run Test :" + test.name);
-    await exec.exec(
-      executablePath,
-      [
-        "-f",
-        path.resolve(testPath, test.input[0]), //Todo: change for multiple input test
-        ...test.options
-      ],
-      options
-    );
-    return test;
-  } catch (error) {
-    test.error = error;
-    return test;
-  }
-}
-
-async function runTestInParallel(buildDirectory, executablePath, testPath) {
-  core.startGroup("Run Tests");
-  const runner = test =>
-    runTest(buildDirectory, executablePath, testPath, test);
-  const data = await batchPromise(
-    runner,
-    Object.values(testsObject.milestones).flat(),
-    10
-  );
-  core.endGroup();
-  return data;
-}
-
-function evalTest(test) {
-  if (test.type === "stdout") {
-    test.score = RegExp(test.output).test(test.stdout) ? 1 : 0;
-  } else {
-    test.score = 0;
-  }
-  return test;
-}
-
-function computeScore() {
-  const tests = Object.values(testsObject.milestones).flat();
-  tests.forEach(test => evalTest(test));
-  core.startGroup("tests results");
-  tests.forEach(test => core.info(`Feature ${test.name} : ${test.score}`));
-  core.endGroup();
-  core.startGroup("Feature grading");
-  Object.entries(
-    tests.reduce((accumulator, test) => {
-      accumulator[test.feature] = (accumulator[test.feature] ?? 0) + test.score;
-      return accumulator;
-    }, {})
-  ).forEach(([feature, score]) => core.info(`Feature ${feature} : ${score}`));
-  core.endGroup();
-  return tests.reduce((accumlateur, test) => accumlateur + test.score, 0);
-}
-
-Array.prototype.each = fn => {
-  this.forEach(fn);
-  return this;
-};
-// function computeScore() {}
-// function outputScore() {}
-
-
-
-run();
-
-
-/***/ }),
+import './sourcemap-register.cjs';import { createRequire as __WEBPACK_EXTERNAL_createRequire } from "module";
+/******/ var __webpack_modules__ = ({
 
 /***/ 351:
 /***/ (function(__unused_webpack_module, exports, __nccwpck_require__) {
@@ -3378,185 +3173,6 @@ function width(text, max){
 
 /***/ }),
 
-/***/ 567:
-/***/ ((__unused_webpack___webpack_module__, __webpack_exports__, __nccwpck_require__) => {
-
-"use strict";
-// ESM COMPAT FLAG
-__nccwpck_require__.r(__webpack_exports__);
-
-// EXPORTS
-__nccwpck_require__.d(__webpack_exports__, {
-  "alignmentOptions": () => (/* binding */ alignmentOptions),
-  "default": () => (/* binding */ tablemark_dist),
-  "toCellText": () => (/* reexport */ toCellText)
-});
-
-// EXTERNAL MODULE: ./node_modules/sentence-case/dist/index.js
-var dist = __nccwpck_require__(229);
-// EXTERNAL MODULE: ./node_modules/split-text-to-chunks/index.js
-var split_text_to_chunks = __nccwpck_require__(624);
-;// CONCATENATED MODULE: ./node_modules/tablemark/dist/utilities.js
-
-
-
-const columnsWidthMin = 5;
-const pipeRegex = /\|/g;
-const alignmentSet = new Set([
-    "LEFT",
-    "CENTER",
-    "RIGHT"
-]);
-const pad = (alignment, width, content) => {
-    if (alignment == null || alignment === alignmentOptions.left) {
-        return content.padEnd(width);
-    }
-    if (alignment === alignmentOptions.right) {
-        return content.padStart(width);
-    }
-    // center alignment
-    const remainder = Math.max(0, (width - content.length) % 2);
-    const sides = Math.max(0, (width - content.length - remainder) / 2);
-    return " ".repeat(sides) + content + " ".repeat(sides + remainder);
-};
-const toCellText = v => {
-    if (typeof v === "undefined")
-        return "";
-    return String(v).replace(pipeRegex, "\\|");
-};
-const line = (columns, config, forceGutters = false) => {
-    const gutters = forceGutters ? true : config.wrapWithGutters;
-    return ((gutters ? "| " : "  ") +
-        columns.join(gutters ? " | " : "   ") +
-        (gutters ? " |" : "  ") +
-        config.lineEnding);
-};
-const row = (alignments, widths, columns, config) => {
-    const width = columns.length;
-    const values = new Array(width);
-    const first = new Array(width);
-    let height = 1;
-    for (let h = 0; h < width; h++) {
-        const cells = (values[h] = split_text_to_chunks(columns[h], widths[h]));
-        if (cells.length > height)
-            height = cells.length;
-        first[h] = pad(alignments[h], widths[h], cells[0]);
-    }
-    if (height === 1) {
-        return line(first, config, true);
-    }
-    const lines = new Array(height);
-    lines[0] = line(first, config, true);
-    for (let v = 1; v < height; v++) {
-        lines[v] = new Array(width);
-    }
-    for (let h = 0; h < width; h++) {
-        const cells = values[h];
-        let v = 1;
-        for (; v < cells.length; v++) {
-            lines[v][h] = pad(alignments[h], widths[h], cells[v]);
-        }
-        for (; v < height; v++) {
-            lines[v][h] = " ".repeat(widths[h]);
-        }
-    }
-    for (let h = 1; h < height; h++) {
-        lines[h] = line(lines[h], config);
-    }
-    return lines.join("");
-};
-const normalizeOptions = (options) => {
-    const defaults = {
-        toCellText,
-        caseHeaders: true,
-        columns: [],
-        lineEnding: "\n",
-        wrapWidth: Infinity,
-        wrapWithGutters: false
-    };
-    Object.assign(defaults, options);
-    defaults.columns =
-        options?.columns?.map(descriptor => {
-            if (typeof descriptor === "string") {
-                return { name: descriptor };
-            }
-            const align = descriptor.align?.toUpperCase() ??
-                alignmentOptions.left;
-            if (!alignmentSet.has(align)) {
-                throw new RangeError(`Unknown alignment, got ${descriptor.align}`);
-            }
-            return {
-                align,
-                name: descriptor.name
-            };
-        }) ?? [];
-    return defaults;
-};
-const getColumnTitles = (keys, config) => {
-    return keys.map((key, i) => {
-        if (Array.isArray(config.columns)) {
-            const customTitle = config.columns[i]?.name;
-            if (customTitle != null) {
-                return customTitle;
-            }
-        }
-        if (!config.caseHeaders) {
-            return key;
-        }
-        return (0,dist/* sentenceCase */.G8)(key);
-    });
-};
-const getColumnWidths = (input, keys, titles, config) => {
-    return input.reduce((sizes, item) => keys.map((key, i) => Math.max(split_text_to_chunks.width(config.toCellText(item[key]), config.wrapWidth), sizes[i])), titles.map(t => Math.max(columnsWidthMin, split_text_to_chunks.width(t, config.wrapWidth))));
-};
-const getColumnAlignments = (keys, config) => {
-    return keys.map((_, i) => {
-        if (typeof config.columns[i]?.align === "string") {
-            return config.columns[i].align;
-        }
-        return alignmentOptions.left;
-    });
-};
-
-;// CONCATENATED MODULE: ./node_modules/tablemark/dist/index.js
-
-const alignmentOptions = {
-    left: "LEFT",
-    center: "CENTER",
-    right: "RIGHT"
-};
-/* harmony default export */ const tablemark_dist = ((input, options = {}) => {
-    if (typeof input[Symbol.iterator] !== "function") {
-        throw new TypeError(`Expected an iterable, got ${typeof input}`);
-    }
-    const config = normalizeOptions(options);
-    const keys = Object.keys(input[0]);
-    const titles = getColumnTitles(keys, config);
-    const widths = getColumnWidths(input, keys, titles, config);
-    const alignments = getColumnAlignments(keys, config);
-    let table = "";
-    // header line
-    table += row(alignments, widths, titles, config);
-    // header separator
-    table += line(alignments.map((align, i) => (align === alignmentOptions.left || align === alignmentOptions.center
-        ? ":"
-        : "-") +
-        "-".repeat(widths[i] - 2) +
-        (align === alignmentOptions.right || align === alignmentOptions.center
-            ? ":"
-            : "-")), config, true);
-    // table body
-    table += input
-        .map((item, _) => row(alignments, widths, keys.map(key => config.toCellText(item[key])), config))
-        .join("");
-    return table;
-});
-
-
-
-
-/***/ }),
-
 /***/ 679:
 /***/ ((module) => {
 
@@ -4179,63 +3795,11 @@ exports.upperCaseFirst = upperCaseFirst;
 
 /***/ }),
 
-/***/ 368:
-/***/ ((module) => {
-
-module.exports = {} ;
-module.exports.test1 = {
-  feature : "Dimension",
-  name : "Dimension 64x64",
-  description: "Test if the dimension feature is working",
-  type: "stdout",
-  input: ["input/a_64x64.bmp"],
-  options: ["-o", "dimension"],
-  output : "[dD]imension[s]*\\s*:\\s*64\\s*,\\s*64"
-}
-
-module.exports.test2 = {
-  feature : "Dimension",
-  name : "Dimension 1x1",
-  description: "Test if the dimension feature is working for one by one files",
-  type: "stdout",
-  input: ["input/a_1x1.bmp"],
-  options: ["-o", "dimension"],
-  output : "[dD]imension[s]*\\s*:\\s*1\\s*,\\s*1"
-}
-
-
-/***/ }),
-
-/***/ 534:
-/***/ ((module, __unused_webpack_exports, __nccwpck_require__) => {
-
-const dimension = __nccwpck_require__( 368 ) ;
-const statistiques = [ dimension.test1, dimension.test2 ];
-statistiques.forEach( e=> e.milestone = "statistiques");
-module.exports = statistiques ;
-
-
-/***/ }),
-
-/***/ 825:
-/***/ ((module, __unused_webpack_exports, __nccwpck_require__) => {
-
-const statistiques = __nccwpck_require__( 534);
-
-module.exports = {
-  milestones : {
-    statistiques: statistiques
-  }
-}
-
-
-/***/ }),
-
 /***/ 357:
 /***/ ((module) => {
 
 "use strict";
-module.exports = require("assert");
+module.exports = __WEBPACK_EXTERNAL_createRequire(import.meta.url)("assert");
 
 /***/ }),
 
@@ -4243,7 +3807,7 @@ module.exports = require("assert");
 /***/ ((module) => {
 
 "use strict";
-module.exports = require("child_process");
+module.exports = __WEBPACK_EXTERNAL_createRequire(import.meta.url)("child_process");
 
 /***/ }),
 
@@ -4251,7 +3815,7 @@ module.exports = require("child_process");
 /***/ ((module) => {
 
 "use strict";
-module.exports = require("events");
+module.exports = __WEBPACK_EXTERNAL_createRequire(import.meta.url)("events");
 
 /***/ }),
 
@@ -4259,15 +3823,7 @@ module.exports = require("events");
 /***/ ((module) => {
 
 "use strict";
-module.exports = require("fs");
-
-/***/ }),
-
-/***/ 225:
-/***/ ((module) => {
-
-"use strict";
-module.exports = require("fs/promises");
+module.exports = __WEBPACK_EXTERNAL_createRequire(import.meta.url)("fs");
 
 /***/ }),
 
@@ -4275,7 +3831,7 @@ module.exports = require("fs/promises");
 /***/ ((module) => {
 
 "use strict";
-module.exports = require("http");
+module.exports = __WEBPACK_EXTERNAL_createRequire(import.meta.url)("http");
 
 /***/ }),
 
@@ -4283,7 +3839,7 @@ module.exports = require("http");
 /***/ ((module) => {
 
 "use strict";
-module.exports = require("https");
+module.exports = __WEBPACK_EXTERNAL_createRequire(import.meta.url)("https");
 
 /***/ }),
 
@@ -4291,7 +3847,7 @@ module.exports = require("https");
 /***/ ((module) => {
 
 "use strict";
-module.exports = require("net");
+module.exports = __WEBPACK_EXTERNAL_createRequire(import.meta.url)("net");
 
 /***/ }),
 
@@ -4299,7 +3855,7 @@ module.exports = require("net");
 /***/ ((module) => {
 
 "use strict";
-module.exports = require("os");
+module.exports = __WEBPACK_EXTERNAL_createRequire(import.meta.url)("os");
 
 /***/ }),
 
@@ -4307,7 +3863,7 @@ module.exports = require("os");
 /***/ ((module) => {
 
 "use strict";
-module.exports = require("path");
+module.exports = __WEBPACK_EXTERNAL_createRequire(import.meta.url)("path");
 
 /***/ }),
 
@@ -4315,7 +3871,7 @@ module.exports = require("path");
 /***/ ((module) => {
 
 "use strict";
-module.exports = require("string_decoder");
+module.exports = __WEBPACK_EXTERNAL_createRequire(import.meta.url)("string_decoder");
 
 /***/ }),
 
@@ -4323,7 +3879,7 @@ module.exports = require("string_decoder");
 /***/ ((module) => {
 
 "use strict";
-module.exports = require("timers");
+module.exports = __WEBPACK_EXTERNAL_createRequire(import.meta.url)("timers");
 
 /***/ }),
 
@@ -4331,7 +3887,7 @@ module.exports = require("timers");
 /***/ ((module) => {
 
 "use strict";
-module.exports = require("tls");
+module.exports = __WEBPACK_EXTERNAL_createRequire(import.meta.url)("tls");
 
 /***/ }),
 
@@ -4339,83 +3895,572 @@ module.exports = require("tls");
 /***/ ((module) => {
 
 "use strict";
-module.exports = require("util");
+module.exports = __WEBPACK_EXTERNAL_createRequire(import.meta.url)("util");
 
 /***/ })
 
-/******/ 	});
+/******/ });
 /************************************************************************/
-/******/ 	// The module cache
-/******/ 	var __webpack_module_cache__ = {};
-/******/ 	
-/******/ 	// The require function
-/******/ 	function __nccwpck_require__(moduleId) {
-/******/ 		// Check if module is in cache
-/******/ 		var cachedModule = __webpack_module_cache__[moduleId];
-/******/ 		if (cachedModule !== undefined) {
-/******/ 			return cachedModule.exports;
-/******/ 		}
-/******/ 		// Create a new module (and put it into the cache)
-/******/ 		var module = __webpack_module_cache__[moduleId] = {
-/******/ 			// no module.id needed
-/******/ 			// no module.loaded needed
-/******/ 			exports: {}
-/******/ 		};
-/******/ 	
-/******/ 		// Execute the module function
-/******/ 		var threw = true;
-/******/ 		try {
-/******/ 			__webpack_modules__[moduleId].call(module.exports, module, module.exports, __nccwpck_require__);
-/******/ 			threw = false;
-/******/ 		} finally {
-/******/ 			if(threw) delete __webpack_module_cache__[moduleId];
-/******/ 		}
-/******/ 	
-/******/ 		// Return the exports of the module
-/******/ 		return module.exports;
+/******/ // The module cache
+/******/ var __webpack_module_cache__ = {};
+/******/ 
+/******/ // The require function
+/******/ function __nccwpck_require__(moduleId) {
+/******/ 	// Check if module is in cache
+/******/ 	var cachedModule = __webpack_module_cache__[moduleId];
+/******/ 	if (cachedModule !== undefined) {
+/******/ 		return cachedModule.exports;
 /******/ 	}
-/******/ 	
+/******/ 	// Create a new module (and put it into the cache)
+/******/ 	var module = __webpack_module_cache__[moduleId] = {
+/******/ 		// no module.id needed
+/******/ 		// no module.loaded needed
+/******/ 		exports: {}
+/******/ 	};
+/******/ 
+/******/ 	// Execute the module function
+/******/ 	var threw = true;
+/******/ 	try {
+/******/ 		__webpack_modules__[moduleId].call(module.exports, module, module.exports, __nccwpck_require__);
+/******/ 		threw = false;
+/******/ 	} finally {
+/******/ 		if(threw) delete __webpack_module_cache__[moduleId];
+/******/ 	}
+/******/ 
+/******/ 	// Return the exports of the module
+/******/ 	return module.exports;
+/******/ }
+/******/ 
 /************************************************************************/
-/******/ 	/* webpack/runtime/define property getters */
-/******/ 	(() => {
-/******/ 		// define getter functions for harmony exports
-/******/ 		__nccwpck_require__.d = (exports, definition) => {
-/******/ 			for(var key in definition) {
-/******/ 				if(__nccwpck_require__.o(definition, key) && !__nccwpck_require__.o(exports, key)) {
-/******/ 					Object.defineProperty(exports, key, { enumerable: true, get: definition[key] });
-/******/ 				}
-/******/ 			}
-/******/ 		};
-/******/ 	})();
-/******/ 	
-/******/ 	/* webpack/runtime/hasOwnProperty shorthand */
-/******/ 	(() => {
-/******/ 		__nccwpck_require__.o = (obj, prop) => (Object.prototype.hasOwnProperty.call(obj, prop))
-/******/ 	})();
-/******/ 	
-/******/ 	/* webpack/runtime/make namespace object */
-/******/ 	(() => {
-/******/ 		// define __esModule on exports
-/******/ 		__nccwpck_require__.r = (exports) => {
-/******/ 			if(typeof Symbol !== 'undefined' && Symbol.toStringTag) {
-/******/ 				Object.defineProperty(exports, Symbol.toStringTag, { value: 'Module' });
-/******/ 			}
-/******/ 			Object.defineProperty(exports, '__esModule', { value: true });
-/******/ 		};
-/******/ 	})();
-/******/ 	
-/******/ 	/* webpack/runtime/compat */
-/******/ 	
-/******/ 	if (typeof __nccwpck_require__ !== 'undefined') __nccwpck_require__.ab = __dirname + "/";
-/******/ 	
+/******/ /* webpack/runtime/compat */
+/******/ 
+/******/ if (typeof __nccwpck_require__ !== 'undefined') __nccwpck_require__.ab = new URL('.', import.meta.url).pathname.slice(import.meta.url.match(/^file:\/\/\/\w:/) ? 1 : 0, -1) + "/";
+/******/ 
 /************************************************************************/
-/******/ 	
-/******/ 	// startup
-/******/ 	// Load entry module and return exports
-/******/ 	// This entry module is referenced by other modules so it can't be inlined
-/******/ 	var __webpack_exports__ = __nccwpck_require__(932);
-/******/ 	module.exports = __webpack_exports__;
-/******/ 	
-/******/ })()
-;
+var __webpack_exports__ = {};
+// This entry need to be wrapped in an IIFE because it need to be in strict mode.
+(() => {
+"use strict";
+
+// EXTERNAL MODULE: ./node_modules/@actions/core/lib/core.js
+var core = __nccwpck_require__(186);
+// EXTERNAL MODULE: ./node_modules/@actions/exec/lib/exec.js
+var exec = __nccwpck_require__(514);
+// EXTERNAL MODULE: ./node_modules/@actions/io/lib/io.js
+var io = __nccwpck_require__(436);
+;// CONCATENATED MODULE: external "fs/promises"
+const promises_namespaceObject = __WEBPACK_EXTERNAL_createRequire(import.meta.url)("fs/promises");
+// EXTERNAL MODULE: external "path"
+var external_path_ = __nccwpck_require__(622);
+// EXTERNAL MODULE: ./node_modules/sentence-case/dist/index.js
+var dist = __nccwpck_require__(229);
+// EXTERNAL MODULE: ./node_modules/split-text-to-chunks/index.js
+var split_text_to_chunks = __nccwpck_require__(624);
+;// CONCATENATED MODULE: ./node_modules/tablemark/dist/utilities.js
+
+
+
+const columnsWidthMin = 5;
+const pipeRegex = /\|/g;
+const alignmentSet = new Set([
+    "LEFT",
+    "CENTER",
+    "RIGHT"
+]);
+const pad = (alignment, width, content) => {
+    if (alignment == null || alignment === alignmentOptions.left) {
+        return content.padEnd(width);
+    }
+    if (alignment === alignmentOptions.right) {
+        return content.padStart(width);
+    }
+    // center alignment
+    const remainder = Math.max(0, (width - content.length) % 2);
+    const sides = Math.max(0, (width - content.length - remainder) / 2);
+    return " ".repeat(sides) + content + " ".repeat(sides + remainder);
+};
+const toCellText = v => {
+    if (typeof v === "undefined")
+        return "";
+    return String(v).replace(pipeRegex, "\\|");
+};
+const line = (columns, config, forceGutters = false) => {
+    const gutters = forceGutters ? true : config.wrapWithGutters;
+    return ((gutters ? "| " : "  ") +
+        columns.join(gutters ? " | " : "   ") +
+        (gutters ? " |" : "  ") +
+        config.lineEnding);
+};
+const row = (alignments, widths, columns, config) => {
+    const width = columns.length;
+    const values = new Array(width);
+    const first = new Array(width);
+    let height = 1;
+    for (let h = 0; h < width; h++) {
+        const cells = (values[h] = split_text_to_chunks(columns[h], widths[h]));
+        if (cells.length > height)
+            height = cells.length;
+        first[h] = pad(alignments[h], widths[h], cells[0]);
+    }
+    if (height === 1) {
+        return line(first, config, true);
+    }
+    const lines = new Array(height);
+    lines[0] = line(first, config, true);
+    for (let v = 1; v < height; v++) {
+        lines[v] = new Array(width);
+    }
+    for (let h = 0; h < width; h++) {
+        const cells = values[h];
+        let v = 1;
+        for (; v < cells.length; v++) {
+            lines[v][h] = pad(alignments[h], widths[h], cells[v]);
+        }
+        for (; v < height; v++) {
+            lines[v][h] = " ".repeat(widths[h]);
+        }
+    }
+    for (let h = 1; h < height; h++) {
+        lines[h] = line(lines[h], config);
+    }
+    return lines.join("");
+};
+const normalizeOptions = (options) => {
+    const defaults = {
+        toCellText,
+        caseHeaders: true,
+        columns: [],
+        lineEnding: "\n",
+        wrapWidth: Infinity,
+        wrapWithGutters: false
+    };
+    Object.assign(defaults, options);
+    defaults.columns =
+        options?.columns?.map(descriptor => {
+            if (typeof descriptor === "string") {
+                return { name: descriptor };
+            }
+            const align = descriptor.align?.toUpperCase() ??
+                alignmentOptions.left;
+            if (!alignmentSet.has(align)) {
+                throw new RangeError(`Unknown alignment, got ${descriptor.align}`);
+            }
+            return {
+                align,
+                name: descriptor.name
+            };
+        }) ?? [];
+    return defaults;
+};
+const getColumnTitles = (keys, config) => {
+    return keys.map((key, i) => {
+        if (Array.isArray(config.columns)) {
+            const customTitle = config.columns[i]?.name;
+            if (customTitle != null) {
+                return customTitle;
+            }
+        }
+        if (!config.caseHeaders) {
+            return key;
+        }
+        return (0,dist/* sentenceCase */.G8)(key);
+    });
+};
+const getColumnWidths = (input, keys, titles, config) => {
+    return input.reduce((sizes, item) => keys.map((key, i) => Math.max(split_text_to_chunks.width(config.toCellText(item[key]), config.wrapWidth), sizes[i])), titles.map(t => Math.max(columnsWidthMin, split_text_to_chunks.width(t, config.wrapWidth))));
+};
+const getColumnAlignments = (keys, config) => {
+    return keys.map((_, i) => {
+        if (typeof config.columns[i]?.align === "string") {
+            return config.columns[i].align;
+        }
+        return alignmentOptions.left;
+    });
+};
+
+;// CONCATENATED MODULE: ./node_modules/tablemark/dist/index.js
+
+const alignmentOptions = {
+    left: "LEFT",
+    center: "CENTER",
+    right: "RIGHT"
+};
+/* harmony default export */ const tablemark_dist = ((input, options = {}) => {
+    if (typeof input[Symbol.iterator] !== "function") {
+        throw new TypeError(`Expected an iterable, got ${typeof input}`);
+    }
+    const config = normalizeOptions(options);
+    const keys = Object.keys(input[0]);
+    const titles = getColumnTitles(keys, config);
+    const widths = getColumnWidths(input, keys, titles, config);
+    const alignments = getColumnAlignments(keys, config);
+    let table = "";
+    // header line
+    table += row(alignments, widths, titles, config);
+    // header separator
+    table += line(alignments.map((align, i) => (align === alignmentOptions.left || align === alignmentOptions.center
+        ? ":"
+        : "-") +
+        "-".repeat(widths[i] - 2) +
+        (align === alignmentOptions.right || align === alignmentOptions.center
+            ? ":"
+            : "-")), config, true);
+    // table body
+    table += input
+        .map((item, _) => row(alignments, widths, keys.map(key => config.toCellText(item[key])), config))
+        .join("");
+    return table;
+});
+
+
+
+;// CONCATENATED MODULE: ./tests/milestones/tutorial/dimensions.js
+const test1 = {
+  feature : "Dimension",
+  name : "Dimension 64x64",
+  description: "Test if the dimension feature is working",
+  type: "stdout",
+  input: ["input/rgbw_64x64.bmp"],
+  options: ["-o", "dimension"],
+  output : "[dD]imension[s]*\\s*:\\s*64\\s*,\\s*64"
+}
+
+const test2 = {
+  feature : "Dimension",
+  name : "Dimension 1x1",
+  description: "Test if the dimension feature is working for one by one files",
+  type: "stdout",
+  input: ["input/r_1x1.bmp"],
+  options: ["-o", "dimension"],
+  output : "[dD]imension[s]*\\s*:\\s*1\\s*,\\s*1"
+}
+
+const test3 = {
+  feature : "Dimension",
+  name : "Dimension 32x64",
+  description: "Test if the dimension feature is working",
+  type: "stdout",
+  input: ["input/rgbw_32x64.bmp"],
+  options: ["-o", "dimension"],
+  output : "[dD]imension[s]*\\s*:\\s*32\\s*,\\s*64"
+}
+
+const test4 = {
+  feature : "Dimension",
+  name : "Dimension 64x32",
+  description: "Test if the dimension feature is working",
+  type: "stdout",
+  input: ["input/rgbw_64x32.bmp"],
+  options: ["-o", "dimension"],
+  output : "[dD]imension[s]*\\s*:\\s*64\\s*,\\s*32"
+}
+
+;// CONCATENATED MODULE: ./tests/milestones/tutorial/index.js
+
+const tutorial = [ test1, test2, test3, test4  ];
+tutorial.forEach( e=> e.milestone = "Tutorial");
+/* harmony default export */ const milestones_tutorial = (tutorial);
+
+;// CONCATENATED MODULE: ./tests/milestones/statistiques/dimensions.js
+const dimensions_test1 = {
+  feature : "Dimension",
+  name : "Dimension 64x64",
+  description: "Test if the dimension feature is working",
+  type: "stdout",
+  input: ["input/rgbw_64x64.bmp"],
+  options: ["-o", "dimension"],
+  output : "[dD]imension[s]*\\s*:\\s*64\\s*,\\s*64"
+}
+
+const dimensions_test2 = {
+  feature : "Dimension",
+  name : "Dimension 1x1",
+  description: "Test if the dimension feature is working for one by one files",
+  type: "stdout",
+  input: ["input/r_1x1.bmp"],
+  options: ["-o", "dimension"],
+  output : "[dD]imension[s]*\\s*:\\s*1\\s*,\\s*1"
+}
+
+const dimensions_test3 = {
+  feature : "Dimension",
+  name : "Dimension 32x64",
+  description: "Test if the dimension feature is working",
+  type: "stdout",
+  input: ["input/rgbw_32x64.bmp"],
+  options: ["-o", "dimension"],
+  output : "[dD]imension[s]*\\s*:\\s*32\\s*,\\s*64"
+}
+
+const dimensions_test4 = {
+  feature : "Dimension",
+  name : "Dimension 64x32",
+  description: "Test if the dimension feature is working",
+  type: "stdout",
+  input: ["input/rgbw_64x32.bmp"],
+  options: ["-o", "dimension"],
+  output : "[dD]imension[s]*\\s*:\\s*64\\s*,\\s*32"
+}
+
+;// CONCATENATED MODULE: ./tests/milestones/statistiques/index.js
+
+const statistiques = [ dimensions_test1, dimensions_test2 ];
+statistiques.forEach( e=> e.milestone = "statistiques");
+/* harmony default export */ const milestones_statistiques = (statistiques);
+
+;// CONCATENATED MODULE: ./tests/tests.js
+
+
+
+/* harmony default export */ const tests_tests = ({
+  milestones : {
+    tutorial: milestones_tutorial,
+    statistiques: milestones_statistiques
+  }
+});
+
+;// CONCATENATED MODULE: ./batchPromise.js
+ /**
+ * Same as Promise.all(items.map(item => task(item))), but it waits for
+ * the first {batchSize} promises to finish before starting the next batch.
+ * https://stackoverflow.com/questions/37213316/execute-batch-of-promises-in-series-once-promise-all-is-done-go-to-the-next-bat
+ * David Veszelovszki
+ * @template A
+ * @template B
+ * @param {function(A): B} task The task to run for each item.
+ * @param {A[]} items Arguments to pass to the task for each call.
+ * @param {int} batchSize
+ * @returns {B[]}
+ */
+async function batchPromise(task, items, batchSize) {
+    let position = 0;
+    let results = [];
+    while (position < items.length) {
+        const itemsForBatch = items.slice(position, position + batchSize);
+        results = [...results, ...await Promise.all(itemsForBatch.map(item => task(item)))];
+        position += batchSize;
+    }
+    return results;
+}
+
+;// CONCATENATED MODULE: ./index.js
+
+
+
+
+
+
+
+
+
+
+
+const testsObjectToArray = testsObject =>
+  Object.values(testsObject.milestones).flat();
+
+// most @actions toolkit packages have async methods
+async function run() {
+  try {
+    const buildDirectory = core.getInput("buildDirectory");
+    const testsDirectory = core.getInput("testsDirectory");
+    const executableName = core.getInput("executableName");
+    const executablePath = external_path_.resolve(buildDirectory, executableName);
+
+    await testFreudVersion(executablePath);
+    await loadTest();
+    await runTestInParallel(
+      external_path_.resolve(buildDirectory),
+      executablePath,
+      external_path_.resolve(testsDirectory)
+    );
+    const score = computeScore();
+    core.setOutput("grade", score);
+
+    printReport(tests_tests);
+  } catch (error) {
+    core.endGroup();
+    core.setFailed(error.message);
+    core.setOutput("grade", 0);
+  }
+}
+
+async function printReport(testsObject) {
+  core.startGroup("print report");
+  const timestamp = timeString();
+  await io.mkdirP(`result/${timestamp}`);
+  await promises_namespaceObject.writeFile(
+    `result/${timestamp}/log_${timeString()}.json`,
+    JSON.stringify(testsObject),
+    "utf8"
+  );
+  const resultat = {};
+  testsObjectToArray(testsObject).forEach(test => {
+    resultat[test.milestone] = resultat[test.milestone] ?? {
+      scoreTotal: 0,
+      count: 0,
+      features: []
+    };
+    resultat[test.milestone].features[test.feature] = resultat[test.milestone]
+      .features[test.feature] ?? {
+      feature: test.feature,
+      score: 0,
+      count: 0,
+      missedTest: []
+    };
+    const feature = resultat[test.milestone].features[test.feature];
+    // Count the test for the milestone
+    resultat[test.milestone].scoreTotal += test.score;
+    resultat[test.milestone].count++;
+    // Count the test for the feature
+    feature.score += test.score;
+    feature.count += 1;
+    if (test.score < 0.5) feature.missedTest.push(test.name);
+  });
+  let markdown = "";
+
+  Object.entries(resultat).forEach(([milestone, data]) => {
+    markdown += `# ${milestone}\n`;
+    markdown += `Score : ${data.scoreTotal}/${data.count} :  ${Math.floor(
+      (100 * data.scoreTotal) / data.count
+    )}%\n`;
+    markdown += `## Detail\n`;
+    markdown += tablemark_dist(
+      Object.values(data.features).map(feature => ({
+        name: feature.feature,
+        score: `${feature.score}/${feature.count} :  ${Math.floor(
+          (100 * data.scoreTotal) / data.count
+        )}%\n`,
+        "missed tests": feature.missedTest.join("<br>")
+      }))
+    );
+  });
+  //Black magic to allow multiline output...
+  core.setOutput("markdown", markdown.replace(/%/g,"%25").replace(/\n/g,"%0A").replace(/\r/g,"%0D"));
+  await promises_namespaceObject.writeFile(`result/${timestamp}/Readme.md`, markdown, "utf8");
+  core.endGroup()
+}
+
+function timeString() {
+  const d = new Date();
+  return (
+    `0${d.getUTCFullYear()}`.slice(-2) +
+    `0${d.getUTCMonth()}`.slice(-2) +
+    `0${d.getUTCDate()}`.slice(-2) +
+    `0${d.getUTCHours()}`.slice(-2) +
+    `0${d.getHours()}`.slice(-2) +
+    `0${d.getMinutes()}`.slice(-2) +
+    `0${d.getSeconds()}`.slice(-2)
+  );
+}
+
+function listenerOutput(test, type) {
+  test[type] = "";
+  return data => (test[type] += data);
+}
+
+//Check if freud is accessible by running freud --version.
+async function testFreudVersion(executablePath) {
+  core.startGroup("Find Freud");
+  const { exitCode, stdout } = await exec.getExecOutput(
+    executablePath,
+    ["--version"],
+    { silent: true }
+  );
+  if (exitCode === 0) {
+    core.info("Freud has been found" + stdout.trim());
+  } else {
+    core.info("Freud returned an error when run with --version");
+    throw new Error("Freud not working properly");
+  }
+  core.endGroup();
+}
+
+//Get the tests. TODO: Load the Manifest and prune tests for feature not implemented
+async function loadTest() {
+  core.startGroup("Load Tests");
+  core.info(`Manifest not loaded`);
+  core.info(
+    `Loaded ${Object.values(tests_tests.milestones).flat().length} tests`
+  );
+  core.endGroup();
+}
+
+//Run a test TODO: implement test that compare a file
+async function runTest(buildDirectory, executablePath, testPath, test) {
+  try {
+    const options = {};
+    options.listeners = {};
+    options.listeners.stdout = listenerOutput(test, "stdout");
+    options.listeners.stderr = listenerOutput(test, "stderr");
+    options.silent = true;
+    options.cwd = external_path_.resolve(buildDirectory);
+    core.info("Run Test :" + test.name);
+    await exec.exec(
+      executablePath,
+      [
+        "-f",
+        external_path_.resolve(testPath, test.input[0]), //Todo: change for multiple input test
+        ...test.options
+      ],
+      options
+    );
+    return test;
+  } catch (error) {
+    test.error = error;
+    return test;
+  }
+}
+
+async function runTestInParallel(buildDirectory, executablePath, testPath) {
+  core.startGroup("Run Tests");
+  const runner = test =>
+    runTest(buildDirectory, executablePath, testPath, test);
+  const data = await batchPromise(
+    runner,
+    Object.values(tests_tests.milestones).flat(),
+    10
+  );
+  core.endGroup();
+  return data;
+}
+
+function evalTest(test) {
+  if (test.type === "stdout") {
+    test.score = RegExp(test.output).test(test.stdout) ? 1 : 0;
+  } else {
+    test.score = 0;
+  }
+  return test;
+}
+
+function computeScore() {
+  const tests = Object.values(tests_tests.milestones).flat();
+  tests.forEach(test => evalTest(test));
+  core.startGroup("tests results");
+  tests.forEach(test => core.info(`Feature ${test.name} : ${test.score}`));
+  core.endGroup();
+  core.startGroup("Feature grading");
+  Object.entries(
+    tests.reduce((accumulator, test) => {
+      accumulator[test.feature] = (accumulator[test.feature] ?? 0) + test.score;
+      return accumulator;
+    }, {})
+  ).forEach(([feature, score]) => core.info(`Feature ${feature} : ${score}`));
+  core.endGroup();
+
+  return tests.reduce((accumlateur, test) => accumlateur + test.score, 0);
+}
+
+Array.prototype.each = fn => {
+  undefined.forEach(fn);
+  return undefined;
+};
+// function computeScore() {}
+// function outputScore() {}
+
+run();
+
+})();
+
+
 //# sourceMappingURL=index.js.map
