@@ -9,7 +9,7 @@ set_target_properties(getopt PROPERTIES
   PUBLIC_HEADER src/getopt.h)
 
 # Main configurations export directly to the source folder
-install(TARGETS estia-image
+install(TARGETS getopt
         ARCHIVE DESTINATION ${INSTALL_DESTINATION}/lib
         PUBLIC_HEADER DESTINATION ${INSTALL_DESTINATION}/include
 )
