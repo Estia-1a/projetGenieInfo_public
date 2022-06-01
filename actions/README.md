@@ -22,3 +22,4 @@ Note that:
 
 ## Useful Doc
 - [octokit api](https://octokit.github.io/rest.js/v18#issues)
+- [pygithub](https://pygithub.readthedocs.io/en/latest/)
