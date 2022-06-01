@@ -1,7 +1,9 @@
-const statistiques = require( "./milestones/statistiques/index.js");
+import tutorial from  "./milestones/tutorial/index.js" ;
+import statistiques from  "./milestones/statistiques/index.js" ;
 
-module.exports = {
+export default {
   milestones : {
+    tutorial: tutorial,
     statistiques: statistiques
   }
 }
