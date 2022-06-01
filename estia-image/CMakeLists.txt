@@ -13,18 +13,3 @@ install(TARGETS estia-image
         ARCHIVE DESTINATION ${CMAKE_SOURCE_DIR}/estia-image/lib
         PUBLIC_HEADER DESTINATION ${CMAKE_SOURCE_DIR}/estia-image/include
 )
-
-## MAC AND LINUX
-# Probably only useful for mac and linux
-include(GNUInstallDirs)
-# Only for release, probably only useful for mac and linux
-configure_file(estia-image.pc.in estia-image.pc @ONLY)
-# Release version for Mac and Linux
-install(TARGETS estia-image
-        CONFIGURATIONS Release
-        ARCHIVE DESTINATION ${CMAKE_INSTALL_LIBDIR}
-        PUBLIC_HEADER DESTINATION ${CMAKE_INSTALL_INCLUDEDIR}
-)
-install(FILES ${CMAKE_BINARY_DIR}/estia-image.pc
-    CONFIGURATIONS Release
-    DESTINATION ${CMAKE_INSTALL_DATAROOTDIR}/pkgconfig)
