@@ -1,9 +1,9 @@
 cmake_minimum_required(VERSION 3.20)
 project(freud VERSION 1.0.1 DESCRIPTION "freud is an image analyst")
-
+set(INSTALL_DESTINATION ${CMAKE_SOURCE_DIR}/getopt CACHE STRING "Install directory")
 # Set everything to use our image library
-set(ESTIA_IMAGE_PATH ${CMAKE_SOURCE_DIR}/lib/estia-image/estia-image)
-set(GETOPT_PATH ${CMAKE_SOURCE_DIR}/lib/getopt/getopt)
+set(ESTIA_IMAGE_PATH ${CMAKE_SOURCE_DIR}/lib/estia-image/estia-image CACHE STRING "estia_image directory")
+set(GETOPT_PATH ${CMAKE_SOURCE_DIR}/lib/getopt/getopt CACHE STRING "getopt directory")
 # Include directory
 include_directories( ${ESTIA_IMAGE_PATH}/include )
 include_directories( ${GETOPT_PATH}/include )
