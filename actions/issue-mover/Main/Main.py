@@ -42,7 +42,8 @@ def main(argv):
 
     try:
         opts, args = getopt.getopt(argv,"ht:r",["token=","repo="])
-    except getopt.GetoptError:
+    except getopt.GetoptError as e:
+        print(e)
         PrintHelp()
         sys.exit(2)
     for opt, arg in opts:
