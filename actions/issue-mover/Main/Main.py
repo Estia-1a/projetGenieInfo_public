@@ -41,7 +41,7 @@ def main(argv):
     git_repo = ""
 
     try:
-        opts, args = getopt.getopt(argv,"ht:r",["token=","repo="])
+        opts, args = getopt.getopt(argv,"ht:r:",["token=","repo="])
     except getopt.GetoptError as e:
         print(e)
         PrintHelp()
