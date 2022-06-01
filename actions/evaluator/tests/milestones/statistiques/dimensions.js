@@ -6,7 +6,7 @@ module.exports.test1 = {
   type: "stdout",
   input: ["input/a_64x64.bmp"],
   options: ["-o", "dimension"],
-  output : "dimension[s]*\\s*:\\s*64\\s*,\\s*64"
+  output : "[dD]imension[s]*\\s*:\\s*64\\s*,\\s*64"
 }
 
 module.exports.test2 = {
@@ -16,5 +16,5 @@ module.exports.test2 = {
   type: "stdout",
   input: ["input/a_1x1.bmp"],
   options: ["-o", "dimension"],
-  output : "dimension[s]*\\s*:\\s*1\\s*,\\s*1"
+  output : "[dD]imension[s]*\\s*:\\s*1\\s*,\\s*1"
 }
