@@ -1,0 +1,67 @@
+name: Evaluation
+on:
+  pull_request:
+    branches:
+      - master
+  workflow_dispatch:
+env:
+  PUBLIC_URL: https://github.com/Estia-1a/projetGenieInfo_public/archive/refs/heads/evaluator.zip
+jobs:
+  cmake-build-and-test:
+    name: Automatic Evaluation
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout your code
+        uses: actions/checkout@v3
+
+      # Get the libraries
+      - name: download lib and cmake config
+        run: |
+          wget $PUBLIC_URL -O public.zip
+          unzip public.zip
+          mv projetGenieInfo_public-evaluator ${{ runner.workspace }}/public
+      - name: Cache Libraries
+        id: cache-libraries
+        uses: actions/cache@v3
+        with:
+          path: public
+          key: public-evaluator
+      - if: steps.cache-libraries.outputs.cache-hit != 'true'
+        name: Build Estia-image Lib
+        uses: ashutoshvarma/action-cmake-build@master
+        with:
+          source-dir: ${{ runner.workspace }}/public/estia-image
+          build-dir: ${{ runner.workspace }}/public/estia-image/build
+          configure-options: -DINSTALL_DESTINATION=${{ runner.workspace }}/lib/estia_image
+          install-build: true
+      - if: steps.cache-libraries.outputs.cache-hit != 'true'
+        name: Build getopt Lib
+        uses: ashutoshvarma/action-cmake-build@master
+        with:
+          source-dir: ${{ runner.workspace }}/public/getopt
+          build-dir: ${{ runner.workspace }}/public/getopt/build
+          configure-options: -DINSTALL_DESTINATION=${{ runner.workspace }}/lib/getopt
+          install-build: true
+
+      - name: Copy the CMakeLists.txt
+        run: |
+          cp -f  ${{ runner.workspace }}/public/CMake/CMakeLists.txt $GITHUB_WORKSPACE/CMakeLists.txt
+     # Build student code
+      - name: Build
+        uses: ashutoshvarma/action-cmake-build@master
+        with:
+          build-dir: ${{ runner.workspace }}/build
+          configure-options: -DESTIA_IMAGE_PATH=${{ runner.workspace }}/lib/estia_image -DGETOPT_PATH=${{ runner.workspace }}/lib/getopt
+          install-build: true
+      - name: Run tests
+        id: runTests
+        uses: Estia-1a/projetGenieInfo_public/actions/evaluator@v3
+        with:
+          buildDirectory: ./dist/
+          testDirectory: ${{ runner.workspace }}/public/images
+      - name: Comment PR
+        uses: thollander/actions-comment-pull-request@v1
+        if: github.event_name == 'pull_request'
+        with:
+          message: ${{steps.runTests.outputs.grade}}
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
