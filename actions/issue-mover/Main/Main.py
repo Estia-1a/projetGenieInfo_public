@@ -135,13 +135,10 @@ def main(argv):
     # write and add file
     print("creating .github/issues.json file")
     try:
-        ref = repo_target.get_branch("issues-creation")
-        contents = repo_target.get_contents(".github/issues.json", ref="issues-creation")
+        contents = repo_target.get_contents(".github/issues.json", ref="main")
         repo_target.update_file(path=contents.path, content=str(dico), message="Updating issue mapping", sha=contents.sha, branch="issues-creation")
     except:
-        ref = repo_target.get_branch("main")
-        repo_target.create_git_ref("refs/heads/issues-creation", ref.commit.sha)
-        repo_target.create_file(path = ".github/issues.json", content = str(dico), message="Creating issue mapping.", branch="issues-creation")
+        repo_target.create_file(path = ".github/issues.json", content = str(dico), message="Creating issue mapping.", branch="main")
 
     print(str(created_issues) + "/" + str(len(dico)) + " issues created and mapped.")
     return
