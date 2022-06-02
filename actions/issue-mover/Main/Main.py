@@ -116,15 +116,17 @@ def main(argv):
 
             # finally create issue
             if gi.title not in t_issues:
-                val = repo_target.create_issue(title = gi.title, body = gi.body, milestone=milestone, labels=gi.labels + ["feature"])
+                val = repo_target.create_issue(title = gi.title, body = gi.body, milestone=milestone, labels=gi.labels)
                 print("creating issue " + val.title, val.number)
                 created_issues += 1
             else:
+                print("updating issue " + gi.title)
                 val = [x for x in target_issues if x.title == gi.title][0]
+                val.edit(title=gi.title, body=gi.body, milestone=milestone, labels=[l.name for l in gi.labels])
 
             # keep track of issue index / feature index
             # for .github/issues.json
-            cmd = re.findall("Command\s*\|\s*`-c\s*(.*?)\s*`", val.body)
+            cmd = re.findall("Command\s*\|\s*`-c\s+(.*?)[\s|`]", val.body)
             dico.append({"id": val.number, "command": cmd[0], "title": val.title})
             time.sleep(2)
 

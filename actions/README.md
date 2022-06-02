@@ -19,6 +19,11 @@ Note that:
 * The script creates (and updates at each run) the `.github/issues.json` file. For now, the file only exists in the `issues-creation` branch.
 * The script should run (i) at the project's creation, or (ii) manually.
 * The `template` repository (with original issues and milestones) **has to** be public.
+* Also updates:
+    * body
+    * label(s) (Note: keeps label `export` since it can indicate students which issues are mandatory and which issues are from their colleagues)
+    * milestone
+
 
 ## Useful Doc
 - [octokit api](https://octokit.github.io/rest.js/v18#issues)
