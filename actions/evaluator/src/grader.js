@@ -1,5 +1,4 @@
 import core from "@actions/core";
-import testsObject from "./tests/tests.js";
 
 export function evalTest(test) {
   if (test.type === "stdout") {
