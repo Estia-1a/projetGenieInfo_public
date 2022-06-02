@@ -3036,7 +3036,7 @@ function replace(input, re, value) {
 
 /***/ }),
 
-/***/ 732:
+/***/ 229:
 /***/ ((__unused_webpack_module, exports, __nccwpck_require__) => {
 
 "use strict";
@@ -4073,96 +4073,146 @@ async function testFreudVersion(executablePath) {
 }
 
 ;// CONCATENATED MODULE: ./src/tests/milestones/tutorial/dimensions.js
-const test1 = {
-  feature : "Dimension",
-  name : "Dimension 64x64",
-  description: "Test if the dimension feature is working",
-  type: "stdout",
-  input: ["input/rgbw_64x64.bmp"],
-  options: ["-o", "dimension"],
-  output : "[dD]imension[s]*\\s*:\\s*64\\s*,\\s*64"
-}
+/* harmony default export */ const dimensions = ([
+  {
+    feature: "Dimension",
+    name: "Dimension 64x64",
+    description: "Test if the dimension feature is working",
+    type: "stdout",
+    input: ["input/rgbw_64x64.bmp"],
+    options: ["-c", "dimension"],
+    output: "[dD]imension[s]*\\s*:\\s*64\\s*,\\s*64"
+  },
 
-const test2 = {
-  feature : "Dimension",
-  name : "Dimension 1x1",
-  description: "Test if the dimension feature is working for one by one files",
-  type: "stdout",
-  input: ["input/r_1x1.bmp"],
-  options: ["-o", "dimension"],
-  output : "[dD]imension[s]*\\s*:\\s*1\\s*,\\s*1"
-}
+  {
+    feature: "Dimension",
+    name: "Dimension 1x1",
+    description:
+      "Test if the dimension feature is working for one by one files",
+    type: "stdout",
+    input: ["input/r_1x1.bmp"],
+    options: ["-c", "dimension"],
+    output: "[dD]imension[s]*\\s*:\\s*1\\s*,\\s*1"
+  },
 
-const test3 = {
-  feature : "Dimension",
-  name : "Dimension 32x64",
-  description: "Test if the dimension feature is working",
-  type: "stdout",
-  input: ["input/rgbw_32x64.bmp"],
-  options: ["-o", "dimension"],
-  output : "[dD]imension[s]*\\s*:\\s*32\\s*,\\s*64"
-}
+  {
+    feature: "Dimension",
+    name: "Dimension 32x64",
+    description: "Test if the dimension feature is working",
+    type: "stdout",
+    input: ["input/rgbw_32x64.bmp"],
+    options: ["-c", "dimension"],
+    output: "[dD]imension[s]*\\s*:\\s*32\\s*,\\s*64"
+  },
 
-const test4 = {
-  feature : "Dimension",
-  name : "Dimension 64x32",
-  description: "Test if the dimension feature is working",
-  type: "stdout",
-  input: ["input/rgbw_64x32.bmp"],
-  options: ["-o", "dimension"],
-  output : "[dD]imension[s]*\\s*:\\s*64\\s*,\\s*32"
-}
+  {
+    feature: "Dimension",
+    name: "Dimension 64x32",
+    description: "Test if the dimension feature is working",
+    type: "stdout",
+    input: ["input/rgbw_64x32.bmp"],
+    options: ["-c", "dimension"],
+    output: "[dD]imension[s]*\\s*:\\s*64\\s*,\\s*32"
+  }
+]);
+
+;// CONCATENATED MODULE: ./src/tests/milestones/tutorial/firstPixel.js
+/* harmony default export */ const firstPixel = ([
+  {
+    feature: "first_pixel",
+    name: "First Pixel 64x64 Red : 255, 0, 0",
+    description: "Check first pixel on 64x64 : should be red",
+    type: "stdout",
+    input: ["input/rgbw_64x64.bmp"],
+    options: ["-c", "first_pixel"],
+    output: "[fF]irst_pixel*\\s*:\\s*255\\s*,\\s*0,\\s*0"
+  },
+
+  {
+    feature: "first_pixel",
+    name: "First Pixel 32x32 Red : 255, 0, 0",
+    description: "Check first pixel on 32x32 red image",
+    type: "stdout",
+    input: ["input/r_32x32.bmp"],
+    options: ["-c", "first_pixel"],
+    output: "[fF]irst_pixel*\\s*:\\s*255\\s*,\\s*0,\\s*0"
+  },
+
+  {
+    feature: "first_pixel",
+    name: "First Pixel 32x32 Green : 0, 255, 0",
+    description: "Check first pixel on 32x32 green image",
+    type: "stdout",
+    input: ["input/g_32x32.bmp"],
+    options: ["-c", "first_pixel"],
+    output: "[fF]irst_pixel*\\s*:\\s*0\\s*,\\s*255,\\s*0"
+  },
+
+  {
+    feature: "first_pixel",
+    name: "First Pixel 32x32 Blue : 0, 0, 255",
+    description: "Check first pixel on 32x32 blue image",
+    type: "stdout",
+    input: ["input/b_32x32.bmp"],
+    options: ["-c", "first_pixel"],
+    output: "[fF]irst_pixel*\\s*:\\s*0\\s*,\\s*0,\\s*255"
+  }
+]);
 
 ;// CONCATENATED MODULE: ./src/tests/milestones/tutorial/index.js
 
-const tutorial = [ test1, test2, test3, test4  ];
+
+const tutorial = [ ...dimensions, ...firstPixel  ];
 tutorial.forEach( e=> e.milestone = "Tutorial");
 /* harmony default export */ const milestones_tutorial = (tutorial);
 
 ;// CONCATENATED MODULE: ./src/tests/milestones/statistiques/dimensions.js
-const dimensions_test1 = {
-  feature : "Dimension",
-  name : "Dimension 64x64",
-  description: "Test if the dimension feature is working",
-  type: "stdout",
-  input: ["input/rgbw_64x64.bmp"],
-  options: ["-o", "dimension"],
-  output : "[dD]imension[s]*\\s*:\\s*64\\s*,\\s*64"
-}
+/* harmony default export */ const statistiques_dimensions = ([
+  {
+    feature: "Dimension_2",
+    name: "Dimension_2 64x64",
+    description: "Test if the dimension feature is working",
+    type: "stdout",
+    input: ["input/rgbw_64x64.bmp"],
+    options: ["-o", "dimension"],
+    output: "[dD]imension[s]*\\s*:\\s*64\\s*,\\s*64"
+  },
 
-const dimensions_test2 = {
-  feature : "Dimension",
-  name : "Dimension 1x1",
-  description: "Test if the dimension feature is working for one by one files",
-  type: "stdout",
-  input: ["input/r_1x1.bmp"],
-  options: ["-o", "dimension"],
-  output : "[dD]imension[s]*\\s*:\\s*1\\s*,\\s*1"
-}
+  {
+    feature: "Dimension_2",
+    name: "Dimension_2 1x1",
+    description:
+      "Test if the dimension feature is working for one by one files",
+    type: "stdout",
+    input: ["input/r_1x1.bmp"],
+    options: ["-o", "dimension"],
+    output: "[dD]imension[s]*\\s*:\\s*1\\s*,\\s*1"
+  },
 
-const dimensions_test3 = {
-  feature : "Dimension",
-  name : "Dimension 32x64",
-  description: "Test if the dimension feature is working",
-  type: "stdout",
-  input: ["input/rgbw_32x64.bmp"],
-  options: ["-o", "dimension"],
-  output : "[dD]imension[s]*\\s*:\\s*32\\s*,\\s*64"
-}
+  {
+    feature: "Dimension_2",
+    name: "Dimension_2 32x64",
+    description: "Test if the dimension feature is working",
+    type: "stdout",
+    input: ["input/rgbw_32x64.bmp"],
+    options: ["-o", "dimension"],
+    output: "[dD]imension[s]*\\s*:\\s*32\\s*,\\s*64"
+  },
 
-const dimensions_test4 = {
-  feature : "Dimension",
-  name : "Dimension 64x32",
-  description: "Test if the dimension feature is working",
-  type: "stdout",
-  input: ["input/rgbw_64x32.bmp"],
-  options: ["-o", "dimension"],
-  output : "[dD]imension[s]*\\s*:\\s*64\\s*,\\s*32"
-}
+  {
+    feature: "Dimension_2",
+    name: "Dimension_2 64x32",
+    description: "Test if the dimension feature is working",
+    type: "stdout",
+    input: ["input/rgbw_64x32.bmp"],
+    options: ["-o", "dimension"],
+    output: "[dD]imension[s]*\\s*:\\s*64\\s*,\\s*32"
+  }
+]);
 
 ;// CONCATENATED MODULE: ./src/tests/milestones/statistiques/index.js
 
-const statistiques = [ dimensions_test1, dimensions_test2 ];
+const statistiques = [ ...statistiques_dimensions];
 statistiques.forEach( e=> e.milestone = "statistiques");
 /* harmony default export */ const milestones_statistiques = (statistiques);
 
@@ -4227,7 +4277,7 @@ var io = __nccwpck_require__(436);
 ;// CONCATENATED MODULE: external "fs/promises"
 const promises_namespaceObject = __WEBPACK_EXTERNAL_createRequire(import.meta.url)("fs/promises");
 // EXTERNAL MODULE: ./node_modules/sentence-case/dist/index.js
-var dist = __nccwpck_require__(732);
+var dist = __nccwpck_require__(229);
 // EXTERNAL MODULE: ./node_modules/split-text-to-chunks/index.js
 var split_text_to_chunks = __nccwpck_require__(624);
 ;// CONCATENATED MODULE: ./node_modules/tablemark/dist/utilities.js

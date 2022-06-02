@@ -8,7 +8,7 @@
 #define GET_PIXEL_G_DIF(data1, data2, x, y, n, width) ((data1[((y*width+x)*n)+1] - data2[((y*width+x)*n)+1]))
 #define GET_PIXEL_B_DIF(data1, data2, x, y, n, width) ((data1[((y*width+x)*n)+2] - data2[((y*width+x)*n)+2]))
 
-int main(int argc, char **argv) 
+int main(int argc, char **argv)
 {
   // Basic check of command-line arguments
   if(argc < 3) {
@@ -32,7 +32,7 @@ int main(int argc, char **argv)
     printf("0 Incorrect dimensions\n");
     return 0;
   }
-  
+
   // Compute euclidian distance between files
   unsigned long long distance = 0;
 
@@ -45,10 +45,10 @@ int main(int argc, char **argv)
       distance += (r_dif*r_dif) + (g_dif*g_dif) + (b_dif*b_dif);
     }
   }
-
+  distance *= 100 ;
   distance /= (width1 * width2 * nb1);
-
-  int score = 100 - (distance * 100 / (255*255)); // Normalize to give a percentage between 0 and 100
+  distance /= (255*255)
+  int score = 100 - distance ; // Normalize to give a percentage between 0 and 100
 
   // TODO: define what the threshold above which distance is acceptable should be
 
