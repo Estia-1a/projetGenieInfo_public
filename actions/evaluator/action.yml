@@ -1,0 +1,33 @@
+name: 'Wait'
+description: 'Wait a designated number of milliseconds'
+inputs:
+  buildDirectory:  # id of input
+    description: 'build directory where to find the exec'
+    required: true
+    default: './build'
+  testsDirectory:  # id of input
+    description: 'where to find the test files,'
+    required: true
+    default: './test'
+  entryPoint:  # id of input
+    description: 'name of the json file for all the test'
+    required: true
+    default: 'test.json'
+  executableName:  # id of input
+    description: 'executable name'
+    required: true
+    default: 'freud'
+  comparatorPath:
+    description: "path and name of the comparator"
+    required: true
+    default: './image-comparator'
+outputs:
+  grade: # output will be available to future steps
+    description: 'The final grade'
+  markdown: # output will be available to future steps
+    description: 'A summary of the evaluation'
+  date: # output will be available to future steps
+    description: 'Evaluation date'
+runs:
+  using: 'node16'
+  main: 'dist/index.js'

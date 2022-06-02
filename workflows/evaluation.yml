@@ -1,0 +1,108 @@
+name: Evaluation
+on:
+  pull_request:
+    branches:
+      - master
+  workflow_dispatch:
+env:
+  PUBLIC_URL: https://github.com/Estia-1a/projetGenieInfo_public/archive/refs/heads/evaluator.zip
+jobs:
+  cmake-build-and-test:
+
+    name: Automatic Evaluation
+    runs-on: ubuntu-latest
+    steps:
+      - name: Create cache file
+        run: |
+          mkdir ${{ runner.workspace }}/check-SHA
+          echo ${{ github.sha }} > ${{ runner.workspace }}/check-SHA/github-sha.txt
+      - name: Check SHA
+        id: check_sha
+        uses: actions/cache@v3
+        with:
+          path: ${{ runner.workspace }}/check-SHA
+          key: check-SHA-${{ github.sha }}
+      - name: abort
+        id: abort
+        if: steps.check_sha.outputs.cache-hit == 'true'
+        run: |
+          echo ::notice:: No modifications since last evaluation
+          exit 1
+      - name: Checkout your code
+        uses: actions/checkout@v3
+
+      # Get the libraries
+      - name: download lib and cmake config
+        run: |
+          wget $PUBLIC_URL -O public.zip
+          unzip public.zip
+          mv projetGenieInfo_public-evaluator ${{ runner.workspace }}/public
+      - name: Cache Libraries
+        id: cache-libraries
+        uses: actions/cache@v3
+        with:
+          path: |
+            ${{ runner.workspace }}/public
+            ${{ runner.workspace }}/lib/estia_image
+            ${{ runner.workspace }}/lib/getopt
+            ${{ runner.workspace }}/lib/image_comparator
+          key: public-evaluator2
+      - if: steps.cache-libraries.outputs.cache-hit != 'true'
+        name: Build Estia-image Lib
+        uses: ashutoshvarma/action-cmake-build@master
+        with:
+          source-dir: ${{ runner.workspace }}/public/estia-image
+          build-dir: ${{ runner.workspace }}/public/estia-image/build
+          configure-options: -DINSTALL_DESTINATION=${{ runner.workspace }}/lib/estia_image
+          install-build: true
+      - if: steps.cache-libraries.outputs.cache-hit != 'true'
+        name: Build getopt Lib
+        uses: ashutoshvarma/action-cmake-build@master
+        with:
+          source-dir: ${{ runner.workspace }}/public/getopt
+          build-dir: ${{ runner.workspace }}/public/getopt/build
+          configure-options: -DINSTALL_DESTINATION=${{ runner.workspace }}/lib/getopt
+          install-build: true
+      - if: steps.cache-libraries.outputs.cache-hit != 'true'
+        name: Build image comparator
+        uses: ashutoshvarma/action-cmake-build@master
+        with:
+          source-dir: ${{ runner.workspace }}/public/image-comparator
+          build-dir: ${{ runner.workspace }}/public/image-comparator/build
+          configure-options: -DESTIA_IMAGE_PATH=${{ runner.workspace }}/lib/estia_image -DINSTALL_DESTINATION=${{ runner.workspace }}/lib/image_comparator
+          install-build: true
+
+      - name: Copy the CMakeLists.txt
+        run: |
+          cp -f  ${{ runner.workspace }}/public/CMake/CMakeLists.txt $GITHUB_WORKSPACE/CMakeLists.txt
+     # Build student code
+      - name: Build
+        uses: ashutoshvarma/action-cmake-build@master
+        with:
+          build-dir: ${{ runner.workspace }}/build
+          configure-options: -DESTIA_IMAGE_PATH=${{ runner.workspace }}/lib/estia_image -DGETOPT_PATH=${{ runner.workspace }}/lib/getopt
+          install-build: true
+      - name: Run tests
+        id: runTests
+        uses: Estia-1a/projetGenieInfo_public/actions/evaluator@evaluator
+        with:
+          buildDirectory: ./dist/
+          testsDirectory: ${{ runner.workspace }}/public/images
+          comparatorPath: ${{ runner.workspace }}/lib/image_comparator
+      - name: Summary
+        run: |
+          echo "${{steps.runTests.outputs.markdown}}" > $GITHUB_STEP_SUMMARY
+      - name: Create Pull Request
+        uses: peter-evans/create-pull-request@v4
+        with:
+           add-paths: result
+           commit-message: Automatic Evaluation from ${{steps.runTests.outputs.date}}
+           branch: Evaluation/Daily
+           branch-suffix: timestamp
+           delete-branch: true
+           title: Daily Evaluation ${{steps.runTests.outputs.date}}
+           body: ${{steps.runTests.outputs.markdown}}
+      - name: handle no modification
+        if: ${{ failure() && steps.abort.conclusion == 'failure' }}
+        run: |
+          echo "# No evaluation needed" > $GITHUB_STEP_SUMMARY
