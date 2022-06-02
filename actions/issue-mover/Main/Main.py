@@ -13,10 +13,7 @@ import time
 
 # https://pygithub.readthedocs.io/en/latest/introduction.html
 from github import Github
-from github.Milestone import Milestone
-from github.Label import Label
 
-from dotenv import load_dotenv
 
 '''
 To run the script outside Eclipse
@@ -40,6 +37,8 @@ def main(argv):
     git_token = ""
     git_repo = ""
 
+    created_issues = 0
+
     try:
         opts, args = getopt.getopt(argv,"ht:r:",["token=","repo="])
     except getopt.GetoptError as e:
@@ -55,13 +54,13 @@ def main(argv):
         elif opt in ("-r", "--repo"):
             git_repo = arg
 
-    if len(git_repo) == 0:
+    if len(git_repo) == 0 or len(git_token) == 0:
         # this is running on a machine
-        load_dotenv(".env")
-        git_token = os.getenv("GITHUB_TOKEN")
-        git_repo = os.getenv("GITHUB_REPOSITORY")
+        # in this case, best to have a tasks.json file to run in VSCode
+        print("problem occured with arguments: ", opts)
+        PrintHelp()
+        sys.exit(2)
 
-    
     g = Github(git_token)
 
     # get the template repo
@@ -108,7 +107,7 @@ def main(argv):
             # check if the milestone exists in the target repo
             if gi.milestone.title not in t_milestones:
                 # create milestone
-                print("creating " + gi.milestone.title)
+                print("creating milestone " + gi.milestone.title)
                 milestone = repo_target.create_milestone(title=gi.milestone.title, state="open", description=gi.milestone.description)
                 t_milestones.append(milestone.title)
                 target_milestones = repo_target.get_milestones()
@@ -118,7 +117,8 @@ def main(argv):
             # finally create issue
             if gi.title not in t_issues:
                 val = repo_target.create_issue(title = gi.title, body = gi.body, milestone=milestone, labels=gi.labels + ["feature"])
-                print("creating " + val.title, val.number)
+                print("creating issue " + val.title, val.number)
+                created_issues += 1
             else:
                 val = [x for x in target_issues if x.title == gi.title][0]
 
@@ -131,6 +131,7 @@ def main(argv):
 
     
     # write and add file
+    print("creating .github/issues.json file")
     try:
         ref = repo_target.get_branch("issues-creation")
         contents = repo_target.get_contents(".github/issues.json", ref="issues-creation")
@@ -140,9 +141,11 @@ def main(argv):
         repo_target.create_git_ref("refs/heads/issues-creation", ref.commit.sha)
         repo_target.create_file(path = ".github/issues.json", content = str(dico), message="Creating issue mapping.", branch="issues-creation")
 
+    print(str(created_issues) + "/" + str(len(dico)) + " issues created and mapped.")
     return
 
 
 
 if __name__ == '__main__':
     main(sys.argv[1:])
+    
