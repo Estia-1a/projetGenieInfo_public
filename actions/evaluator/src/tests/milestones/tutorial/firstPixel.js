@@ -38,4 +38,14 @@ export default [
     options: ["-c", "first_pixel"],
     output: "[fF]irst_pixel*\\s*:\\s*0\\s*,\\s*0,\\s*255"
   }
+
+  , {
+    feature: "first_pixel",
+    name: "First Pixel 8x8 001 : 1, 1, 1",
+    description: "Check first pixel on 8x8 image",
+    type: "stdout",
+    input: ["input/firstPixel_001_8x8.bmp"],
+    options: ["-c", "first_pixel"],
+    output: "[fF]irst_pixel*\\s*:\\s*1\\s*,\\s*1,\\s*1"
+  }
 ];

@@ -47,7 +47,7 @@ int main(int argc, char **argv)
   }
   distance *= 100 ;
   distance /= (width1 * width2 * nb1);
-  distance /= (255*255)
+  distance /= (255*255);
   int score = 100 - distance ; // Normalize to give a percentage between 0 and 100
 
   // TODO: define what the threshold above which distance is acceptable should be

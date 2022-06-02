@@ -17,6 +17,10 @@ inputs:
     description: 'executable name'
     required: true
     default: 'freud'
+  comparatorPath:
+    description: "path and name of the comparator"
+    required: true
+    default: './image-comparator'
 outputs:
   grade: # output will be available to future steps
     description: 'The final grade'

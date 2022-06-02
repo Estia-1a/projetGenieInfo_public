@@ -3944,6 +3944,8 @@ var __webpack_exports__ = {};
 
 // EXTERNAL MODULE: ./node_modules/@actions/core/lib/core.js
 var core = __nccwpck_require__(186);
+// EXTERNAL MODULE: ./node_modules/@actions/io/lib/io.js
+var io = __nccwpck_require__(436);
 // EXTERNAL MODULE: ./node_modules/@actions/exec/lib/exec.js
 var exec = __nccwpck_require__(514);
 // EXTERNAL MODULE: external "path"
@@ -4017,24 +4019,43 @@ async function batchPromise(task, items, batchSize) {
 
 
 
-async function runTest(buildDirectory, executablePath, testPath, test) {
+
+let uuid = 0 ;
+async function runTest(config, test) {
   try {
     const options = {};
     options.listeners = {};
     options.listeners.stdout = listenerOutput(test, "stdout");
     options.listeners.stderr = listenerOutput(test, "stderr");
     options.silent = true;
-    options.cwd = (0,external_path_.resolve)(buildDirectory);
+    const cwd = `${config.buildDirectory}/run/${uuid++}`
+    await io.mkdirP( cwd ) ;
+    options.cwd = cwd ;
     core.info("Run Test :" + test.name);
     await exec.exec(
-      executablePath,
+      config.executablePath,
       [
         "-f",
-        (0,external_path_.resolve)(testPath, test.input[0]), //Todo: change for multiple input test
+        (0,external_path_.resolve)(config.testPath, test.input[0]), //Todo: change for multiple input test
         ...test.options
       ],
       options
     );
+
+
+    if( test.type == "image" ) {
+      await exec.exec(
+        config.comparatorPath,
+        [
+          (0,external_path_.resolve)(cwd, test.expectedOutput[0]), //Todo: change for multiple input test
+          (0,external_path_.resolve)(config.testPath, test.reference[0]), //Todo: change for multiple input test
+
+        ],
+        options
+      );
+
+    }
+
     return test;
   } catch (error) {
     test.error = error;
@@ -4042,10 +4063,11 @@ async function runTest(buildDirectory, executablePath, testPath, test) {
   }
 }
 
-async function runTestInParallel(buildDirectory, executablePath, testPath, testsObject) {
+async function runTestInParallel(config, testsObject) {
+
   core.startGroup("Run Tests");
   const runner = test =>
-    runTest(buildDirectory, executablePath, testPath, test);
+    runTest(config, test);
   const data = await batchPromise(
     runner,
     Object.values(testsObject.milestones).flat(),
@@ -4157,6 +4179,16 @@ async function testFreudVersion(executablePath) {
     options: ["-c", "first_pixel"],
     output: "[fF]irst_pixel*\\s*:\\s*0\\s*,\\s*0,\\s*255"
   }
+
+  , {
+    feature: "first_pixel",
+    name: "First Pixel 8x8 001 : 1, 1, 1",
+    description: "Check first pixel on 8x8 image",
+    type: "stdout",
+    input: ["input/firstPixel_001_8x8.bmp"],
+    options: ["-c", "first_pixel"],
+    output: "[fF]irst_pixel*\\s*:\\s*1\\s*,\\s*1,\\s*1"
+  }
 ]);
 
 ;// CONCATENATED MODULE: ./src/tests/milestones/tutorial/index.js
@@ -4212,9 +4244,29 @@ tutorial.forEach( e=> e.milestone = "Tutorial");
 
 ;// CONCATENATED MODULE: ./src/tests/milestones/statistiques/index.js
 
-const statistiques = [ ...statistiques_dimensions];
+const statistiques = [ ...statistiques_dimensions ];
 statistiques.forEach( e=> e.milestone = "statistiques");
 /* harmony default export */ const milestones_statistiques = (statistiques);
+
+;// CONCATENATED MODULE: ./src/tests/milestones/colors/blue.js
+/* harmony default export */ const blue = ([
+  {
+    feature: "blue",
+    name: "Blue Identity",
+    description: "Test if working on an already blue image",
+    type: "image",
+    input: ["input/b_32x32.bmp"],
+    options: ["-c", "blue"],
+    expectedOutput: ["image_out.bmp"],
+    reference: ["input/b_32x32.bmp"]
+  }
+]);
+
+;// CONCATENATED MODULE: ./src/tests/milestones/colors/index.js
+
+const colors_statistiques = [ ...blue ];
+colors_statistiques.forEach( e=> e.milestone = "colors");
+/* harmony default export */ const colors = (colors_statistiques);
 
 ;// CONCATENATED MODULE: ./src/tests/tests.js
 
@@ -4223,7 +4275,8 @@ statistiques.forEach( e=> e.milestone = "statistiques");
 /* harmony default export */ const tests = ({
   milestones : {
     tutorial: milestones_tutorial,
-    statistiques: milestones_statistiques
+    statistiques: milestones_statistiques,
+    colors: colors
   }
 });
 
@@ -4244,11 +4297,12 @@ async function loadTest() {
 ;// CONCATENATED MODULE: ./src/grader.js
 
 
-
 function evalTest(test) {
   if (test.type === "stdout") {
     test.score = RegExp(test.output).test(test.stdout) ? 1 : 0;
-  } else {
+  } else if ( test.type === "image") {
+    test.score = (+RegExp(/(?<score>\d+)/).exec(test.stdout)?.groups.score)/100 ;
+  }else {
     test.score = 0;
   }
   return test;
@@ -4272,8 +4326,6 @@ function computeScore( testsObject ) {
   return tests.reduce((accumlateur, test) => accumlateur + test.score, 0);
 }
 
-// EXTERNAL MODULE: ./node_modules/@actions/io/lib/io.js
-var io = __nccwpck_require__(436);
 ;// CONCATENATED MODULE: external "fs/promises"
 const promises_namespaceObject = __WEBPACK_EXTERNAL_createRequire(import.meta.url)("fs/promises");
 // EXTERNAL MODULE: ./node_modules/sentence-case/dist/index.js
@@ -4535,22 +4587,24 @@ function createMarkdownOutput(resultat) {
 
 
 
-
-
 // most @actions toolkit packages have async methods
 async function run() {
   try {
     const buildDirectory = core.getInput("buildDirectory");
     const testsDirectory = core.getInput("testsDirectory");
     const executableName = core.getInput("executableName");
+    const comparatorPath = core.getInput("comparatorPath");
     const executablePath = (0,external_path_.resolve)(buildDirectory, executableName);
 
     await testFreudVersion(executablePath);
     const testsObject = await loadTest();
     await runTestInParallel(
-      (0,external_path_.resolve)(buildDirectory),
-      executablePath,
-      (0,external_path_.resolve)(testsDirectory),
+      {
+        buildDirectory: (0,external_path_.resolve)(buildDirectory),
+        executablePath: executablePath,
+        testPath: (0,external_path_.resolve)(testsDirectory),
+        comparatorPath:  (0,external_path_.resolve)(comparatorPath)
+      },
       testsObject
     );
     const score = computeScore(testsObject);
@@ -4564,13 +4618,7 @@ async function run() {
   }
 }
 
-
-
-
-
-
 //Run a test TODO: implement test that compare a file
-
 
 run();
 

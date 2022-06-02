@@ -3,7 +3,9 @@ import core from "@actions/core";
 export function evalTest(test) {
   if (test.type === "stdout") {
     test.score = RegExp(test.output).test(test.stdout) ? 1 : 0;
-  } else {
+  } else if ( test.type === "image") {
+    test.score = (+RegExp(/(?<score>\d+)/).exec(test.stdout)?.groups.score)/100 ;
+  }else {
     test.score = 0;
   }
   return test;

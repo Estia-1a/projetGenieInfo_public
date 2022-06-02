@@ -1,10 +1,9 @@
-# TODO: write the CMakeLists in a more proper way
-
 cmake_minimum_required(VERSION 3.20)
 project(image-comparator VERSION 1.0.1 DESCRIPTION "Small utility that tells how different two given images are")
+set(INSTALL_DESTINATION ${CMAKE_SOURCE_DIR}/dist CACHE STRING "Install directory")
 
 # Set everything to use our image library
-set(ESTIA_IMAGE_PATH ${CMAKE_SOURCE_DIR}/../estia-image/estia-image)
+set(ESTIA_IMAGE_PATH ${CMAKE_SOURCE_DIR}/lib/estia-image/estia-image CACHE STRING "estia_image directory")
 #set(ESTIA_IMAGE_PATH ${CMAKE_SOURCE_DIR}/../estia-image)
 
 # Include directory
@@ -29,8 +28,5 @@ endif()
 
 # Install
 install(TARGETS image-comparator
-        RUNTIME DESTINATION ${CMAKE_SOURCE_DIR}/dist
+        RUNTIME DESTINATION ${INSTALL_DESTINATION}
 )
-
-
-

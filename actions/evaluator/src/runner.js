@@ -1,27 +1,46 @@
+import io from "@actions/io";
 import core from "@actions/core";
 import exec from "@actions/exec";
 import {resolve} from "path" ;
 import { listenerOutput } from "./utils.js";
 import batchPromise from "./batchPromise.js";
 
-async function runTest(buildDirectory, executablePath, testPath, test) {
+let uuid = 0 ;
+async function runTest(config, test) {
   try {
     const options = {};
     options.listeners = {};
     options.listeners.stdout = listenerOutput(test, "stdout");
     options.listeners.stderr = listenerOutput(test, "stderr");
     options.silent = true;
-    options.cwd = resolve(buildDirectory);
+    const cwd = `${config.buildDirectory}/run/${uuid++}`
+    await io.mkdirP( cwd ) ;
+    options.cwd = cwd ;
     core.info("Run Test :" + test.name);
     await exec.exec(
-      executablePath,
+      config.executablePath,
       [
         "-f",
-        resolve(testPath, test.input[0]), //Todo: change for multiple input test
+        resolve(config.testPath, test.input[0]), //Todo: change for multiple input test
         ...test.options
       ],
       options
     );
+
+
+    if( test.type == "image" ) {
+      await exec.exec(
+        config.comparatorPath,
+        [
+          resolve(cwd, test.expectedOutput[0]), //Todo: change for multiple input test
+          resolve(config.testPath, test.reference[0]), //Todo: change for multiple input test
+
+        ],
+        options
+      );
+
+    }
+
     return test;
   } catch (error) {
     test.error = error;
@@ -29,10 +48,11 @@ async function runTest(buildDirectory, executablePath, testPath, test) {
   }
 }
 
-export async function runTestInParallel(buildDirectory, executablePath, testPath, testsObject) {
+export async function runTestInParallel(config, testsObject) {
+
   core.startGroup("Run Tests");
   const runner = test =>
-    runTest(buildDirectory, executablePath, testPath, test);
+    runTest(config, test);
   const data = await batchPromise(
     runner,
     Object.values(testsObject.milestones).flat(),
