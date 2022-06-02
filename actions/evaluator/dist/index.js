@@ -3036,7 +3036,7 @@ function replace(input, re, value) {
 
 /***/ }),
 
-/***/ 229:
+/***/ 732:
 /***/ ((__unused_webpack_module, exports, __nccwpck_require__) => {
 
 "use strict";
@@ -3946,14 +3946,288 @@ var __webpack_exports__ = {};
 var core = __nccwpck_require__(186);
 // EXTERNAL MODULE: ./node_modules/@actions/exec/lib/exec.js
 var exec = __nccwpck_require__(514);
+// EXTERNAL MODULE: external "path"
+var external_path_ = __nccwpck_require__(622);
+;// CONCATENATED MODULE: ./src/utils.js
+
+const testsObjectToArray = testsObject =>
+  Object.values(testsObject.milestones).flat();
+
+
+function timeString() {
+  const d = new Date();
+  return (
+    `0${d.getUTCMonth() + 1}`.slice(-2) +
+    `0${d.getUTCDate()}`.slice(-2) +
+    "-"+
+    `0${d.getHours()}`.slice(-2) +
+    `0${d.getMinutes()}`.slice(-2) +
+    `0${d.getSeconds()}`.slice(-2)
+  );
+}
+
+function dateString() {
+  const d = new Date();
+  return (
+    `0${d.getUTCDate()}`.slice(-2) +
+    "/"+
+    `0${d.getUTCMonth() + 1}`.slice(-2) +
+    " - "+
+    `0${d.getHours()}`.slice(-2) +
+    ":"+
+    `0${d.getMinutes()}`.slice(-2) +
+    ":"+
+    `0${d.getSeconds()}`.slice(-2)
+  );
+}
+
+function listenerOutput(test, type) {
+  test[type] = "";
+  return data => (test[type] += data);
+}
+
+;// CONCATENATED MODULE: ./src/batchPromise.js
+ /**
+ * Same as Promise.all(items.map(item => task(item))), but it waits for
+ * the first {batchSize} promises to finish before starting the next batch.
+ * https://stackoverflow.com/questions/37213316/execute-batch-of-promises-in-series-once-promise-all-is-done-go-to-the-next-bat
+ * David Veszelovszki
+ * @template A
+ * @template B
+ * @param {function(A): B} task The task to run for each item.
+ * @param {A[]} items Arguments to pass to the task for each call.
+ * @param {int} batchSize
+ * @returns {B[]}
+ */
+async function batchPromise(task, items, batchSize) {
+    let position = 0;
+    let results = [];
+    while (position < items.length) {
+        const itemsForBatch = items.slice(position, position + batchSize);
+        results = [...results, ...await Promise.all(itemsForBatch.map(item => task(item)))];
+        position += batchSize;
+    }
+    return results;
+}
+
+;// CONCATENATED MODULE: ./src/runner.js
+
+
+
+
+
+
+async function runTest(buildDirectory, executablePath, testPath, test) {
+  try {
+    const options = {};
+    options.listeners = {};
+    options.listeners.stdout = listenerOutput(test, "stdout");
+    options.listeners.stderr = listenerOutput(test, "stderr");
+    options.silent = true;
+    options.cwd = (0,external_path_.resolve)(buildDirectory);
+    core.info("Run Test :" + test.name);
+    await exec.exec(
+      executablePath,
+      [
+        "-f",
+        (0,external_path_.resolve)(testPath, test.input[0]), //Todo: change for multiple input test
+        ...test.options
+      ],
+      options
+    );
+    return test;
+  } catch (error) {
+    test.error = error;
+    return test;
+  }
+}
+
+async function runTestInParallel(buildDirectory, executablePath, testPath, testsObject) {
+  core.startGroup("Run Tests");
+  const runner = test =>
+    runTest(buildDirectory, executablePath, testPath, test);
+  const data = await batchPromise(
+    runner,
+    Object.values(testsObject.milestones).flat(),
+    10
+  );
+  core.endGroup();
+  return data;
+}
+
+//Check if freud is accessible by running freud --version.
+async function testFreudVersion(executablePath) {
+  core.startGroup("Find Freud");
+  const { exitCode, stdout } = await exec.getExecOutput(
+    executablePath,
+    ["--version"],
+    { silent: true }
+  );
+  if (exitCode === 0) {
+    core.info("Freud has been found" + stdout.trim());
+  } else {
+    core.info("Freud returned an error when run with --version");
+    throw new Error("Freud not working properly");
+  }
+  core.endGroup();
+}
+
+;// CONCATENATED MODULE: ./src/tests/milestones/tutorial/dimensions.js
+const test1 = {
+  feature : "Dimension",
+  name : "Dimension 64x64",
+  description: "Test if the dimension feature is working",
+  type: "stdout",
+  input: ["input/rgbw_64x64.bmp"],
+  options: ["-o", "dimension"],
+  output : "[dD]imension[s]*\\s*:\\s*64\\s*,\\s*64"
+}
+
+const test2 = {
+  feature : "Dimension",
+  name : "Dimension 1x1",
+  description: "Test if the dimension feature is working for one by one files",
+  type: "stdout",
+  input: ["input/r_1x1.bmp"],
+  options: ["-o", "dimension"],
+  output : "[dD]imension[s]*\\s*:\\s*1\\s*,\\s*1"
+}
+
+const test3 = {
+  feature : "Dimension",
+  name : "Dimension 32x64",
+  description: "Test if the dimension feature is working",
+  type: "stdout",
+  input: ["input/rgbw_32x64.bmp"],
+  options: ["-o", "dimension"],
+  output : "[dD]imension[s]*\\s*:\\s*32\\s*,\\s*64"
+}
+
+const test4 = {
+  feature : "Dimension",
+  name : "Dimension 64x32",
+  description: "Test if the dimension feature is working",
+  type: "stdout",
+  input: ["input/rgbw_64x32.bmp"],
+  options: ["-o", "dimension"],
+  output : "[dD]imension[s]*\\s*:\\s*64\\s*,\\s*32"
+}
+
+;// CONCATENATED MODULE: ./src/tests/milestones/tutorial/index.js
+
+const tutorial = [ test1, test2, test3, test4  ];
+tutorial.forEach( e=> e.milestone = "Tutorial");
+/* harmony default export */ const milestones_tutorial = (tutorial);
+
+;// CONCATENATED MODULE: ./src/tests/milestones/statistiques/dimensions.js
+const dimensions_test1 = {
+  feature : "Dimension",
+  name : "Dimension 64x64",
+  description: "Test if the dimension feature is working",
+  type: "stdout",
+  input: ["input/rgbw_64x64.bmp"],
+  options: ["-o", "dimension"],
+  output : "[dD]imension[s]*\\s*:\\s*64\\s*,\\s*64"
+}
+
+const dimensions_test2 = {
+  feature : "Dimension",
+  name : "Dimension 1x1",
+  description: "Test if the dimension feature is working for one by one files",
+  type: "stdout",
+  input: ["input/r_1x1.bmp"],
+  options: ["-o", "dimension"],
+  output : "[dD]imension[s]*\\s*:\\s*1\\s*,\\s*1"
+}
+
+const dimensions_test3 = {
+  feature : "Dimension",
+  name : "Dimension 32x64",
+  description: "Test if the dimension feature is working",
+  type: "stdout",
+  input: ["input/rgbw_32x64.bmp"],
+  options: ["-o", "dimension"],
+  output : "[dD]imension[s]*\\s*:\\s*32\\s*,\\s*64"
+}
+
+const dimensions_test4 = {
+  feature : "Dimension",
+  name : "Dimension 64x32",
+  description: "Test if the dimension feature is working",
+  type: "stdout",
+  input: ["input/rgbw_64x32.bmp"],
+  options: ["-o", "dimension"],
+  output : "[dD]imension[s]*\\s*:\\s*64\\s*,\\s*32"
+}
+
+;// CONCATENATED MODULE: ./src/tests/milestones/statistiques/index.js
+
+const statistiques = [ dimensions_test1, dimensions_test2 ];
+statistiques.forEach( e=> e.milestone = "statistiques");
+/* harmony default export */ const milestones_statistiques = (statistiques);
+
+;// CONCATENATED MODULE: ./src/tests/tests.js
+
+
+
+/* harmony default export */ const tests = ({
+  milestones : {
+    tutorial: milestones_tutorial,
+    statistiques: milestones_statistiques
+  }
+});
+
+;// CONCATENATED MODULE: ./src/init.js
+
+
+//Get the tests. TODO: Load the Manifest and prune tests for feature not implemented
+async function loadTest() {
+  core.startGroup("Load Tests");
+  core.info(`Manifest not loaded`);
+  core.info(
+    `Loaded ${Object.values(tests.milestones).flat().length} tests`
+  );
+  core.endGroup();
+  return tests ;
+}
+
+;// CONCATENATED MODULE: ./src/grader.js
+
+
+
+function evalTest(test) {
+  if (test.type === "stdout") {
+    test.score = RegExp(test.output).test(test.stdout) ? 1 : 0;
+  } else {
+    test.score = 0;
+  }
+  return test;
+}
+
+function computeScore( testsObject ) {
+  const tests = Object.values(testsObject.milestones).flat();
+  tests.forEach(test => evalTest(test));
+  core.startGroup("tests results");
+  tests.forEach(test => core.info(`Feature ${test.name} : ${test.score}`));
+  core.endGroup();
+  core.startGroup("Feature grading");
+  Object.entries(
+    tests.reduce((accumulator, test) => {
+      accumulator[test.feature] = (accumulator[test.feature] ?? 0) + test.score;
+      return accumulator;
+    }, {})
+  ).forEach(([feature, score]) => core.info(`Feature ${feature} : ${score}`));
+  core.endGroup();
+
+  return tests.reduce((accumlateur, test) => accumlateur + test.score, 0);
+}
+
 // EXTERNAL MODULE: ./node_modules/@actions/io/lib/io.js
 var io = __nccwpck_require__(436);
 ;// CONCATENATED MODULE: external "fs/promises"
 const promises_namespaceObject = __WEBPACK_EXTERNAL_createRequire(import.meta.url)("fs/promises");
-// EXTERNAL MODULE: external "path"
-var external_path_ = __nccwpck_require__(622);
 // EXTERNAL MODULE: ./node_modules/sentence-case/dist/index.js
-var dist = __nccwpck_require__(229);
+var dist = __nccwpck_require__(732);
 // EXTERNAL MODULE: ./node_modules/split-text-to-chunks/index.js
 var split_text_to_chunks = __nccwpck_require__(624);
 ;// CONCATENATED MODULE: ./node_modules/tablemark/dist/utilities.js
@@ -4114,133 +4388,92 @@ const alignmentOptions = {
 
 
 
-;// CONCATENATED MODULE: ./tests/milestones/tutorial/dimensions.js
-const test1 = {
-  feature : "Dimension",
-  name : "Dimension 64x64",
-  description: "Test if the dimension feature is working",
-  type: "stdout",
-  input: ["input/rgbw_64x64.bmp"],
-  options: ["-o", "dimension"],
-  output : "[dD]imension[s]*\\s*:\\s*64\\s*,\\s*64"
+;// CONCATENATED MODULE: ./src/printer.js
+
+
+
+
+
+
+
+async function printReport(testsObject) {
+  core.startGroup("print report");
+  const timestamp = timeString();
+
+  logRawTestResults( testsObject, timestamp );
+  const resultat = computeSummary( testsObject )
+  const markdown = createMarkdownOutput(resultat);
+  logSummary( markdown, timestamp ) ;
+
+
+  core.setOutput("date", dateString());
+  core.setOutput("markdown", markdown);
+  core.endGroup();
 }
 
-const test2 = {
-  feature : "Dimension",
-  name : "Dimension 1x1",
-  description: "Test if the dimension feature is working for one by one files",
-  type: "stdout",
-  input: ["input/r_1x1.bmp"],
-  options: ["-o", "dimension"],
-  output : "[dD]imension[s]*\\s*:\\s*1\\s*,\\s*1"
+async function logRawTestResults( testsObject, timestamp ) {
+  await io.mkdirP(`result/${timestamp}`);
+  await promises_namespaceObject.writeFile(
+    `result/${timestamp}/log_${timeString()}.json`,
+    JSON.stringify(testsObject),
+    "utf8"
+  );
+}
+async function logSummary( markdown, timestamp ) {
+  await promises_namespaceObject.writeFile(`result/${timestamp}/Readme.md`, markdown, "utf8");
 }
 
-const test3 = {
-  feature : "Dimension",
-  name : "Dimension 32x64",
-  description: "Test if the dimension feature is working",
-  type: "stdout",
-  input: ["input/rgbw_32x64.bmp"],
-  options: ["-o", "dimension"],
-  output : "[dD]imension[s]*\\s*:\\s*32\\s*,\\s*64"
+function computeSummary( testsObject ) {
+  const resultat = {};
+  testsObjectToArray(testsObject).forEach(test => {
+    resultat[test.milestone] = resultat[test.milestone] ?? {
+      score: 0,
+      count: 0,
+      features: []
+    };
+    resultat[test.milestone].features[test.feature] = resultat[test.milestone]
+      .features[test.feature] ?? {
+      feature: test.feature,
+      score: 0,
+      count: 0,
+      missedTest: []
+    };
+    const feature = resultat[test.milestone].features[test.feature];
+    // Count the test for the milestone
+    resultat[test.milestone].score += test.score;
+    resultat[test.milestone].count++;
+    // Count the test for the feature
+    feature.score += test.score;
+    feature.count += 1;
+    if (test.score < 0.5) feature.missedTest.push(test.name);
+  });
+  return resultat ;
 }
 
-const test4 = {
-  feature : "Dimension",
-  name : "Dimension 64x32",
-  description: "Test if the dimension feature is working",
-  type: "stdout",
-  input: ["input/rgbw_64x32.bmp"],
-  options: ["-o", "dimension"],
-  output : "[dD]imension[s]*\\s*:\\s*64\\s*,\\s*32"
-}
-
-;// CONCATENATED MODULE: ./tests/milestones/tutorial/index.js
-
-const tutorial = [ test1, test2, test3, test4  ];
-tutorial.forEach( e=> e.milestone = "Tutorial");
-/* harmony default export */ const milestones_tutorial = (tutorial);
-
-;// CONCATENATED MODULE: ./tests/milestones/statistiques/dimensions.js
-const dimensions_test1 = {
-  feature : "Dimension",
-  name : "Dimension 64x64",
-  description: "Test if the dimension feature is working",
-  type: "stdout",
-  input: ["input/rgbw_64x64.bmp"],
-  options: ["-o", "dimension"],
-  output : "[dD]imension[s]*\\s*:\\s*64\\s*,\\s*64"
-}
-
-const dimensions_test2 = {
-  feature : "Dimension",
-  name : "Dimension 1x1",
-  description: "Test if the dimension feature is working for one by one files",
-  type: "stdout",
-  input: ["input/r_1x1.bmp"],
-  options: ["-o", "dimension"],
-  output : "[dD]imension[s]*\\s*:\\s*1\\s*,\\s*1"
-}
-
-const dimensions_test3 = {
-  feature : "Dimension",
-  name : "Dimension 32x64",
-  description: "Test if the dimension feature is working",
-  type: "stdout",
-  input: ["input/rgbw_32x64.bmp"],
-  options: ["-o", "dimension"],
-  output : "[dD]imension[s]*\\s*:\\s*32\\s*,\\s*64"
-}
-
-const dimensions_test4 = {
-  feature : "Dimension",
-  name : "Dimension 64x32",
-  description: "Test if the dimension feature is working",
-  type: "stdout",
-  input: ["input/rgbw_64x32.bmp"],
-  options: ["-o", "dimension"],
-  output : "[dD]imension[s]*\\s*:\\s*64\\s*,\\s*32"
-}
-
-;// CONCATENATED MODULE: ./tests/milestones/statistiques/index.js
-
-const statistiques = [ dimensions_test1, dimensions_test2 ];
-statistiques.forEach( e=> e.milestone = "statistiques");
-/* harmony default export */ const milestones_statistiques = (statistiques);
-
-;// CONCATENATED MODULE: ./tests/tests.js
-
-
-
-/* harmony default export */ const tests_tests = ({
-  milestones : {
-    tutorial: milestones_tutorial,
-    statistiques: milestones_statistiques
-  }
-});
-
-;// CONCATENATED MODULE: ./batchPromise.js
- /**
- * Same as Promise.all(items.map(item => task(item))), but it waits for
- * the first {batchSize} promises to finish before starting the next batch.
- * https://stackoverflow.com/questions/37213316/execute-batch-of-promises-in-series-once-promise-all-is-done-go-to-the-next-bat
- * David Veszelovszki
- * @template A
- * @template B
- * @param {function(A): B} task The task to run for each item.
- * @param {A[]} items Arguments to pass to the task for each call.
- * @param {int} batchSize
- * @returns {B[]}
- */
-async function batchPromise(task, items, batchSize) {
-    let position = 0;
-    let results = [];
-    while (position < items.length) {
-        const itemsForBatch = items.slice(position, position + batchSize);
-        results = [...results, ...await Promise.all(itemsForBatch.map(item => task(item)))];
-        position += batchSize;
-    }
-    return results;
+function createMarkdownOutput(resultat) {
+  let markdown = "# Daily Evaluation " + dateString() + "\n";
+  markdown +=
+    "You can find below how you did for each feature. \n You should merge the pull request to keep the eval and automatically close and open the issues you have finished!\n";
+  Object.entries(resultat).forEach(([milestone, data]) => {
+    markdown += `# ${milestone}\n`;
+    markdown += `Score : ${data.score}/${data.count} :  ${Math.floor(
+      (100 * data.score) / data.count
+    )}%\n`;
+    markdown += `## Detail\n`;
+    markdown += tablemark_dist(
+      Object.values(data.features).map(feature => ({
+        name: feature.feature,
+        score: `${feature.score}/${feature.count} :  ${Math.floor(
+          (100 * data.score) / data.count
+        )}%\n`,
+        "missed tests": feature.missedTest.join("<br>")
+      }))
+    );
+    // markdown += "## Related issues\n"
+    // markdown += "close #24\n"
+    // markdown += "open #17\n"
+  });
+  return markdown;
 }
 
 ;// CONCATENATED MODULE: ./index.js
@@ -4254,29 +4487,26 @@ async function batchPromise(task, items, batchSize) {
 
 
 
-
-const testsObjectToArray = testsObject =>
-  Object.values(testsObject.milestones).flat();
-
 // most @actions toolkit packages have async methods
 async function run() {
   try {
     const buildDirectory = core.getInput("buildDirectory");
     const testsDirectory = core.getInput("testsDirectory");
     const executableName = core.getInput("executableName");
-    const executablePath = external_path_.resolve(buildDirectory, executableName);
+    const executablePath = (0,external_path_.resolve)(buildDirectory, executableName);
 
     await testFreudVersion(executablePath);
-    await loadTest();
+    const testsObject = await loadTest();
     await runTestInParallel(
-      external_path_.resolve(buildDirectory),
+      (0,external_path_.resolve)(buildDirectory),
       executablePath,
-      external_path_.resolve(testsDirectory)
+      (0,external_path_.resolve)(testsDirectory),
+      testsObject
     );
-    const score = computeScore();
+    const score = computeScore(testsObject);
     core.setOutput("grade", score);
 
-    printReport(tests_tests);
+    printReport(testsObject);
   } catch (error) {
     core.endGroup();
     core.setFailed(error.message);
@@ -4284,198 +4514,13 @@ async function run() {
   }
 }
 
-async function printReport(testsObject) {
-  core.startGroup("print report");
-  const timestamp = timeString();
 
-  core.setOutput("date", dateString())
 
-  await io.mkdirP(`result/${timestamp}`);
-  await promises_namespaceObject.writeFile(
-    `result/${timestamp}/log_${timeString()}.json`,
-    JSON.stringify(testsObject),
-    "utf8"
-  );
-  const resultat = {};
-  testsObjectToArray(testsObject).forEach(test => {
-    resultat[test.milestone] = resultat[test.milestone] ?? {
-      scoreTotal: 0,
-      count: 0,
-      features: []
-    };
-    resultat[test.milestone].features[test.feature] = resultat[test.milestone]
-      .features[test.feature] ?? {
-      feature: test.feature,
-      score: 0,
-      count: 0,
-      missedTest: []
-    };
-    const feature = resultat[test.milestone].features[test.feature];
-    // Count the test for the milestone
-    resultat[test.milestone].scoreTotal += test.score;
-    resultat[test.milestone].count++;
-    // Count the test for the feature
-    feature.score += test.score;
-    feature.count += 1;
-    if (test.score < 0.5) feature.missedTest.push(test.name);
-  });
-  let markdown = "# Daily Evaluation " + dateString() + "\n" ;
-  markdown += "You can find below how you did for each feature. \n You should merge the pull request to keep the eval and automatically close and open the issues you have finished!\n"
-  Object.entries(resultat).forEach(([milestone, data]) => {
-    markdown += `# ${milestone}\n`;
-    markdown += `Score : ${data.scoreTotal}/${data.count} :  ${Math.floor(
-      (100 * data.scoreTotal) / data.count
-    )}%\n`;
-    markdown += `## Detail\n`;
-    markdown += tablemark_dist(
-      Object.values(data.features).map(feature => ({
-        name: feature.feature,
-        score: `${feature.score}/${feature.count} :  ${Math.floor(
-          (100 * data.scoreTotal) / data.count
-        )}%\n`,
-        "missed tests": feature.missedTest.join("<br>")
-      }))
-    );
-    // markdown += "## Related issues\n"
-    // markdown += "close #24\n"
-    // markdown += "open #17\n"
-  });
-  core.setOutput("markdown", markdown );
-  await promises_namespaceObject.writeFile(`result/${timestamp}/Readme.md`, markdown, "utf8");
-  core.endGroup()
-}
 
-function timeString() {
-  const d = new Date();
-  return (
-    `0${d.getUTCMonth() + 1}`.slice(-2) +
-    `0${d.getUTCDate()}`.slice(-2) +
-    "-"+
-    `0${d.getHours()}`.slice(-2) +
-    `0${d.getMinutes()}`.slice(-2) +
-    `0${d.getSeconds()}`.slice(-2)
-  );
-}
 
-function dateString() {
-  const d = new Date();
-  return (
-    `0${d.getUTCDate()}`.slice(-2) +
-    "/"+
-    `0${d.getUTCMonth() + 1}`.slice(-2) +
-    " - "+
-    `0${d.getHours()}`.slice(-2) +
-    ":"+
-    `0${d.getMinutes()}`.slice(-2) +
-    ":"+
-    `0${d.getSeconds()}`.slice(-2)
-  );
-}
-
-function listenerOutput(test, type) {
-  test[type] = "";
-  return data => (test[type] += data);
-}
-
-//Check if freud is accessible by running freud --version.
-async function testFreudVersion(executablePath) {
-  core.startGroup("Find Freud");
-  const { exitCode, stdout } = await exec.getExecOutput(
-    executablePath,
-    ["--version"],
-    { silent: true }
-  );
-  if (exitCode === 0) {
-    core.info("Freud has been found" + stdout.trim());
-  } else {
-    core.info("Freud returned an error when run with --version");
-    throw new Error("Freud not working properly");
-  }
-  core.endGroup();
-}
-
-//Get the tests. TODO: Load the Manifest and prune tests for feature not implemented
-async function loadTest() {
-  core.startGroup("Load Tests");
-  core.info(`Manifest not loaded`);
-  core.info(
-    `Loaded ${Object.values(tests_tests.milestones).flat().length} tests`
-  );
-  core.endGroup();
-}
 
 //Run a test TODO: implement test that compare a file
-async function runTest(buildDirectory, executablePath, testPath, test) {
-  try {
-    const options = {};
-    options.listeners = {};
-    options.listeners.stdout = listenerOutput(test, "stdout");
-    options.listeners.stderr = listenerOutput(test, "stderr");
-    options.silent = true;
-    options.cwd = external_path_.resolve(buildDirectory);
-    core.info("Run Test :" + test.name);
-    await exec.exec(
-      executablePath,
-      [
-        "-f",
-        external_path_.resolve(testPath, test.input[0]), //Todo: change for multiple input test
-        ...test.options
-      ],
-      options
-    );
-    return test;
-  } catch (error) {
-    test.error = error;
-    return test;
-  }
-}
 
-async function runTestInParallel(buildDirectory, executablePath, testPath) {
-  core.startGroup("Run Tests");
-  const runner = test =>
-    runTest(buildDirectory, executablePath, testPath, test);
-  const data = await batchPromise(
-    runner,
-    Object.values(tests_tests.milestones).flat(),
-    10
-  );
-  core.endGroup();
-  return data;
-}
-
-function evalTest(test) {
-  if (test.type === "stdout") {
-    test.score = RegExp(test.output).test(test.stdout) ? 1 : 0;
-  } else {
-    test.score = 0;
-  }
-  return test;
-}
-
-function computeScore() {
-  const tests = Object.values(tests_tests.milestones).flat();
-  tests.forEach(test => evalTest(test));
-  core.startGroup("tests results");
-  tests.forEach(test => core.info(`Feature ${test.name} : ${test.score}`));
-  core.endGroup();
-  core.startGroup("Feature grading");
-  Object.entries(
-    tests.reduce((accumulator, test) => {
-      accumulator[test.feature] = (accumulator[test.feature] ?? 0) + test.score;
-      return accumulator;
-    }, {})
-  ).forEach(([feature, score]) => core.info(`Feature ${feature} : ${score}`));
-  core.endGroup();
-
-  return tests.reduce((accumlateur, test) => accumlateur + test.score, 0);
-}
-
-Array.prototype.each = fn => {
-  undefined.forEach(fn);
-  return undefined;
-};
-// function computeScore() {}
-// function outputScore() {}
 
 run();
 
