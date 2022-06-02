@@ -18,7 +18,7 @@ Note that:
 * The repository **has to** have at least the `main` branch. Otherwise, the API does not allow the creation of new branches.
 * The script creates (and updates at each run) the `.github/issues.json` file. For now, the file only exists in the `issues-creation` branch.
 * The script should run (i) at the project's creation, or (ii) manually.
-
+* The `template` repository (with original issues and milestones) **has to** be public.
 
 ## Useful Doc
 - [octokit api](https://octokit.github.io/rest.js/v18#issues)
