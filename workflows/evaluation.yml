@@ -45,6 +45,7 @@ jobs:
             ${{ runner.workspace }}/public
             ${{ runner.workspace }}/lib/estia_image
             ${{ runner.workspace }}/lib/getopt
+            ${{ runner.workspace }}/lib/image_comparator
           key: public-evaluator2
       - if: steps.cache-libraries.outputs.cache-hit != 'true'
         name: Build Estia-image Lib
@@ -61,6 +62,14 @@ jobs:
           source-dir: ${{ runner.workspace }}/public/getopt
           build-dir: ${{ runner.workspace }}/public/getopt/build
           configure-options: -DINSTALL_DESTINATION=${{ runner.workspace }}/lib/getopt
+          install-build: true
+      - if: steps.cache-libraries.outputs.cache-hit != 'true'
+        name: Build image comparator
+        uses: ashutoshvarma/action-cmake-build@master
+        with:
+          source-dir: ${{ runner.workspace }}/public/image-comparator
+          build-dir: ${{ runner.workspace }}/public/image-comparator/build
+          configure-options: -DESTIA_IMAGE_PATH=${{ runner.workspace }}/lib/estia_image -DINSTALL_DESTINATION=${{ runner.workspace }}/lib/image_comparator
           install-build: true
 
       - name: Copy the CMakeLists.txt
@@ -79,6 +88,7 @@ jobs:
         with:
           buildDirectory: ./dist/
           testsDirectory: ${{ runner.workspace }}/public/images
+          comparatorPath: ${{ runner.workspace }}/lib/image_comparator
       - name: Summary
         run: |
           echo "${{steps.runTests.outputs.markdown}}" > $GITHUB_STEP_SUMMARY
