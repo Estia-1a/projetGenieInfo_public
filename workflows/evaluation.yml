@@ -1,11 +1,10 @@
 name: Evaluation
 on:
-  pull_request:
-    branches:
-      - master
+  schedule:
+    - cron:  '0 2 * 6 *'
   workflow_dispatch:
 env:
-  PUBLIC_URL: https://github.com/Estia-1a/projetGenieInfo_public/archive/refs/heads/evaluator.zip
+  PUBLIC_URL: https://github.com/Estia-1a/projetGenieInfo_public/archive/refs/heads/release/evaluator.zip
 jobs:
   cmake-build-and-test:
 
@@ -36,7 +35,7 @@ jobs:
         run: |
           wget $PUBLIC_URL -O public.zip
           unzip public.zip
-          mv projetGenieInfo_public-evaluator ${{ runner.workspace }}/public
+          mv projetGenieInfo_public-release-evaluator ${{ runner.workspace }}/public
       - name: Cache Libraries
         id: cache-libraries
         uses: actions/cache@v3
