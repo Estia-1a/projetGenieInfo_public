@@ -1,6 +1,9 @@
 name: Import issues from Template
 
 on:
+  schedule:
+    - cron: '0 14 * 6 1,3,5'
+    - cron: '0 14 7 6 *' 
   project:
     types: [created]
   workflow_dispatch:

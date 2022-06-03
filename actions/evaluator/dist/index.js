@@ -4502,11 +4502,11 @@ async function printReport(testsObject) {
   core.startGroup("print report");
   const timestamp = timeString();
 
-  logRawTestResults( testsObject, timestamp );
+  await logRawTestResults( testsObject, timestamp );
   const resultat = computeSummary( testsObject )
   const markdown = createMarkdownOutput(resultat);
-  logSummary( markdown, timestamp ) ;
-
+  await logSummary( markdown, timestamp ) ;
+  console.table(resultat) ;
 
   core.setOutput("date", dateString());
   core.setOutput("markdown", markdown);
