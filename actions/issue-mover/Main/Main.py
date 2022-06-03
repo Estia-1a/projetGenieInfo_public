@@ -94,6 +94,7 @@ def main(argv):
     label_export = repo.get_label("export")
 
     # main loop!
+    should_sleep = True
     for gi in g_issues:
         if label_export in gi.labels:
             # take care of labels first
@@ -119,16 +120,23 @@ def main(argv):
                 val = repo_target.create_issue(title = gi.title, body = gi.body, milestone=milestone, labels=gi.labels)
                 print("creating issue " + val.title, val.number)
                 created_issues += 1
+                should_sleep = True
             else:
-                print("updating issue " + gi.title)
                 val = [x for x in target_issues if x.title == gi.title][0]
-                val.edit(title=gi.title, body=gi.body, milestone=milestone, labels=[l.name for l in gi.labels])
+                print(gi.title != val.title, gi.body != val.body, gi.milestone.title != val.milestone.title, [l.name for l in gi.labels] != [l.name for l in val.labels])
+                if gi.title != val.title or gi.body != val.body or gi.milestone.title != val.milestone.title or [l.name for l in gi.labels] != [l.name for l in val.labels]:
+                    print("updating issue " + gi.title)
+                    val.edit(title=gi.title, body=gi.body, milestone=milestone, labels=[l.name for l in gi.labels])
+                    should_sleep = True
+                else:
+                    should_sleep = False
 
             # keep track of issue index / feature index
             # for .github/issues.json
             cmd = re.findall("Command\s*\|\s*`-c\s+(.*?)[\s|`]", val.body)
             dico.append({"id": val.number, "command": cmd[0], "title": val.title})
-            time.sleep(2)
+            if should_sleep:
+                time.sleep(0.1)
 
 
     
