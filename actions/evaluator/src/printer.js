@@ -14,7 +14,6 @@ export async function printReport(testsObject) {
   const markdown = createMarkdownOutput(resultat);
   await logSummary( markdown, timestamp ) ;
   console.table(resultat) ;
-
   core.setOutput("date", dateString());
   core.setOutput("markdown", markdown);
   core.endGroup();
@@ -74,10 +73,11 @@ function createMarkdownOutput(resultat) {
         name: feature.feature,
         score: `${feature.score}/${feature.count} :  ${Math.floor(
           (100 * data.score) / data.count
-        )}%\n`,
-        "missed tests": feature.missedTest.join("<br>")
+        )}%`,
+        "missed tests": feature.missedTest.join("<br>").trim()
       }))
     );
+    markdown += "\n"
     // markdown += "## Related issues\n"
     // markdown += "close #24\n"
     // markdown += "open #17\n"

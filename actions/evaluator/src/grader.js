@@ -4,7 +4,8 @@ export function evalTest(test) {
   if (test.type === "stdout") {
     test.score = RegExp(test.output).test(test.stdout) ? 1 : 0;
   } else if ( test.type === "image") {
-    test.score = (+RegExp(/(?<score>\d+)/).exec(test.stdout)?.groups.score)/100 ;
+    test.score = (+RegExp(/(?<score>\d+)/).exec(test.image_comparator)?.groups.score)/100 ;
+    test.score = isNaN(test.score)?0:test.score ;
   }else {
     test.score = 0;
   }

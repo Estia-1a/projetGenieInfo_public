@@ -1,6 +1,6 @@
 import core from "@actions/core";
 
-import { testFreudVersion, runTestInParallel } from "./src/runner.js";
+import { testFreudVersion, runTestInParallel, testComparator } from "./src/runner.js";
 import { loadTest } from "./src/init.js";
 import { resolve } from "path";
 import { computeScore } from "./src/grader.js";
@@ -14,16 +14,17 @@ async function run() {
     const executableName = core.getInput("executableName");
     const comparatorPath = core.getInput("comparatorPath");
     const executablePath = resolve(buildDirectory, executableName);
-
-    await testFreudVersion(executablePath);
+    const config = {
+      buildDirectory: resolve(buildDirectory),
+      executablePath: executablePath,
+      testPath: resolve(testsDirectory),
+      comparatorPath:  resolve(comparatorPath)
+    }
+    await testFreudVersion(config.executablePath);
+    await testComparator(config) ;
     const testsObject = await loadTest();
     await runTestInParallel(
-      {
-        buildDirectory: resolve(buildDirectory),
-        executablePath: executablePath,
-        testPath: resolve(testsDirectory),
-        comparatorPath:  resolve(comparatorPath)
-      },
+      config,
       testsObject
     );
     const score = computeScore(testsObject);

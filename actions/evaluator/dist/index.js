@@ -4044,6 +4044,7 @@ async function runTest(config, test) {
 
 
     if( test.type == "image" ) {
+      options.listeners.stdout = listenerOutput(test, "image_comparator");
       await exec.exec(
         config.comparatorPath,
         [
@@ -4090,6 +4091,26 @@ async function testFreudVersion(executablePath) {
   } else {
     core.info("Freud returned an error when run with --version");
     throw new Error("Freud not working properly");
+  }
+  core.endGroup();
+}
+
+//Check if freud is accessible by running freud --version.
+async function testComparator(config) {
+  core.startGroup("Check Comparator");
+  const { exitCode, stdout } = await exec.getExecOutput(
+    config.comparatorPath,
+    [
+      (0,external_path_.resolve)(config.testPath, "input/b_32x32.bmp"),
+      (0,external_path_.resolve)(config.testPath, "input/b_32x32.bmp")
+    ],
+    { silent: true }
+  );
+  if (exitCode === 0 && stdout.match("100")) {
+    core.info("Comparator has been found : " + stdout.trim());
+  } else {
+    core.info("Comparator did not find a match");
+    throw new Error("Comparator not working properly");
   }
   core.endGroup();
 }
@@ -4301,7 +4322,8 @@ function evalTest(test) {
   if (test.type === "stdout") {
     test.score = RegExp(test.output).test(test.stdout) ? 1 : 0;
   } else if ( test.type === "image") {
-    test.score = (+RegExp(/(?<score>\d+)/).exec(test.stdout)?.groups.score)/100 ;
+    test.score = (+RegExp(/(?<score>\d+)/).exec(test.image_comparator)?.groups.score)/100 ;
+    test.score = isNaN(test.score)?0:test.score ;
   }else {
     test.score = 0;
   }
@@ -4507,7 +4529,6 @@ async function printReport(testsObject) {
   const markdown = createMarkdownOutput(resultat);
   await logSummary( markdown, timestamp ) ;
   console.table(resultat) ;
-
   core.setOutput("date", dateString());
   core.setOutput("markdown", markdown);
   core.endGroup();
@@ -4567,10 +4588,11 @@ function createMarkdownOutput(resultat) {
         name: feature.feature,
         score: `${feature.score}/${feature.count} :  ${Math.floor(
           (100 * data.score) / data.count
-        )}%\n`,
-        "missed tests": feature.missedTest.join("<br>")
+        )}%`,
+        "missed tests": feature.missedTest.join("<br>").trim()
       }))
     );
+    markdown += "\n"
     // markdown += "## Related issues\n"
     // markdown += "close #24\n"
     // markdown += "open #17\n"
@@ -4595,16 +4617,17 @@ async function run() {
     const executableName = core.getInput("executableName");
     const comparatorPath = core.getInput("comparatorPath");
     const executablePath = (0,external_path_.resolve)(buildDirectory, executableName);
-
-    await testFreudVersion(executablePath);
+    const config = {
+      buildDirectory: (0,external_path_.resolve)(buildDirectory),
+      executablePath: executablePath,
+      testPath: (0,external_path_.resolve)(testsDirectory),
+      comparatorPath:  (0,external_path_.resolve)(comparatorPath)
+    }
+    await testFreudVersion(config.executablePath);
+    await testComparator(config) ;
     const testsObject = await loadTest();
     await runTestInParallel(
-      {
-        buildDirectory: (0,external_path_.resolve)(buildDirectory),
-        executablePath: executablePath,
-        testPath: (0,external_path_.resolve)(testsDirectory),
-        comparatorPath:  (0,external_path_.resolve)(comparatorPath)
-      },
+      config,
       testsObject
     );
     const score = computeScore(testsObject);

@@ -29,6 +29,7 @@ async function runTest(config, test) {
 
 
     if( test.type == "image" ) {
+      options.listeners.stdout = listenerOutput(test, "image_comparator");
       await exec.exec(
         config.comparatorPath,
         [
@@ -75,6 +76,26 @@ export async function testFreudVersion(executablePath) {
   } else {
     core.info("Freud returned an error when run with --version");
     throw new Error("Freud not working properly");
+  }
+  core.endGroup();
+}
+
+//Check if freud is accessible by running freud --version.
+export async function testComparator(config) {
+  core.startGroup("Check Comparator");
+  const { exitCode, stdout } = await exec.getExecOutput(
+    config.comparatorPath,
+    [
+      resolve(config.testPath, "input/b_32x32.bmp"),
+      resolve(config.testPath, "input/b_32x32.bmp")
+    ],
+    { silent: true }
+  );
+  if (exitCode === 0 && stdout.match("100")) {
+    core.info("Comparator has been found : " + stdout.trim());
+  } else {
+    core.info("Comparator did not find a match");
+    throw new Error("Comparator not working properly");
   }
   core.endGroup();
 }
