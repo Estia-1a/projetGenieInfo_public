@@ -87,7 +87,7 @@ jobs:
         with:
           buildDirectory: ./dist/
           testsDirectory: ${{ runner.workspace }}/public/images
-          comparatorPath: ${{ runner.workspace }}/lib/image_comparator
+          comparatorPath: ${{ runner.workspace }}/lib/image_comparator/image-comparator
       - name: Summary
         run: |
           echo "${{steps.runTests.outputs.markdown}}" > $GITHUB_STEP_SUMMARY
