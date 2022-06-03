@@ -83,7 +83,7 @@ jobs:
           install-build: true
       - name: Run tests
         id: runTests
-        uses: Estia-1a/projetGenieInfo_public/actions/evaluator@evaluator
+        uses: Estia-1a/projetGenieInfo_public/actions/evaluator@release/evaluator
         with:
           buildDirectory: ./dist/
           testsDirectory: ${{ runner.workspace }}/public/images
