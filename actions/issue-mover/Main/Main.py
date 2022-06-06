@@ -84,7 +84,7 @@ def main(argv):
     # get all milestones and issues already in  the target repo
     target_milestones = repo_target.get_milestones()
     t_milestones = [t.title for t in target_milestones]
-    target_issues = repo_target.get_issues()
+    target_issues = repo_target.get_issues(state="all")
     t_issues = [i.title for i in target_issues]
 
     # to save data to log
