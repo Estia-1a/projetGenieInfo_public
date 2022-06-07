@@ -28,6 +28,8 @@ What were you doing when the bug happened.
 - Version of mingw/gcc  (type `gcc -v` in the CMD) 
 - $Path (type `echo %path%` ) 
 
+(Clic Preview to see the image below)
+
 ![Info systeme](https://user-images.githubusercontent.com/5263585/172393818-60718464-4064-4be9-be54-c226561c2545.png)
 
 **Screen shot**
