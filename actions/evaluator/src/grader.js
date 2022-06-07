@@ -27,5 +27,5 @@ export function computeScore( testsObject ) {
   ).forEach(([feature, score]) => core.info(`Feature ${feature} : ${score}`));
   core.endGroup();
 
-  return tests.reduce((accumlateur, test) => accumlateur + test.score, 0);
+  return tests.reduce((accumlateur, test) => accumlateur + test.score, 0) + "/" + tests.length ;
 }

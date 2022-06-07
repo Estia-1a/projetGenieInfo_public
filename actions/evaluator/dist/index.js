@@ -4118,7 +4118,7 @@ async function testComparator(config) {
 ;// CONCATENATED MODULE: ./src/tests/milestones/tutorial/dimensions.js
 /* harmony default export */ const dimensions = ([
   {
-    feature: "Dimension",
+    feature: "dimension",
     name: "Dimension 64x64",
     description: "Test if the dimension feature is working",
     type: "stdout",
@@ -4128,7 +4128,7 @@ async function testComparator(config) {
   },
 
   {
-    feature: "Dimension",
+    feature: "dimension",
     name: "Dimension 1x1",
     description:
       "Test if the dimension feature is working for one by one files",
@@ -4139,7 +4139,7 @@ async function testComparator(config) {
   },
 
   {
-    feature: "Dimension",
+    feature: "dimension",
     name: "Dimension 32x64",
     description: "Test if the dimension feature is working",
     type: "stdout",
@@ -4149,7 +4149,7 @@ async function testComparator(config) {
   },
 
   {
-    feature: "Dimension",
+    feature: "dimension",
     name: "Dimension 64x32",
     description: "Test if the dimension feature is working",
     type: "stdout",
@@ -4168,105 +4168,500 @@ async function testComparator(config) {
     type: "stdout",
     input: ["input/rgbw_64x64.bmp"],
     options: ["-c", "first_pixel"],
-    output: "[fF]irst_pixel*\\s*:\\s*255\\s*,\\s*0,\\s*0"
+    output: "[fF]irst_pixel\\s*:\\s*255\\s*,\\s*0,\\s*0"
   },
 
   {
     feature: "first_pixel",
-    name: "First Pixel 32x32 Red : 255, 0, 0",
+    name: "First Pixel Red : 255, 0, 0",
     description: "Check first pixel on 32x32 red image",
     type: "stdout",
     input: ["input/r_32x32.bmp"],
     options: ["-c", "first_pixel"],
-    output: "[fF]irst_pixel*\\s*:\\s*255\\s*,\\s*0,\\s*0"
+    output: "[fF]irst_pixel\\s*:\\s*255\\s*,\\s*0,\\s*0"
   },
 
   {
     feature: "first_pixel",
-    name: "First Pixel 32x32 Green : 0, 255, 0",
+    name: "First Pixel Green : 0, 255, 0",
     description: "Check first pixel on 32x32 green image",
     type: "stdout",
     input: ["input/g_32x32.bmp"],
     options: ["-c", "first_pixel"],
-    output: "[fF]irst_pixel*\\s*:\\s*0\\s*,\\s*255,\\s*0"
+    output: "[fF]irst_pixel\\s*:\\s*0\\s*,\\s*255,\\s*0"
   },
 
   {
     feature: "first_pixel",
-    name: "First Pixel 32x32 Blue : 0, 0, 255",
+    name: "First Pixel Blue : 0, 0, 255",
     description: "Check first pixel on 32x32 blue image",
     type: "stdout",
     input: ["input/b_32x32.bmp"],
     options: ["-c", "first_pixel"],
-    output: "[fF]irst_pixel*\\s*:\\s*0\\s*,\\s*0,\\s*255"
+    output: "[fF]irst_pixel\\s*:\\s*0\\s*,\\s*0,\\s*255"
   }
 
   , {
     feature: "first_pixel",
-    name: "First Pixel 8x8 001 : 1, 1, 1",
+    name: "First Pixel 1 2 3 : 1, 2, 3",
     description: "Check first pixel on 8x8 image",
     type: "stdout",
-    input: ["input/firstPixel_001_8x8.bmp"],
+    input: ["input/first_pixel_1_2_3_8x8.bmp"],
     options: ["-c", "first_pixel"],
-    output: "[fF]irst_pixel*\\s*:\\s*1\\s*,\\s*1,\\s*1"
+    output: "[fF]irst_pixel\\s*:\\s*1\\s*,\\s*2,\\s*3"
   }
+]);
+
+;// CONCATENATED MODULE: ./src/tests/milestones/tutorial/tenthPixel.js
+/* harmony default export */ const tenthPixel = ([
+  {
+    feature: "tenth_pixel",
+    name: "Tenth Pixel Red : 255, 0, 0",
+    description: "Check first pixel on 32x32 red image",
+    type: "stdout",
+    input: ["input/r_32x32.bmp"],
+    options: ["-c", "tenth_pixel"],
+    output: "[tT]enth_pixel\\s*:\\s*255\\s*,\\s*0,\\s*0"
+  },
+
+  {
+    feature: "tenth_pixel",
+    name: "Tenth Pixel Green : 0, 255, 0",
+    description: "Check first pixel on 32x32 green image",
+    type: "stdout",
+    input: ["input/g_32x32.bmp"],
+    options: ["-c", "tenth_pixel"],
+    output: "[tT]enth_pixel\\s*:\\s*0\\s*,\\s*255,\\s*0"
+  },
+
+  {
+    feature: "tenth_pixel",
+    name: "Tenth Pixel Blue : 0, 0, 255",
+    description: "Check first pixel on 32x32 blue image",
+    type: "stdout",
+    input: ["input/b_32x32.bmp"],
+    options: ["-c", "tenth_pixel"],
+    output: "[tT]enth_pixel\\s*:\\s*0\\s*,\\s*0,\\s*255"
+  }
+
+  , {
+    feature: "tenth_pixel",
+    name: "Tenth Pixel 11 12 13 : 1, 2, 3",
+    description: "Check first pixel on 10x8 image",
+    type: "stdout",
+    input: ["input/tenth_pixel_11_12_13_10x8.bmp"],
+    options: ["-c", "tenth_pixel"],
+    output: "[tT]enth_pixel\\s*:\\s*11\\s*,\\s*12,\\s*13"
+  }
+]);
+
+;// CONCATENATED MODULE: ./src/tests/milestones/tutorial/secondLine.js
+/* harmony default export */ const secondLine = ([
+  {
+    feature: "second_line",
+    name: "Second line First Pixel 64x64 Red : 255, 0, 0",
+    description: "Check first pixel on the second line on 64x64 : should be red",
+    type: "stdout",
+    input: ["input/rgbw_64x64.bmp"],
+    options: ["-c", "second_line"],
+    output: "[sS]econd_line\\s*:\\s*255\\s*,\\s*0,\\s*0"
+  },
+
+  {
+    feature: "second_line",
+    name: "Second line First Pixel Red : 255, 0, 0",
+    description: "Check first pixel on the second line on 32x32 red image",
+    type: "stdout",
+    input: ["input/r_32x32.bmp"],
+    options: ["-c", "second_line"],
+    output: "[sS]econd_line\\s*:\\s*255\\s*,\\s*0,\\s*0"
+  },
+
+  {
+    feature: "second_line",
+    name: "Second line First Pixel Green : 0, 255, 0",
+    description: "Check first pixel on the second line on 32x32 green image",
+    type: "stdout",
+    input: ["input/g_32x32.bmp"],
+    options: ["-c", "second_line"],
+    output: "[sS]econd_line\\s*:\\s*0\\s*,\\s*255,\\s*0"
+  },
+
+  {
+    feature: "second_line",
+    name: "Second line First Pixel Blue : 0, 0, 255",
+    description: "Check first pixel on the second line on 32x32 blue image",
+    type: "stdout",
+    input: ["input/b_32x32.bmp"],
+    options: ["-c", "second_line"],
+    output: "[sS]econd_line\\s*:\\s*0\\s*,\\s*0,\\s*255"
+  }
+
+  , {
+    feature: "second_line",
+    name: "Second line First Pixel 21 22 23",
+    description: "Check first pixel on the second line on 8x8 image",
+    type: "stdout",
+    input: ["input/second_line_21_22_23_8x8.bmp"],
+    options: ["-c", "second_line"],
+    output: "[sS]econd_line\\s*:\\s*21\\s*,\\s*22,\\s*23"
+  }
+]);
+
+;// CONCATENATED MODULE: ./src/tests/milestones/tutorial/printPixel.js
+/* harmony default export */ const printPixel = ([
+
+  {
+    feature: "print_pixel",
+    name: "Get Pixel(0,0) : 0,0,0",
+    description: "Get the first pixel on 8x8 image",
+    type: "stdout",
+    input: ["input/get_pixel_x0_y0_n_8x8.bmp"],
+    options: ["-c", "print_pixel"
+             , "0", "0" ],
+    output: "[Pp]rint_pixel\\s*\\(\\s*0\\s*,\\s*0\\s*\\)\\s*:\\s*0\\s*,\\s*0,\\s*0"
+  },
+
+  {
+    feature: "print_pixel",
+    name: "Get Pixel(2,3) : 20,30,26",
+    description: "Get the pixel of coordinate 2,3 on 8x8 image",
+    type: "stdout",
+    input: ["input/get_pixel_x0_y0_n_8x8.bmp"],
+    options: ["-c", "print_pixel"
+             , "2", "3" ],
+    output: "[Pp]rint_pixel\\s*\\(\\s*2\\s*,\\s*3\\s*\\)\\s*:\\s*20\\s*,\\s*30,\\s*26"
+  }
+  ,
+
+
+  {
+    feature: "print_pixel",
+    name: "Get Pixel(3,2) : 30,20,19",
+    description: "Get the pixel of coordinate 2,3 on 8x8 image",
+    type: "stdout",
+    input: ["input/get_pixel_x0_y0_n_8x8.bmp"],
+    options: ["-c", "print_pixel"
+             , "3", "2" ],
+    output: "[Pp]rint_pixel\\s*\\(\\s*3\\s*,\\s*2\\s*\\)\\s*:\\s*30\\s*,\\s*20,\\s*19"
+  }
+  ,
+  {
+    feature: "print_pixel",
+    name: "Get Pixel(7,7) : 0,0,0",
+    description: "Get the pixel of coordinate 7,7 on 8x8 image",
+    type: "stdout",
+    input: ["input/get_pixel_x0_y0_n_8x8.bmp"],
+    options: ["-c", "print_pixel"
+             , "7", "7" ],
+    output: "[Pp]rint_pixel\\s*\\(\\s*7\\s*,\\s*7\\s*\\)\\s*:\\s*70\\s*,\\s*70,\\s*63"
+  }
+
+
 ]);
 
 ;// CONCATENATED MODULE: ./src/tests/milestones/tutorial/index.js
 
 
-const tutorial = [ ...dimensions, ...firstPixel  ];
+
+
+
+const tutorial = [ ...dimensions, ...firstPixel, ...tenthPixel, ...secondLine, ...printPixel  ];
 tutorial.forEach( e=> e.milestone = "Tutorial");
 /* harmony default export */ const milestones_tutorial = (tutorial);
 
-;// CONCATENATED MODULE: ./src/tests/milestones/statistiques/dimensions.js
-/* harmony default export */ const statistiques_dimensions = ([
+;// CONCATENATED MODULE: ./src/tests/milestones/statistiques/maxPixel.js
+/* harmony default export */ const maxPixel = ([
   {
-    feature: "Dimension_2",
-    name: "Dimension_2 64x64",
-    description: "Test if the dimension feature is working",
+    feature: "max_pixel",
+    name: "Max Pixel black 8x8",
+    description: "Get the max pixel of a black image",
     type: "stdout",
-    input: ["input/rgbw_64x64.bmp"],
-    options: ["-o", "dimension"],
-    output: "[dD]imension[s]*\\s*:\\s*64\\s*,\\s*64"
+    input: ["input/N_8x8.bmp"],
+    options: ["-c", "max_pixel"],
+    output: "[mM]ax_pixel\\s*\\(\\s*0\\s*,\\s*0\\s*\\)\\s*:\\s*0\\s*,\\s*0,\\s*0"
   },
-
   {
-    feature: "Dimension_2",
-    name: "Dimension_2 1x1",
-    description:
-      "Test if the dimension feature is working for one by one files",
+    feature: "max_pixel",
+    name: "Max Pixel white 8x8",
+    description: "Get the max pixel of a white image",
     type: "stdout",
-    input: ["input/r_1x1.bmp"],
-    options: ["-o", "dimension"],
-    output: "[dD]imension[s]*\\s*:\\s*1\\s*,\\s*1"
+    input: ["input/W_8x8.bmp"],
+    options: ["-c", "max_pixel"],
+    output: "[mM]ax_pixel\\s*\\(\\s*0\\s*,\\s*0\\s*\\)\\s*:\\s*255\\s*,\\s*255,\\s*255"
   },
-
   {
-    feature: "Dimension_2",
-    name: "Dimension_2 32x64",
-    description: "Test if the dimension feature is working",
+    feature: "max_pixel",
+    name: "Max Pixel at 6 5 ",
+    description: "Get the max pixel at 6 5 ",
     type: "stdout",
-    input: ["input/rgbw_32x64.bmp"],
-    options: ["-o", "dimension"],
-    output: "[dD]imension[s]*\\s*:\\s*32\\s*,\\s*64"
+    input: ["input/maxPixel_6_5_60_50_100_8x8.bmp"],
+    options: ["-c", "max_pixel"],
+    output: "[mM]ax_pixel\\s*\\(\\s*6\\s*,\\s*5\\s*\\)\\s*:\\s*60\\s*,\\s*50,\\s*100"
   },
-
   {
-    feature: "Dimension_2",
-    name: "Dimension_2 64x32",
-    description: "Test if the dimension feature is working",
+    feature: "max_pixel",
+    name: "Max Pixel at 3 4 ",
+    description: "Get the max pixel at 3 4 ",
     type: "stdout",
-    input: ["input/rgbw_64x32.bmp"],
-    options: ["-o", "dimension"],
-    output: "[dD]imension[s]*\\s*:\\s*64\\s*,\\s*32"
+    input: ["input/maxPixel_3_4_30_40_130_8x8.bmp"],
+    options: ["-c", "max_pixel"],
+    output: "[mM]ax_pixel\\s*\\(\\s*3\\s*,\\s*4\\s*\\)\\s*:\\s*30\\s*,\\s*40,\\s*130"
   }
+
+]);
+
+;// CONCATENATED MODULE: ./src/tests/milestones/statistiques/minPixel.js
+/* harmony default export */ const minPixel = ([
+  {
+    feature: "min_pixel",
+    name: "Max Pixel black 8x8",
+    description: "Get the min pixel of a black image",
+    type: "stdout",
+    input: ["input/N_8x8.bmp"],
+    options: ["-c", "min_pixel"],
+    output: "[mM]in_pixel\\s*\\(\\s*0\\s*,\\s*0\\s*\\)\\s*:\\s*0\\s*,\\s*0,\\s*0"
+  },
+  {
+    feature: "min_pixel",
+    name: "Max Pixel white 8x8",
+    description: "Get the min pixel of a white image",
+    type: "stdout",
+    input: ["input/W_8x8.bmp"],
+    options: ["-c", "min_pixel"],
+    output: "[mM]in_pixel\\s*\\(\\s*0\\s*,\\s*0\\s*\\)\\s*:\\s*255\\s*,\\s*255,\\s*255"
+  },
+  {
+    feature: "min_pixel",
+    name: "Max Pixel at 6 5",
+    description: "Get the min pixel at 6 5 ",
+    type: "stdout",
+    input: ["input/minPixel_6_5_60_50_100_8x8.bmp"],
+    options: ["-c", "min_pixel"],
+    output: "[mM]in_pixel\\s*\\(\\s*6\\s*,\\s*5\\s*\\)\\s*:\\s*60\\s*,\\s*50,\\s*100"
+  },
+  {
+    feature: "min_pixel",
+    name: "Max Pixel at 3 4",
+    description: "Get the min pixel at 3 4 ",
+    type: "stdout",
+    input: ["input/minPixel_3_4_30_40_140_8x8.bmp"],
+    options: ["-c", "min_pixel"],
+    output: "[mM]in_pixel\\s*\\(\\s*3\\s*,\\s*4\\s*\\)\\s*:\\s*30\\s*,\\s*40,\\s*140"
+  }
+
+]);
+
+;// CONCATENATED MODULE: ./src/tests/milestones/statistiques/minComponentR.js
+/* harmony default export */ const minComponentR = ([
+  {
+    feature: "min_component R",
+    name: "Min Component R of black 8x8",
+    description: "Get the min component of a black image",
+    type: "stdout",
+    input: ["input/N_8x8.bmp"],
+    options: ["-c", "min_component", "R"],
+    output: "[mM]in_component\\s*R\\s*\\(\\s*0\\s*,\\s*0\\s*\\)\\s*:\\s*0\\s*,\\s*0,\\s*0"
+  },
+  {
+    feature: "min_component R",
+    name: "Min Component R of white 8x8",
+    description: "Get the min component of a white image",
+    type: "stdout",
+    input: ["input/W_8x8.bmp"],
+    options: ["-c", "min_component", "R"],
+    output: "[mM]in_component\\s*R\\s*\\(\\s*0\\s*,\\s*0\\s*\\)\\s*:\\s*255\\s*,\\s*255,\\s*255"
+  },
+  {
+    feature: "min_component R",
+    name: "Min Component black ",
+    description: "Get the min component at 2 0 ",
+    type: "stdout",
+    input: ["input/minComponentR_2_0_5.bmp"],
+    options: ["-c", "min_component", "R"],
+    output: "[mM]in_component\\s*R\\s*\\(\\s*2\\s*,\\s*0\\s*\\)\\s*:\\s*5"
+  }
+
+
+]);
+
+;// CONCATENATED MODULE: ./src/tests/milestones/statistiques/minComponentG.js
+/* harmony default export */ const minComponentG = ([
+  {
+    feature: "min_component G",
+    name: "Min Component G of black 8x8",
+    description: "Get the min component of a black image",
+    type: "stdout",
+    input: ["input/N_8x8.bmp"],
+    options: ["-c", "min_component", "G"],
+    output: "[mM]in_component\\s*G\\s*\\(\\s*0\\s*,\\s*0\\s*\\)\\s*:\\s*0\\s*,\\s*0,\\s*0"
+  },
+  {
+    feature: "min_component G",
+    name: "Min Component G of white 8x8",
+    description: "Get the min component of a white image",
+    type: "stdout",
+    input: ["input/W_8x8.bmp"],
+    options: ["-c", "min_component", "G"],
+    output: "[mM]in_component\\s*G\\s*\\(\\s*0\\s*,\\s*0\\s*\\)\\s*:\\s*255\\s*,\\s*255,\\s*255"
+  },
+  {
+    feature: "min_component G",
+    name: "Min Component black ",
+    description: "Get the min component at 2 0 ",
+    type: "stdout",
+    input: ["input/minComponentG_2_0_5.bmp"],
+    options: ["-c", "min_component", "G"],
+    output: "[mM]in_component\\s*G\\s*\\(\\s*2\\s*,\\s*0\\s*\\)\\s*:\\s*5"
+  }
+
+
+]);
+
+;// CONCATENATED MODULE: ./src/tests/milestones/statistiques/minComponentB.js
+/* harmony default export */ const minComponentB = ([
+  {
+    feature: "min_component B",
+    name: "Min Component B of black 8x8",
+    description: "Get the min component of a black image",
+    type: "stdout",
+    input: ["input/N_8x8.bmp"],
+    options: ["-c", "min_component", "B"],
+    output: "[mM]in_component\\s*B\\s*\\(\\s*0\\s*,\\s*0\\s*\\)\\s*:\\s*0\\s*,\\s*0,\\s*0"
+  },
+  {
+    feature: "min_component B",
+    name: "Min Component B of white 8x8",
+    description: "Get the min component of a white image",
+    type: "stdout",
+    input: ["input/W_8x8.bmp"],
+    options: ["-c", "min_component", "B"],
+    output: "[mM]in_component\\s*B\\s*\\(\\s*0\\s*,\\s*0\\s*\\)\\s*:\\s*255\\s*,\\s*255,\\s*255"
+  },
+  {
+    feature: "min_component B",
+    name: "Min Component black ",
+    description: "Get the min component at 2 0 ",
+    type: "stdout",
+    input: ["input/minComponentB_2_0_5.bmp"],
+    options: ["-c", "min_component", "B"],
+    output: "[mM]in_component\\s*B\\s*\\(\\s*2\\s*,\\s*0\\s*\\)\\s*:\\s*5"
+  }
+
+
+]);
+
+;// CONCATENATED MODULE: ./src/tests/milestones/statistiques/maxComponentR.js
+/* harmony default export */ const maxComponentR = ([
+  {
+    feature: "max_component R",
+    name: "Max Component R of black 8x8",
+    description: "Get the max component of a black image",
+    type: "stdout",
+    input: ["input/N_8x8.bmp"],
+    options: ["-c", "max_component", "R"],
+    output: "[mM]ax_component\\s*R\\s*\\(\\s*0\\s*,\\s*0\\s*\\)\\s*:\\s*0\\s*,\\s*0,\\s*0"
+  },
+  {
+    feature: "max_component R",
+    name: "Max Component R of white 8x8",
+    description: "Get the max component of a white image",
+    type: "stdout",
+    input: ["input/W_8x8.bmp"],
+    options: ["-c", "max_component", "R"],
+    output: "[mM]ax_component\\s*R\\s*\\(\\s*0\\s*,\\s*0\\s*\\)\\s*:\\s*255\\s*,\\s*255,\\s*255"
+  },
+  {
+    feature: "max_component R",
+    name: "Max Component black ",
+    description: "Get the max component at 2 0 ",
+    type: "stdout",
+    input: ["input/maxComponentR_2_0_255.bmp"],
+    options: ["-c", "max_component", "R"],
+    output: "[mM]ax_component\\s*R\\s*\\(\\s*2\\s*,\\s*0\\s*\\)\\s*:\\s*255"
+  }
+
+
+]);
+
+;// CONCATENATED MODULE: ./src/tests/milestones/statistiques/maxComponentG.js
+/* harmony default export */ const maxComponentG = ([
+  {
+    feature: "max_component G",
+    name: "Max Component G of black 8x8",
+    description: "Get the max component of a black image",
+    type: "stdout",
+    input: ["input/N_8x8.bmp"],
+    options: ["-c", "max_component", "G"],
+    output: "[mM]ax_component\\s*G\\s*\\(\\s*0\\s*,\\s*0\\s*\\)\\s*:\\s*0\\s*,\\s*0,\\s*0"
+  },
+  {
+    feature: "max_component G",
+    name: "Max Component G of white 8x8",
+    description: "Get the max component of a white image",
+    type: "stdout",
+    input: ["input/W_8x8.bmp"],
+    options: ["-c", "max_component", "G"],
+    output: "[mM]ax_component\\s*G\\s*\\(\\s*0\\s*,\\s*0\\s*\\)\\s*:\\s*255\\s*,\\s*255,\\s*255"
+  },
+  {
+    feature: "max_component G",
+    name: "Max Component black ",
+    description: "Get the max component at 2 0 ",
+    type: "stdout",
+    input: ["input/maxComponentG_2_0_255.bmp"],
+    options: ["-c", "max_component", "G"],
+    output: "[mM]ax_component\\s*G\\s*\\(\\s*2\\s*,\\s*0\\s*\\)\\s*:\\s*255"
+  }
+
+
+]);
+
+;// CONCATENATED MODULE: ./src/tests/milestones/statistiques/maxComponentB.js
+/* harmony default export */ const maxComponentB = ([
+  {
+    feature: "max_component B",
+    name: "Max Component B of black 8x8",
+    description: "Get the max component of a black image",
+    type: "stdout",
+    input: ["input/N_8x8.bmp"],
+    options: ["-c", "max_component", "B"],
+    output: "[mM]ax_component\\s*B\\s*\\(\\s*0\\s*,\\s*0\\s*\\)\\s*:\\s*0\\s*,\\s*0,\\s*0"
+  },
+  {
+    feature: "max_component B",
+    name: "Max Component B of white 8x8",
+    description: "Get the max component of a white image",
+    type: "stdout",
+    input: ["input/W_8x8.bmp"],
+    options: ["-c", "max_component", "B"],
+    output: "[mM]ax_component\\s*B\\s*\\(\\s*0\\s*,\\s*0\\s*\\)\\s*:\\s*255\\s*,\\s*255,\\s*255"
+  },
+  {
+    feature: "max_component B",
+    name: "Max Component black ",
+    description: "Get the max component at 2 0 ",
+    type: "stdout",
+    input: ["input/maxComponentB_2_0_255.bmp"],
+    options: ["-c", "max_component", "B"],
+    output: "[mM]ax_component\\s*B\\s*\\(\\s*2\\s*,\\s*0\\s*\\)\\s*:\\s*255"
+  }
+
+
 ]);
 
 ;// CONCATENATED MODULE: ./src/tests/milestones/statistiques/index.js
 
-const statistiques = [ ...statistiques_dimensions ];
-statistiques.forEach( e=> e.milestone = "statistiques");
+
+
+
+
+
+
+
+
+const statistiques = [...maxPixel, ...minPixel, ...minComponentR, ...minComponentG, ...minComponentB, ...maxComponentR, ...maxComponentG, ...maxComponentB];
+statistiques.forEach(e => (e.milestone = "statistiques"));
 /* harmony default export */ const milestones_statistiques = (statistiques);
 
 ;// CONCATENATED MODULE: ./src/tests/milestones/colors/blue.js
@@ -4287,7 +4682,7 @@ statistiques.forEach( e=> e.milestone = "statistiques");
 
 const colors_statistiques = [ ...blue ];
 colors_statistiques.forEach( e=> e.milestone = "colors");
-/* harmony default export */ const colors = (colors_statistiques);
+/* harmony default export */ const colors = ((/* unused pure expression or super */ null && (colors_statistiques)));
 
 ;// CONCATENATED MODULE: ./src/tests/tests.js
 
@@ -4297,7 +4692,6 @@ colors_statistiques.forEach( e=> e.milestone = "colors");
   milestones : {
     tutorial: milestones_tutorial,
     statistiques: milestones_statistiques,
-    colors: colors
   }
 });
 
@@ -4345,7 +4739,7 @@ function computeScore( testsObject ) {
   ).forEach(([feature, score]) => core.info(`Feature ${feature} : ${score}`));
   core.endGroup();
 
-  return tests.reduce((accumlateur, test) => accumlateur + test.score, 0);
+  return tests.reduce((accumlateur, test) => accumlateur + test.score, 0) + "/" + tests.length ;
 }
 
 ;// CONCATENATED MODULE: external "fs/promises"
@@ -4524,17 +4918,17 @@ async function printReport(testsObject) {
   core.startGroup("print report");
   const timestamp = timeString();
 
-  await logRawTestResults( testsObject, timestamp );
-  const resultat = computeSummary( testsObject )
+  await logRawTestResults(testsObject, timestamp);
+  const resultat = computeSummary(testsObject);
   const markdown = createMarkdownOutput(resultat);
-  await logSummary( markdown, timestamp ) ;
-  console.table(resultat) ;
+  await logSummary(markdown, timestamp);
+  console.table(resultat);
   core.setOutput("date", dateString());
   core.setOutput("markdown", markdown);
   core.endGroup();
 }
 
-async function logRawTestResults( testsObject, timestamp ) {
+async function logRawTestResults(testsObject, timestamp) {
   await io.mkdirP(`result/${timestamp}`);
   await promises_namespaceObject.writeFile(
     `result/${timestamp}/log_${timeString()}.json`,
@@ -4542,11 +4936,11 @@ async function logRawTestResults( testsObject, timestamp ) {
     "utf8"
   );
 }
-async function logSummary( markdown, timestamp ) {
+async function logSummary(markdown, timestamp) {
   await promises_namespaceObject.writeFile(`result/${timestamp}/Readme.md`, markdown, "utf8");
 }
 
-function computeSummary( testsObject ) {
+function computeSummary(testsObject) {
   const resultat = {};
   testsObjectToArray(testsObject).forEach(test => {
     resultat[test.milestone] = resultat[test.milestone] ?? {
@@ -4559,7 +4953,8 @@ function computeSummary( testsObject ) {
       feature: test.feature,
       score: 0,
       count: 0,
-      missedTest: []
+      missedTest: [],
+      missedTestOut: []
     };
     const feature = resultat[test.milestone].features[test.feature];
     // Count the test for the milestone
@@ -4569,8 +4964,9 @@ function computeSummary( testsObject ) {
     feature.score += test.score;
     feature.count += 1;
     if (test.score < 0.5) feature.missedTest.push(test.name);
+    if (test.score < 0.5) feature.missedTestOut.push(test.stdout.trim());
   });
-  return resultat ;
+  return resultat;
 }
 
 function createMarkdownOutput(resultat) {
@@ -4578,21 +4974,22 @@ function createMarkdownOutput(resultat) {
   markdown +=
     "You can find below how you did for each feature. \n You should merge the pull request to keep the eval and automatically close and open the issues you have finished!\n";
   Object.entries(resultat).forEach(([milestone, data]) => {
-    markdown += `# ${milestone}\n`;
+    markdown += `# Milestone  ${milestone}\n`;
     markdown += `Score : ${data.score}/${data.count} :  ${Math.floor(
       (100 * data.score) / data.count
     )}%\n`;
-    markdown += `## Detail\n`;
+    markdown += `## Detail by Feature\n`;
     markdown += tablemark_dist(
       Object.values(data.features).map(feature => ({
-        name: feature.feature,
+        Feature: feature.feature,
         score: `${feature.score}/${feature.count} :  ${Math.floor(
           (100 * data.score) / data.count
         )}%`,
-        "missed tests": feature.missedTest.join("<br>").trim()
+        "missed tests": feature.missedTest.join("<br>").trim(),
+        "stdout": feature.missedTestOut.join("<br>").trim()
       }))
     );
-    markdown += "\n"
+    markdown += "\n";
     // markdown += "## Related issues\n"
     // markdown += "close #24\n"
     // markdown += "open #17\n"

@@ -5,6 +5,5 @@ export default {
   milestones : {
     tutorial: tutorial,
     statistiques: statistiques,
-    colors: colors
   }
 }

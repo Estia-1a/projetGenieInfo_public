@@ -1,6 +1,6 @@
 export default [
   {
-    feature: "Dimension",
+    feature: "dimension",
     name: "Dimension 64x64",
     description: "Test if the dimension feature is working",
     type: "stdout",
@@ -10,7 +10,7 @@ export default [
   },
 
   {
-    feature: "Dimension",
+    feature: "dimension",
     name: "Dimension 1x1",
     description:
       "Test if the dimension feature is working for one by one files",
@@ -21,7 +21,7 @@ export default [
   },
 
   {
-    feature: "Dimension",
+    feature: "dimension",
     name: "Dimension 32x64",
     description: "Test if the dimension feature is working",
     type: "stdout",
@@ -31,7 +31,7 @@ export default [
   },
 
   {
-    feature: "Dimension",
+    feature: "dimension",
     name: "Dimension 64x32",
     description: "Test if the dimension feature is working",
     type: "stdout",

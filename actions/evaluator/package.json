@@ -3,7 +3,7 @@
   "version": "1.0.0",
   "description": "JavaScript Action Template",
   "main": "index.js",
-  "type":"module",
+  "type": "module",
   "scripts": {
     "lint": "eslint .",
     "prepare": "ncc build index.js -o dist --source-map --license licenses.txt",
@@ -28,6 +28,7 @@
   "dependencies": {
     "@actions/core": "^1.2.5",
     "@actions/exec": "^1.1.1",
+    "@actions/io": "^1.1.2",
     "tablemark": "^3.0.0"
   },
   "devDependencies": {
