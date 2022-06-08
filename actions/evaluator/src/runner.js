@@ -1,11 +1,11 @@
 import io from "@actions/io";
 import core from "@actions/core";
 import exec from "@actions/exec";
-import {resolve} from "path" ;
+import { resolve } from "path";
 import { listenerOutput } from "./utils.js";
 import batchPromise from "./batchPromise.js";
 
-let uuid = 0 ;
+let uuid = 0;
 async function runTest(config, test) {
   try {
     const options = {};
@@ -13,47 +13,73 @@ async function runTest(config, test) {
     options.listeners.stdout = listenerOutput(test, "stdout");
     options.listeners.stderr = listenerOutput(test, "stderr");
     options.silent = true;
-    const cwd = `${config.buildDirectory}/run/${uuid++}`
-    await io.mkdirP( cwd ) ;
-    options.cwd = cwd ;
-    core.info("Run Test :" + test.name);
+    const cwd = `${config.buildDirectory}/run/${uuid++}`;
+    await io.mkdirP(cwd);
+    options.cwd = cwd;
     await exec.exec(
       config.executablePath,
       [
         "-f",
         resolve(config.testPath, test.input[0]), //Todo: change for multiple input test
-        ...test.options
+        ...test.options,
       ],
       options
     );
 
-
-    if( test.type == "image" ) {
+    if (test.type == "image") {
       options.listeners.stdout = listenerOutput(test, "image_comparator");
       await exec.exec(
         config.comparatorPath,
         [
-          resolve(cwd, test.expectedOutput[0]), //Todo: change for multiple input test
-          resolve(config.testPath, test.reference[0]), //Todo: change for multiple input test
-
+          resolve(cwd, "image_out.bmp"),
+          resolve(config.testPath, test.output[0]),
         ],
         options
       );
-
+      console.log(test.name);
+      console.log(
+        "   $ freud ",
+        [
+          "-f",
+          test.input[0], //Todo: change for multiple input test
+          ...test.options,
+        ].join(" ")
+      );
+      console.log("   >", test.image_comparator.trim());
+    } else {
+      console.log(test.name);
+      console.log(
+        "   $ freud ",
+        [
+          "-f",
+          test.input[0], //Todo: change for multiple input test
+          ...test.options,
+        ].join(" ")
+      );
+      console.log("   >", test.stdout.trim());
     }
-
     return test;
   } catch (error) {
+    console.log(test.name);
+    console.log(
+      "   $ freud ",
+      [
+        "-f",
+        test.input[0], //Todo: change for multiple input test
+        ...test.options,
+      ].join(" ")
+    );
+    console.log("   >", test.stdout.trim());
+    console.log("   >", test.stderr.trim());
+    console.log("   >", error);
     test.error = error;
     return test;
   }
 }
 
 export async function runTestInParallel(config, testsObject) {
-
   core.startGroup("Run Tests");
-  const runner = test =>
-    runTest(config, test);
+  const runner = (test) => runTest(config, test);
   const data = await batchPromise(
     runner,
     Object.values(testsObject.milestones).flat(),
@@ -87,7 +113,7 @@ export async function testComparator(config) {
     config.comparatorPath,
     [
       resolve(config.testPath, "input/b_32x32.bmp"),
-      resolve(config.testPath, "input/b_32x32.bmp")
+      resolve(config.testPath, "input/b_32x32.bmp"),
     ],
     { silent: true }
   );

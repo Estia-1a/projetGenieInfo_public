@@ -1632,6 +1632,7 @@ class ExecState extends events.EventEmitter {
 }
 //# sourceMappingURL=toolrunner.js.map
 
+
 /***/ }),
 
 /***/ 526:
@@ -3951,17 +3952,15 @@ var exec = __nccwpck_require__(514);
 // EXTERNAL MODULE: external "path"
 var external_path_ = __nccwpck_require__(622);
 ;// CONCATENATED MODULE: ./src/utils.js
-
-const testsObjectToArray = testsObject =>
+const testsObjectToArray = (testsObject) =>
   Object.values(testsObject.milestones).flat();
-
 
 function timeString() {
   const d = new Date();
   return (
     `0${d.getUTCMonth() + 1}`.slice(-2) +
     `0${d.getUTCDate()}`.slice(-2) +
-    "-"+
+    "-" +
     `0${d.getHours()}`.slice(-2) +
     `0${d.getMinutes()}`.slice(-2) +
     `0${d.getSeconds()}`.slice(-2)
@@ -3972,24 +3971,24 @@ function dateString() {
   const d = new Date();
   return (
     `0${d.getUTCDate()}`.slice(-2) +
-    "/"+
+    "/" +
     `0${d.getUTCMonth() + 1}`.slice(-2) +
-    " - "+
+    " - " +
     `0${d.getHours()}`.slice(-2) +
-    ":"+
+    ":" +
     `0${d.getMinutes()}`.slice(-2) +
-    ":"+
+    ":" +
     `0${d.getSeconds()}`.slice(-2)
   );
 }
 
 function listenerOutput(test, type) {
   test[type] = "";
-  return data => (test[type] += data);
+  return (data) => (test[type] += data);
 }
 
 ;// CONCATENATED MODULE: ./src/batchPromise.js
- /**
+/**
  * Same as Promise.all(items.map(item => task(item))), but it waits for
  * the first {batchSize} promises to finish before starting the next batch.
  * https://stackoverflow.com/questions/37213316/execute-batch-of-promises-in-series-once-promise-all-is-done-go-to-the-next-bat
@@ -4002,14 +4001,17 @@ function listenerOutput(test, type) {
  * @returns {B[]}
  */
 async function batchPromise(task, items, batchSize) {
-    let position = 0;
-    let results = [];
-    while (position < items.length) {
-        const itemsForBatch = items.slice(position, position + batchSize);
-        results = [...results, ...await Promise.all(itemsForBatch.map(item => task(item)))];
-        position += batchSize;
-    }
-    return results;
+  let position = 0;
+  let results = [];
+  while (position < items.length) {
+    const itemsForBatch = items.slice(position, position + batchSize);
+    results = [
+      ...results,
+      ...(await Promise.all(itemsForBatch.map((item) => task(item)))),
+    ];
+    position += batchSize;
+  }
+  return results;
 }
 
 ;// CONCATENATED MODULE: ./src/runner.js
@@ -4020,7 +4022,7 @@ async function batchPromise(task, items, batchSize) {
 
 
 
-let uuid = 0 ;
+let uuid = 0;
 async function runTest(config, test) {
   try {
     const options = {};
@@ -4028,47 +4030,73 @@ async function runTest(config, test) {
     options.listeners.stdout = listenerOutput(test, "stdout");
     options.listeners.stderr = listenerOutput(test, "stderr");
     options.silent = true;
-    const cwd = `${config.buildDirectory}/run/${uuid++}`
-    await io.mkdirP( cwd ) ;
-    options.cwd = cwd ;
-    core.info("Run Test :" + test.name);
+    const cwd = `${config.buildDirectory}/run/${uuid++}`;
+    await io.mkdirP(cwd);
+    options.cwd = cwd;
     await exec.exec(
       config.executablePath,
       [
         "-f",
         (0,external_path_.resolve)(config.testPath, test.input[0]), //Todo: change for multiple input test
-        ...test.options
+        ...test.options,
       ],
       options
     );
 
-
-    if( test.type == "image" ) {
+    if (test.type == "image") {
       options.listeners.stdout = listenerOutput(test, "image_comparator");
       await exec.exec(
         config.comparatorPath,
         [
-          (0,external_path_.resolve)(cwd, test.expectedOutput[0]), //Todo: change for multiple input test
-          (0,external_path_.resolve)(config.testPath, test.reference[0]), //Todo: change for multiple input test
-
+          (0,external_path_.resolve)(cwd, "image_out.bmp"),
+          (0,external_path_.resolve)(config.testPath, test.output[0]),
         ],
         options
       );
-
+      console.log(test.name);
+      console.log(
+        "   $ freud ",
+        [
+          "-f",
+          test.input[0], //Todo: change for multiple input test
+          ...test.options,
+        ].join(" ")
+      );
+      console.log("   >", test.image_comparator.trim());
+    } else {
+      console.log(test.name);
+      console.log(
+        "   $ freud ",
+        [
+          "-f",
+          test.input[0], //Todo: change for multiple input test
+          ...test.options,
+        ].join(" ")
+      );
+      console.log("   >", test.stdout.trim());
     }
-
     return test;
   } catch (error) {
+    console.log(test.name);
+    console.log(
+      "   $ freud ",
+      [
+        "-f",
+        test.input[0], //Todo: change for multiple input test
+        ...test.options,
+      ].join(" ")
+    );
+    console.log("   >", test.stdout.trim());
+    console.log("   >", test.stderr.trim());
+    console.log("   >", error);
     test.error = error;
     return test;
   }
 }
 
 async function runTestInParallel(config, testsObject) {
-
   core.startGroup("Run Tests");
-  const runner = test =>
-    runTest(config, test);
+  const runner = (test) => runTest(config, test);
   const data = await batchPromise(
     runner,
     Object.values(testsObject.milestones).flat(),
@@ -4102,7 +4130,7 @@ async function testComparator(config) {
     config.comparatorPath,
     [
       (0,external_path_.resolve)(config.testPath, "input/b_32x32.bmp"),
-      (0,external_path_.resolve)(config.testPath, "input/b_32x32.bmp")
+      (0,external_path_.resolve)(config.testPath, "input/b_32x32.bmp"),
     ],
     { silent: true }
   );
@@ -4115,584 +4143,817 @@ async function testComparator(config) {
   core.endGroup();
 }
 
-;// CONCATENATED MODULE: ./src/tests/milestones/tutorial/dimensions.js
-/* harmony default export */ const dimensions = ([
-  {
-    feature: "dimension",
-    name: "Dimension 64x64",
-    description: "Test if the dimension feature is working",
-    type: "stdout",
-    input: ["input/rgbw_64x64.bmp"],
-    options: ["-c", "dimension"],
-    output: "[dD]imension[s]*\\s*:\\s*64\\s*,\\s*64"
-  },
-
-  {
-    feature: "dimension",
-    name: "Dimension 1x1",
-    description:
-      "Test if the dimension feature is working for one by one files",
-    type: "stdout",
-    input: ["input/r_1x1.bmp"],
-    options: ["-c", "dimension"],
-    output: "[dD]imension[s]*\\s*:\\s*1\\s*,\\s*1"
-  },
-
-  {
-    feature: "dimension",
-    name: "Dimension 32x64",
-    description: "Test if the dimension feature is working",
-    type: "stdout",
-    input: ["input/rgbw_32x64.bmp"],
-    options: ["-c", "dimension"],
-    output: "[dD]imension[s]*\\s*:\\s*32\\s*,\\s*64"
-  },
-
-  {
-    feature: "dimension",
-    name: "Dimension 64x32",
-    description: "Test if the dimension feature is working",
-    type: "stdout",
-    input: ["input/rgbw_64x32.bmp"],
-    options: ["-c", "dimension"],
-    output: "[dD]imension[s]*\\s*:\\s*64\\s*,\\s*32"
-  }
-]);
-
-;// CONCATENATED MODULE: ./src/tests/milestones/tutorial/firstPixel.js
-/* harmony default export */ const firstPixel = ([
-  {
-    feature: "first_pixel",
-    name: "First Pixel 64x64 Red : 255, 0, 0",
-    description: "Check first pixel on 64x64 : should be red",
-    type: "stdout",
-    input: ["input/rgbw_64x64.bmp"],
-    options: ["-c", "first_pixel"],
-    output: "[fF]irst_pixel\\s*:\\s*255\\s*,\\s*0,\\s*0"
-  },
-
-  {
-    feature: "first_pixel",
-    name: "First Pixel Red : 255, 0, 0",
-    description: "Check first pixel on 32x32 red image",
-    type: "stdout",
-    input: ["input/r_32x32.bmp"],
-    options: ["-c", "first_pixel"],
-    output: "[fF]irst_pixel\\s*:\\s*255\\s*,\\s*0,\\s*0"
-  },
-
-  {
-    feature: "first_pixel",
-    name: "First Pixel Green : 0, 255, 0",
-    description: "Check first pixel on 32x32 green image",
-    type: "stdout",
-    input: ["input/g_32x32.bmp"],
-    options: ["-c", "first_pixel"],
-    output: "[fF]irst_pixel\\s*:\\s*0\\s*,\\s*255,\\s*0"
-  },
-
-  {
-    feature: "first_pixel",
-    name: "First Pixel Blue : 0, 0, 255",
-    description: "Check first pixel on 32x32 blue image",
-    type: "stdout",
-    input: ["input/b_32x32.bmp"],
-    options: ["-c", "first_pixel"],
-    output: "[fF]irst_pixel\\s*:\\s*0\\s*,\\s*0,\\s*255"
-  }
-
-  , {
-    feature: "first_pixel",
-    name: "First Pixel 1 2 3 : 1, 2, 3",
-    description: "Check first pixel on 8x8 image",
-    type: "stdout",
-    input: ["input/first_pixel_1_2_3_8x8.bmp"],
-    options: ["-c", "first_pixel"],
-    output: "[fF]irst_pixel\\s*:\\s*1\\s*,\\s*2,\\s*3"
-  }
-]);
-
-;// CONCATENATED MODULE: ./src/tests/milestones/tutorial/tenthPixel.js
-/* harmony default export */ const tenthPixel = ([
-  {
-    feature: "tenth_pixel",
-    name: "Tenth Pixel Red : 255, 0, 0",
-    description: "Check first pixel on 32x32 red image",
-    type: "stdout",
-    input: ["input/r_32x32.bmp"],
-    options: ["-c", "tenth_pixel"],
-    output: "[tT]enth_pixel\\s*:\\s*255\\s*,\\s*0,\\s*0"
-  },
-
-  {
-    feature: "tenth_pixel",
-    name: "Tenth Pixel Green : 0, 255, 0",
-    description: "Check first pixel on 32x32 green image",
-    type: "stdout",
-    input: ["input/g_32x32.bmp"],
-    options: ["-c", "tenth_pixel"],
-    output: "[tT]enth_pixel\\s*:\\s*0\\s*,\\s*255,\\s*0"
-  },
-
-  {
-    feature: "tenth_pixel",
-    name: "Tenth Pixel Blue : 0, 0, 255",
-    description: "Check first pixel on 32x32 blue image",
-    type: "stdout",
-    input: ["input/b_32x32.bmp"],
-    options: ["-c", "tenth_pixel"],
-    output: "[tT]enth_pixel\\s*:\\s*0\\s*,\\s*0,\\s*255"
-  }
-
-  , {
-    feature: "tenth_pixel",
-    name: "Tenth Pixel 11 12 13 : 1, 2, 3",
-    description: "Check first pixel on 10x8 image",
-    type: "stdout",
-    input: ["input/tenth_pixel_11_12_13_10x8.bmp"],
-    options: ["-c", "tenth_pixel"],
-    output: "[tT]enth_pixel\\s*:\\s*11\\s*,\\s*12,\\s*13"
-  }
-]);
-
-;// CONCATENATED MODULE: ./src/tests/milestones/tutorial/secondLine.js
-/* harmony default export */ const secondLine = ([
-  {
-    feature: "second_line",
-    name: "Second line First Pixel 64x64 Red : 255, 0, 0",
-    description: "Check first pixel on the second line on 64x64 : should be red",
-    type: "stdout",
-    input: ["input/rgbw_64x64.bmp"],
-    options: ["-c", "second_line"],
-    output: "[sS]econd_line\\s*:\\s*255\\s*,\\s*0,\\s*0"
-  },
-
-  {
-    feature: "second_line",
-    name: "Second line First Pixel Red : 255, 0, 0",
-    description: "Check first pixel on the second line on 32x32 red image",
-    type: "stdout",
-    input: ["input/r_32x32.bmp"],
-    options: ["-c", "second_line"],
-    output: "[sS]econd_line\\s*:\\s*255\\s*,\\s*0,\\s*0"
-  },
-
-  {
-    feature: "second_line",
-    name: "Second line First Pixel Green : 0, 255, 0",
-    description: "Check first pixel on the second line on 32x32 green image",
-    type: "stdout",
-    input: ["input/g_32x32.bmp"],
-    options: ["-c", "second_line"],
-    output: "[sS]econd_line\\s*:\\s*0\\s*,\\s*255,\\s*0"
-  },
-
-  {
-    feature: "second_line",
-    name: "Second line First Pixel Blue : 0, 0, 255",
-    description: "Check first pixel on the second line on 32x32 blue image",
-    type: "stdout",
-    input: ["input/b_32x32.bmp"],
-    options: ["-c", "second_line"],
-    output: "[sS]econd_line\\s*:\\s*0\\s*,\\s*0,\\s*255"
-  }
-
-  , {
-    feature: "second_line",
-    name: "Second line First Pixel 21 22 23",
-    description: "Check first pixel on the second line on 8x8 image",
-    type: "stdout",
-    input: ["input/second_line_21_22_23_8x8.bmp"],
-    options: ["-c", "second_line"],
-    output: "[sS]econd_line\\s*:\\s*21\\s*,\\s*22,\\s*23"
-  }
-]);
-
-;// CONCATENATED MODULE: ./src/tests/milestones/tutorial/printPixel.js
-/* harmony default export */ const printPixel = ([
-
-  {
-    feature: "print_pixel",
-    name: "Get Pixel(0,0) : 0,0,0",
-    description: "Get the first pixel on 8x8 image",
-    type: "stdout",
-    input: ["input/get_pixel_x0_y0_n_8x8.bmp"],
-    options: ["-c", "print_pixel"
-             , "0", "0" ],
-    output: "[Pp]rint_pixel\\s*\\(\\s*0\\s*,\\s*0\\s*\\)\\s*:\\s*0\\s*,\\s*0,\\s*0"
-  },
-
-  {
-    feature: "print_pixel",
-    name: "Get Pixel(2,3) : 20,30,26",
-    description: "Get the pixel of coordinate 2,3 on 8x8 image",
-    type: "stdout",
-    input: ["input/get_pixel_x0_y0_n_8x8.bmp"],
-    options: ["-c", "print_pixel"
-             , "2", "3" ],
-    output: "[Pp]rint_pixel\\s*\\(\\s*2\\s*,\\s*3\\s*\\)\\s*:\\s*20\\s*,\\s*30,\\s*26"
-  }
-  ,
-
-
-  {
-    feature: "print_pixel",
-    name: "Get Pixel(3,2) : 30,20,19",
-    description: "Get the pixel of coordinate 2,3 on 8x8 image",
-    type: "stdout",
-    input: ["input/get_pixel_x0_y0_n_8x8.bmp"],
-    options: ["-c", "print_pixel"
-             , "3", "2" ],
-    output: "[Pp]rint_pixel\\s*\\(\\s*3\\s*,\\s*2\\s*\\)\\s*:\\s*30\\s*,\\s*20,\\s*19"
-  }
-  ,
-  {
-    feature: "print_pixel",
-    name: "Get Pixel(7,7) : 0,0,0",
-    description: "Get the pixel of coordinate 7,7 on 8x8 image",
-    type: "stdout",
-    input: ["input/get_pixel_x0_y0_n_8x8.bmp"],
-    options: ["-c", "print_pixel"
-             , "7", "7" ],
-    output: "[Pp]rint_pixel\\s*\\(\\s*7\\s*,\\s*7\\s*\\)\\s*:\\s*70\\s*,\\s*70,\\s*63"
-  }
-
-
-]);
-
-;// CONCATENATED MODULE: ./src/tests/milestones/tutorial/index.js
-
-
-
-
-
-const tutorial = [ ...dimensions, ...firstPixel, ...tenthPixel, ...secondLine, ...printPixel  ];
-tutorial.forEach( e=> e.milestone = "Tutorial");
-/* harmony default export */ const milestones_tutorial = (tutorial);
-
-;// CONCATENATED MODULE: ./src/tests/milestones/statistiques/maxPixel.js
-/* harmony default export */ const maxPixel = ([
-  {
-    feature: "max_pixel",
-    name: "Max Pixel black 8x8",
-    description: "Get the max pixel of a black image",
-    type: "stdout",
-    input: ["input/N_8x8.bmp"],
-    options: ["-c", "max_pixel"],
-    output: "[mM]ax_pixel\\s*\\(\\s*0\\s*,\\s*0\\s*\\)\\s*:\\s*0\\s*,\\s*0,\\s*0"
-  },
-  {
-    feature: "max_pixel",
-    name: "Max Pixel white 8x8",
-    description: "Get the max pixel of a white image",
-    type: "stdout",
-    input: ["input/W_8x8.bmp"],
-    options: ["-c", "max_pixel"],
-    output: "[mM]ax_pixel\\s*\\(\\s*0\\s*,\\s*0\\s*\\)\\s*:\\s*255\\s*,\\s*255,\\s*255"
-  },
-  {
-    feature: "max_pixel",
-    name: "Max Pixel at 6 5 ",
-    description: "Get the max pixel at 6 5 ",
-    type: "stdout",
-    input: ["input/maxPixel_6_5_60_50_100_8x8.bmp"],
-    options: ["-c", "max_pixel"],
-    output: "[mM]ax_pixel\\s*\\(\\s*6\\s*,\\s*5\\s*\\)\\s*:\\s*60\\s*,\\s*50,\\s*100"
-  },
-  {
-    feature: "max_pixel",
-    name: "Max Pixel at 3 4 ",
-    description: "Get the max pixel at 3 4 ",
-    type: "stdout",
-    input: ["input/maxPixel_3_4_30_40_130_8x8.bmp"],
-    options: ["-c", "max_pixel"],
-    output: "[mM]ax_pixel\\s*\\(\\s*3\\s*,\\s*4\\s*\\)\\s*:\\s*30\\s*,\\s*40,\\s*130"
-  }
-
-]);
-
-;// CONCATENATED MODULE: ./src/tests/milestones/statistiques/minPixel.js
-/* harmony default export */ const minPixel = ([
-  {
-    feature: "min_pixel",
-    name: "Max Pixel black 8x8",
-    description: "Get the min pixel of a black image",
-    type: "stdout",
-    input: ["input/N_8x8.bmp"],
-    options: ["-c", "min_pixel"],
-    output: "[mM]in_pixel\\s*\\(\\s*0\\s*,\\s*0\\s*\\)\\s*:\\s*0\\s*,\\s*0,\\s*0"
-  },
-  {
-    feature: "min_pixel",
-    name: "Max Pixel white 8x8",
-    description: "Get the min pixel of a white image",
-    type: "stdout",
-    input: ["input/W_8x8.bmp"],
-    options: ["-c", "min_pixel"],
-    output: "[mM]in_pixel\\s*\\(\\s*0\\s*,\\s*0\\s*\\)\\s*:\\s*255\\s*,\\s*255,\\s*255"
-  },
-  {
-    feature: "min_pixel",
-    name: "Max Pixel at 6 5",
-    description: "Get the min pixel at 6 5 ",
-    type: "stdout",
-    input: ["input/minPixel_6_5_60_50_100_8x8.bmp"],
-    options: ["-c", "min_pixel"],
-    output: "[mM]in_pixel\\s*\\(\\s*6\\s*,\\s*5\\s*\\)\\s*:\\s*60\\s*,\\s*50,\\s*100"
-  },
-  {
-    feature: "min_pixel",
-    name: "Max Pixel at 3 4",
-    description: "Get the min pixel at 3 4 ",
-    type: "stdout",
-    input: ["input/minPixel_3_4_30_40_140_8x8.bmp"],
-    options: ["-c", "min_pixel"],
-    output: "[mM]in_pixel\\s*\\(\\s*3\\s*,\\s*4\\s*\\)\\s*:\\s*30\\s*,\\s*40,\\s*140"
-  }
-
-]);
-
-;// CONCATENATED MODULE: ./src/tests/milestones/statistiques/minComponentR.js
-/* harmony default export */ const minComponentR = ([
-  {
-    feature: "min_component R",
-    name: "Min Component R of black 8x8",
-    description: "Get the min component of a black image",
-    type: "stdout",
-    input: ["input/N_8x8.bmp"],
-    options: ["-c", "min_component", "R"],
-    output: "[mM]in_component\\s*R\\s*\\(\\s*0\\s*,\\s*0\\s*\\)\\s*:\\s*0\\s*,\\s*0,\\s*0"
-  },
-  {
-    feature: "min_component R",
-    name: "Min Component R of white 8x8",
-    description: "Get the min component of a white image",
-    type: "stdout",
-    input: ["input/W_8x8.bmp"],
-    options: ["-c", "min_component", "R"],
-    output: "[mM]in_component\\s*R\\s*\\(\\s*0\\s*,\\s*0\\s*\\)\\s*:\\s*255\\s*,\\s*255,\\s*255"
-  },
-  {
-    feature: "min_component R",
-    name: "Min Component black ",
-    description: "Get the min component at 2 0 ",
-    type: "stdout",
-    input: ["input/minComponentR_2_0_5.bmp"],
-    options: ["-c", "min_component", "R"],
-    output: "[mM]in_component\\s*R\\s*\\(\\s*2\\s*,\\s*0\\s*\\)\\s*:\\s*5"
-  }
-
-
-]);
-
-;// CONCATENATED MODULE: ./src/tests/milestones/statistiques/minComponentG.js
-/* harmony default export */ const minComponentG = ([
-  {
-    feature: "min_component G",
-    name: "Min Component G of black 8x8",
-    description: "Get the min component of a black image",
-    type: "stdout",
-    input: ["input/N_8x8.bmp"],
-    options: ["-c", "min_component", "G"],
-    output: "[mM]in_component\\s*G\\s*\\(\\s*0\\s*,\\s*0\\s*\\)\\s*:\\s*0\\s*,\\s*0,\\s*0"
-  },
-  {
-    feature: "min_component G",
-    name: "Min Component G of white 8x8",
-    description: "Get the min component of a white image",
-    type: "stdout",
-    input: ["input/W_8x8.bmp"],
-    options: ["-c", "min_component", "G"],
-    output: "[mM]in_component\\s*G\\s*\\(\\s*0\\s*,\\s*0\\s*\\)\\s*:\\s*255\\s*,\\s*255,\\s*255"
-  },
-  {
-    feature: "min_component G",
-    name: "Min Component black ",
-    description: "Get the min component at 2 0 ",
-    type: "stdout",
-    input: ["input/minComponentG_2_0_5.bmp"],
-    options: ["-c", "min_component", "G"],
-    output: "[mM]in_component\\s*G\\s*\\(\\s*2\\s*,\\s*0\\s*\\)\\s*:\\s*5"
-  }
-
-
-]);
-
-;// CONCATENATED MODULE: ./src/tests/milestones/statistiques/minComponentB.js
-/* harmony default export */ const minComponentB = ([
-  {
-    feature: "min_component B",
-    name: "Min Component B of black 8x8",
-    description: "Get the min component of a black image",
-    type: "stdout",
-    input: ["input/N_8x8.bmp"],
-    options: ["-c", "min_component", "B"],
-    output: "[mM]in_component\\s*B\\s*\\(\\s*0\\s*,\\s*0\\s*\\)\\s*:\\s*0\\s*,\\s*0,\\s*0"
-  },
-  {
-    feature: "min_component B",
-    name: "Min Component B of white 8x8",
-    description: "Get the min component of a white image",
-    type: "stdout",
-    input: ["input/W_8x8.bmp"],
-    options: ["-c", "min_component", "B"],
-    output: "[mM]in_component\\s*B\\s*\\(\\s*0\\s*,\\s*0\\s*\\)\\s*:\\s*255\\s*,\\s*255,\\s*255"
-  },
-  {
-    feature: "min_component B",
-    name: "Min Component black ",
-    description: "Get the min component at 2 0 ",
-    type: "stdout",
-    input: ["input/minComponentB_2_0_5.bmp"],
-    options: ["-c", "min_component", "B"],
-    output: "[mM]in_component\\s*B\\s*\\(\\s*2\\s*,\\s*0\\s*\\)\\s*:\\s*5"
-  }
-
-
-]);
-
-;// CONCATENATED MODULE: ./src/tests/milestones/statistiques/maxComponentR.js
-/* harmony default export */ const maxComponentR = ([
-  {
-    feature: "max_component R",
-    name: "Max Component R of black 8x8",
-    description: "Get the max component of a black image",
-    type: "stdout",
-    input: ["input/N_8x8.bmp"],
-    options: ["-c", "max_component", "R"],
-    output: "[mM]ax_component\\s*R\\s*\\(\\s*0\\s*,\\s*0\\s*\\)\\s*:\\s*0\\s*,\\s*0,\\s*0"
-  },
-  {
-    feature: "max_component R",
-    name: "Max Component R of white 8x8",
-    description: "Get the max component of a white image",
-    type: "stdout",
-    input: ["input/W_8x8.bmp"],
-    options: ["-c", "max_component", "R"],
-    output: "[mM]ax_component\\s*R\\s*\\(\\s*0\\s*,\\s*0\\s*\\)\\s*:\\s*255\\s*,\\s*255,\\s*255"
-  },
-  {
-    feature: "max_component R",
-    name: "Max Component black ",
-    description: "Get the max component at 2 0 ",
-    type: "stdout",
-    input: ["input/maxComponentR_2_0_255.bmp"],
-    options: ["-c", "max_component", "R"],
-    output: "[mM]ax_component\\s*R\\s*\\(\\s*2\\s*,\\s*0\\s*\\)\\s*:\\s*255"
-  }
-
-
-]);
-
-;// CONCATENATED MODULE: ./src/tests/milestones/statistiques/maxComponentG.js
-/* harmony default export */ const maxComponentG = ([
-  {
-    feature: "max_component G",
-    name: "Max Component G of black 8x8",
-    description: "Get the max component of a black image",
-    type: "stdout",
-    input: ["input/N_8x8.bmp"],
-    options: ["-c", "max_component", "G"],
-    output: "[mM]ax_component\\s*G\\s*\\(\\s*0\\s*,\\s*0\\s*\\)\\s*:\\s*0\\s*,\\s*0,\\s*0"
-  },
-  {
-    feature: "max_component G",
-    name: "Max Component G of white 8x8",
-    description: "Get the max component of a white image",
-    type: "stdout",
-    input: ["input/W_8x8.bmp"],
-    options: ["-c", "max_component", "G"],
-    output: "[mM]ax_component\\s*G\\s*\\(\\s*0\\s*,\\s*0\\s*\\)\\s*:\\s*255\\s*,\\s*255,\\s*255"
-  },
-  {
-    feature: "max_component G",
-    name: "Max Component black ",
-    description: "Get the max component at 2 0 ",
-    type: "stdout",
-    input: ["input/maxComponentG_2_0_255.bmp"],
-    options: ["-c", "max_component", "G"],
-    output: "[mM]ax_component\\s*G\\s*\\(\\s*2\\s*,\\s*0\\s*\\)\\s*:\\s*255"
-  }
-
-
-]);
-
-;// CONCATENATED MODULE: ./src/tests/milestones/statistiques/maxComponentB.js
-/* harmony default export */ const maxComponentB = ([
-  {
-    feature: "max_component B",
-    name: "Max Component B of black 8x8",
-    description: "Get the max component of a black image",
-    type: "stdout",
-    input: ["input/N_8x8.bmp"],
-    options: ["-c", "max_component", "B"],
-    output: "[mM]ax_component\\s*B\\s*\\(\\s*0\\s*,\\s*0\\s*\\)\\s*:\\s*0\\s*,\\s*0,\\s*0"
-  },
-  {
-    feature: "max_component B",
-    name: "Max Component B of white 8x8",
-    description: "Get the max component of a white image",
-    type: "stdout",
-    input: ["input/W_8x8.bmp"],
-    options: ["-c", "max_component", "B"],
-    output: "[mM]ax_component\\s*B\\s*\\(\\s*0\\s*,\\s*0\\s*\\)\\s*:\\s*255\\s*,\\s*255,\\s*255"
-  },
-  {
-    feature: "max_component B",
-    name: "Max Component black ",
-    description: "Get the max component at 2 0 ",
-    type: "stdout",
-    input: ["input/maxComponentB_2_0_255.bmp"],
-    options: ["-c", "max_component", "B"],
-    output: "[mM]ax_component\\s*B\\s*\\(\\s*2\\s*,\\s*0\\s*\\)\\s*:\\s*255"
-  }
-
-
-]);
-
-;// CONCATENATED MODULE: ./src/tests/milestones/statistiques/index.js
-
-
-
-
-
-
-
-
-
-const statistiques = [...maxPixel, ...minPixel, ...minComponentR, ...minComponentG, ...minComponentB, ...maxComponentR, ...maxComponentG, ...maxComponentB];
-statistiques.forEach(e => (e.milestone = "statistiques"));
-/* harmony default export */ const milestones_statistiques = (statistiques);
-
-;// CONCATENATED MODULE: ./src/tests/milestones/colors/blue.js
-/* harmony default export */ const blue = ([
-  {
-    feature: "blue",
-    name: "Blue Identity",
-    description: "Test if working on an already blue image",
-    type: "image",
-    input: ["input/b_32x32.bmp"],
-    options: ["-c", "blue"],
-    expectedOutput: ["image_out.bmp"],
-    reference: ["input/b_32x32.bmp"]
-  }
-]);
-
-;// CONCATENATED MODULE: ./src/tests/milestones/colors/index.js
-
-const colors_statistiques = [ ...blue ];
-colors_statistiques.forEach( e=> e.milestone = "colors");
-/* harmony default export */ const colors = ((/* unused pure expression or super */ null && (colors_statistiques)));
-
 ;// CONCATENATED MODULE: ./src/tests/tests.js
-
-
-
 /* harmony default export */ const tests = ({
-  milestones : {
-    tutorial: milestones_tutorial,
-    statistiques: milestones_statistiques,
-  }
+  milestones: {
+    Tutorial: [
+      {
+        feature: "dimension",
+        name: "Dimension 64x64",
+        Difficulty: "1",
+        description: "Test if the dimension feature is working",
+        options: ["-c", "dimension"],
+        type: "stdout",
+        input: ["input/rgbw_64x64.bmp"],
+        output: "^\\s*[dD]imension\\s*:\\s*64,\\s*64\\s*$",
+        coordinates: "",
+        milestone: "Tutorial",
+      },
+      {
+        feature: "dimension",
+        name: "Dimension 1x1",
+        Difficulty: "3",
+        description:
+          "Test if the dimension feature is working for one by one files",
+        options: ["-c", "dimension"],
+        type: "stdout",
+        input: ["input/r_1x1.bmp"],
+        output: "^\\s*[dD]imension\\s*:\\s*1,\\s*1\\s*$",
+        coordinates: "",
+        milestone: "Tutorial",
+      },
+      {
+        feature: "dimension",
+        name: "Dimension 32x64",
+        Difficulty: "2",
+        description: "Test if the dimension feature is working",
+        options: ["-c", "dimension"],
+        type: "stdout",
+        input: ["input/rgbw_32x64.bmp"],
+        output: "^\\s*[dD]imension\\s*:\\s*32,\\s*64\\s*$",
+        coordinates: "",
+        milestone: "Tutorial",
+      },
+      {
+        feature: "dimension",
+        name: "Dimension 64x32",
+        Difficulty: "2",
+        description: "Test if the dimension feature is working",
+        options: ["-c", "dimension"],
+        type: "stdout",
+        input: ["input/rgbw_64x32.bmp"],
+        output: "^\\s*[dD]imension\\s*:\\s*64,\\s*32\\s*$",
+        coordinates: "",
+        milestone: "Tutorial",
+      },
+      {
+        feature: "first_pixel",
+        name: "First Pixel 64x64 : 255, 0, 0",
+        Difficulty: "1",
+        description: "Check first pixel on 64x64 : should be red",
+        options: ["-c", "first_pixel"],
+        type: "stdout",
+        input: ["input/rgbw_64x64.bmp"],
+        output: "^\\s*[fF]irst_[pP]ixel\\s*:\\s*255,\\s*0,\\s*0\\s*$",
+        coordinates: "",
+        milestone: "Tutorial",
+      },
+      {
+        feature: "first_pixel",
+        name: "First Pixel Red : 255, 0, 0",
+        Difficulty: "1",
+        description: "Check first pixel on 32x32 red image",
+        options: ["-c", "first_pixel"],
+        type: "stdout",
+        input: ["input/r_32x32.bmp"],
+        output: "^\\s*[fF]irst_[pP]ixel\\s*:\\s*255,\\s*0,\\s*0\\s*$",
+        coordinates: "",
+        milestone: "Tutorial",
+      },
+      {
+        feature: "first_pixel",
+        name: "First Pixel Green : 0, 255, 0",
+        Difficulty: "1",
+        description: "Check first pixel on 32x32 green image",
+        options: ["-c", "first_pixel"],
+        type: "stdout",
+        input: ["input/g_32x32.bmp"],
+        output: "^\\s*[fF]irst_[pP]ixel\\s*:\\s*0,\\s*255,\\s*0\\s*$",
+        coordinates: "",
+        milestone: "Tutorial",
+      },
+      {
+        feature: "first_pixel",
+        name: "First Pixel Blue : 0, 0, 255",
+        Difficulty: "1",
+        description: "Check first pixel on 32x32 blue image",
+        options: ["-c", "first_pixel"],
+        type: "stdout",
+        input: ["input/b_32x32.bmp"],
+        output: "^\\s*[fF]irst_[pP]ixel\\s*:\\s*0,\\s*0,\\s*255\\s*$",
+        coordinates: "",
+        milestone: "Tutorial",
+      },
+      {
+        feature: "first_pixel",
+        name: "First Pixel 1 2 3 : 1, 2, 3",
+        Difficulty: "3",
+        description: "Check first pixel on 8x8 image",
+        options: ["-c", "first_pixel"],
+        type: "stdout",
+        input: ["input/first_pixel_1_2_3_8x8.bmp"],
+        output: "^\\s*[fF]irst_[pP]ixel\\s*:\\s*1,\\s*2,\\s*3\\s*$",
+        coordinates: "",
+        milestone: "Tutorial",
+      },
+      {
+        feature: "tenth_pixel",
+        name: "Tenth Pixel 64x64 : 255, 0, 0",
+        Difficulty: "1",
+        description: "Check tenth pixel on 64x64 red image",
+        options: ["-c", "tenth_pixel"],
+        type: "stdout",
+        input: ["input/rgbw_64x64.bmp"],
+        output: "^\\s*[tT]enth_[pP]ixel\\s*:\\s*255,\\s*0,\\s*0\\s*$",
+        coordinates: "",
+        milestone: "Tutorial",
+      },
+      {
+        feature: "tenth_pixel",
+        name: "Tenth Pixel Red : 255, 0, 0",
+        Difficulty: "1",
+        description: "Check tenth pixel on 32x32 red image",
+        options: ["-c", "tenth_pixel"],
+        type: "stdout",
+        input: ["input/r_32x32.bmp"],
+        output: "^\\s*[tT]enth_[pP]ixel\\s*:\\s*255,\\s*0,\\s*0\\s*$",
+        coordinates: "",
+        milestone: "Tutorial",
+      },
+      {
+        feature: "tenth_pixel",
+        name: "Tenth Pixel Green : 0, 255, 0",
+        Difficulty: "1",
+        description: "Check tenth pixel on 32x32 green image",
+        options: ["-c", "tenth_pixel"],
+        type: "stdout",
+        input: ["input/g_32x32.bmp"],
+        output: "^\\s*[tT]enth_[pP]ixel\\s*:\\s*0,\\s*255,\\s*0\\s*$",
+        coordinates: "",
+        milestone: "Tutorial",
+      },
+      {
+        feature: "tenth_pixel",
+        name: "Tenth Pixel Blue : 0, 0, 255",
+        Difficulty: "1",
+        description: "Check tenth pixel on 32x32 blue image",
+        options: ["-c", "tenth_pixel"],
+        type: "stdout",
+        input: ["input/b_32x32.bmp"],
+        output: "^\\s*[tT]enth_[pP]ixel\\s*:\\s*0,\\s*0,\\s*255\\s*$",
+        coordinates: "",
+        milestone: "Tutorial",
+      },
+      {
+        feature: "tenth_pixel",
+        name: "Tenth Pixel 11 12 13 : 1, 2, 3",
+        Difficulty: "3",
+        description: "Check tenth pixel on 10x8 image",
+        options: ["-c", "tenth_pixel"],
+        type: "stdout",
+        input: ["input/tenth_pixel_11_12_13_10x8.bmp"],
+        output: "^\\s*[tT]enth_[pP]ixel\\s*:\\s*11,\\s*12,\\s*13\\s*$",
+        coordinates: "",
+        milestone: "Tutorial",
+      },
+      {
+        feature: "second_line",
+        name: "Second line First Pixel 64x64 : 255, 0, 0",
+        Difficulty: "1",
+        description:
+          "Check first pixel on the second line on 64x64 : should be red",
+        options: ["-c", "second_line"],
+        type: "stdout",
+        input: ["input/rgbw_64x64.bmp"],
+        output: "^\\s*[sS]econd_[lL]ine\\s*:\\s*255,\\s*0,\\s*0\\s*$",
+        coordinates: "",
+        milestone: "Tutorial",
+      },
+      {
+        feature: "second_line",
+        name: "Second line First Pixel Red : 255, 0, 0",
+        Difficulty: "1",
+        description: "Check first pixel on the second line on 32x32 red image",
+        options: ["-c", "second_line"],
+        type: "stdout",
+        input: ["input/r_32x32.bmp"],
+        output: "^\\s*[sS]econd_[lL]ine\\s*:\\s*255,\\s*0,\\s*0\\s*$",
+        coordinates: "",
+        milestone: "Tutorial",
+      },
+      {
+        feature: "second_line",
+        name: "Second line First Pixel Green : 0, 255, 0",
+        Difficulty: "1",
+        description:
+          "Check first pixel on the second line on 32x32 green image",
+        options: ["-c", "second_line"],
+        type: "stdout",
+        input: ["input/g_32x32.bmp"],
+        output: "^\\s*[sS]econd_[lL]ine\\s*:\\s*0,\\s*255,\\s*0\\s*$",
+        coordinates: "",
+        milestone: "Tutorial",
+      },
+      {
+        feature: "second_line",
+        name: "Second line First Pixel Blue : 0, 0, 255",
+        Difficulty: "1",
+        description: "Check first pixel on the second line on 32x32 blue image",
+        options: ["-c", "second_line"],
+        type: "stdout",
+        input: ["input/b_32x32.bmp"],
+        output: "^\\s*[sS]econd_[lL]ine\\s*:\\s*0,\\s*0,\\s*255\\s*$",
+        coordinates: "",
+        milestone: "Tutorial",
+      },
+      {
+        feature: "second_line",
+        name: "Second line First Pixel 21 22 23",
+        Difficulty: "3",
+        description: "Check first pixel on the second line on 8x8 image",
+        options: ["-c", "second_line"],
+        type: "stdout",
+        input: ["input/second_line_21_22_23_8x8.bmp"],
+        output: "^\\s*[sS]econd_[lL]ine\\s*:\\s*21,\\s*22,\\s*23\\s*$",
+        coordinates: "",
+        milestone: "Tutorial",
+      },
+      {
+        feature: "print_pixel",
+        name: "Print Pixel (0,0) : 0,0,0",
+        Difficulty: "3",
+        description: "Get the first pixel on 8x8 image",
+        options: ["-c", "print_pixel", "0", "0"],
+        type: "stdout",
+        input: ["input/get_pixel_x0_y0_n_8x8.bmp"],
+        output:
+          "^\\s*[pP]rint_[pP]ixel\\s*\\(\\s*0,\\s*0\\s*\\)\\s*:\\s*0,\\s*0,\\s*0\\s*$",
+        coordinates: ["0", "0"],
+        milestone: "Tutorial",
+      },
+      {
+        feature: "print_pixel",
+        name: "Print Pixel (2,3) : 20,30,26",
+        Difficulty: "3",
+        description: "Get the pixel of coordinate 2,3 on 8x8 image",
+        options: ["-c", "print_pixel", "2", "3"],
+        type: "stdout",
+        input: ["input/get_pixel_x0_y0_n_8x8.bmp"],
+        output:
+          "^\\s*[pP]rint_[pP]ixel\\s*\\(\\s*2,\\s*3\\s*\\)\\s*:\\s*20,\\s*30,\\s*26\\s*$",
+        coordinates: ["2", "3"],
+        milestone: "Tutorial",
+      },
+      {
+        feature: "print_pixel",
+        name: "Print Pixel (3,2) : 30,20,19",
+        Difficulty: "3",
+        description: "Get the pixel of coordinate 2,3 on 8x8 image",
+        options: ["-c", "print_pixel", "3", "2"],
+        type: "stdout",
+        input: ["input/get_pixel_x0_y0_n_8x8.bmp"],
+        output:
+          "^\\s*[pP]rint_[pP]ixel\\s*\\(\\s*3,\\s*2\\s*\\)\\s*:\\s*30,\\s*20,\\s*19\\s*$",
+        coordinates: ["3", "2"],
+        milestone: "Tutorial",
+      },
+      {
+        feature: "print_pixel",
+        name: "Print Pixel (7,7) : 0,0,0",
+        Difficulty: "3",
+        description: "Get the pixel of coordinate 7,7 on 8x8 image",
+        options: ["-c", "print_pixel", "7", "7"],
+        type: "stdout",
+        input: ["input/get_pixel_x0_y0_n_8x8.bmp"],
+        output:
+          "^\\s*[pP]rint_[pP]ixel\\s*\\(\\s*7,\\s*7\\s*\\)\\s*:\\s*70,\\s*70,\\s*63\\s*$",
+        coordinates: ["7", "7"],
+        milestone: "Tutorial",
+      },
+    ],
+    statistiques: [
+      {
+        feature: "max_pixel",
+        name: "Max Pixel black 8x8",
+        Difficulty: "1",
+        description: "Get the max pixel of a black image",
+        options: ["-c", "max_pixel"],
+        type: "stdout",
+        input: ["input/N_8x8.bmp"],
+        output:
+          "^\\s*[mM]ax_[pP]ixel\\s*\\(\\s*0,\\s*0\\s*\\)\\s*:\\s*0,\\s*0,\\s*0\\s*$",
+        coordinates: ["0", "0"],
+        milestone: "statistiques",
+      },
+      {
+        feature: "max_pixel",
+        name: "Max Pixel white 8x8",
+        Difficulty: "1",
+        description: "Get the max pixel of a white image",
+        options: ["-c", "max_pixel"],
+        type: "stdout",
+        input: ["input/W_8x8.bmp"],
+        output:
+          "^\\s*[mM]ax_[pP]ixel\\s*\\(\\s*0,\\s*0\\s*\\)\\s*:\\s*255,\\s*255,\\s*255\\s*$",
+        coordinates: ["0", "0"],
+        milestone: "statistiques",
+      },
+      {
+        feature: "max_pixel",
+        name: "Max Pixel at 6 5",
+        Difficulty: "2",
+        description: "Get the max pixel at 6 5",
+        options: ["-c", "max_pixel"],
+        type: "stdout",
+        input: ["input/maxPixel_6_5_60_50_100_8x8.bmp"],
+        output:
+          "^\\s*[mM]ax_[pP]ixel\\s*\\(\\s*6,\\s*5\\s*\\)\\s*:\\s*60,\\s*50,\\s*100\\s*$",
+        coordinates: ["6", "5"],
+        milestone: "statistiques",
+      },
+      {
+        feature: "max_pixel",
+        name: "Max Pixel at 3 4",
+        Difficulty: "3",
+        description: "Get the max pixel at 3 4",
+        options: ["-c", "max_pixel"],
+        type: "stdout",
+        input: ["input/maxPixel_3_4_30_40_130_8x8.bmp"],
+        output:
+          "^\\s*[mM]ax_[pP]ixel\\s*\\(\\s*3,\\s*4\\s*\\)\\s*:\\s*30,\\s*40,\\s*130\\s*$",
+        coordinates: ["3", "4"],
+        milestone: "statistiques",
+      },
+      {
+        feature: "min_pixel",
+        name: "Max Pixel black 8x8",
+        Difficulty: "1",
+        description: "Get the min pixel of a black image",
+        options: ["-c", "min_pixel"],
+        type: "stdout",
+        input: ["input/N_8x8.bmp"],
+        output:
+          "^\\s*[mM]in_[pP]ixel\\s*\\(\\s*0,\\s*0\\s*\\)\\s*:\\s*0,\\s*0,\\s*0\\s*$",
+        coordinates: ["0", "0"],
+        milestone: "statistiques",
+      },
+      {
+        feature: "min_pixel",
+        name: "Max Pixel white 8x8",
+        Difficulty: "1",
+        description: "Get the min pixel of a white image",
+        options: ["-c", "min_pixel"],
+        type: "stdout",
+        input: ["input/W_8x8.bmp"],
+        output:
+          "^\\s*[mM]in_[pP]ixel\\s*\\(\\s*0,\\s*0\\s*\\)\\s*:\\s*255,\\s*255,\\s*255\\s*$",
+        coordinates: ["0", "0"],
+        milestone: "statistiques",
+      },
+      {
+        feature: "min_pixel",
+        name: "Max Pixel at 6 5",
+        Difficulty: "2",
+        description: "Get the min pixel at 6 5",
+        options: ["-c", "min_pixel"],
+        type: "stdout",
+        input: ["input/minPixel_6_5_60_50_100_8x8.bmp"],
+        output:
+          "^\\s*[mM]in_[pP]ixel\\s*\\(\\s*6,\\s*5\\s*\\)\\s*:\\s*60,\\s*50,\\s*100\\s*$",
+        coordinates: ["6", "5"],
+        milestone: "statistiques",
+      },
+      {
+        feature: "min_pixel",
+        name: "Max Pixel at 3 4",
+        Difficulty: "3",
+        description: "Get the min pixel at 3 4",
+        options: ["-c", "min_pixel"],
+        type: "stdout",
+        input: ["input/minPixel_3_4_30_40_140_8x8.bmp"],
+        output:
+          "^\\s*[mM]in_[pP]ixel\\s*\\(\\s*3,\\s*4\\s*\\)\\s*:\\s*30,\\s*40,\\s*140\\s*$",
+        coordinates: ["3", "4"],
+        milestone: "statistiques",
+      },
+      {
+        feature: "min_component R",
+        name: "Min Component R of black 8x8",
+        Difficulty: "1",
+        description: "Get the min component of a black image",
+        options: ["-c", "min_component", "R"],
+        type: "stdout",
+        input: ["input/N_8x8.bmp"],
+        output:
+          "^\\s*[mM]in_[cC]omponent\\s*R\\s*\\(\\s*0,\\s*0\\s*\\)\\s*:\\s*0\\s*$",
+        coordinates: ["0", "0"],
+        milestone: "statistiques",
+      },
+      {
+        feature: "min_component R",
+        name: "Min Component R of white 8x8",
+        Difficulty: "1",
+        description: "Get the min component of a white image",
+        options: ["-c", "min_component", "R"],
+        type: "stdout",
+        input: ["input/W_8x8.bmp"],
+        output:
+          "^\\s*[mM]in_[cC]omponent\\s*R\\s*\\(\\s*0,\\s*0\\s*\\)\\s*:\\s*255\\s*$",
+        coordinates: ["0", "0"],
+        milestone: "statistiques",
+      },
+      {
+        feature: "min_component R",
+        name: "Min Component 2 0 255 ",
+        Difficulty: "3",
+        description: "Get the min component at 2 0",
+        options: ["-c", "min_component", "R"],
+        type: "stdout",
+        input: ["input/minComponentR_2_0_5.bmp"],
+        output:
+          "^\\s*[mM]in_[cC]omponent\\s*R\\s*\\(\\s*2,\\s*0\\s*\\)\\s*:\\s*5\\s*$",
+        coordinates: ["2", "0"],
+        milestone: "statistiques",
+      },
+      {
+        feature: "min_component G",
+        name: "Min Component G of black 8x8",
+        Difficulty: "1",
+        description: "Get the min component of a black image",
+        options: ["-c", "min_component", "G"],
+        type: "stdout",
+        input: ["input/N_8x8.bmp"],
+        output:
+          "^\\s*[mM]in_[cC]omponent\\s*G\\s*\\(\\s*0,\\s*0\\s*\\)\\s*:\\s*0\\s*$",
+        coordinates: ["0", "0"],
+        milestone: "statistiques",
+      },
+      {
+        feature: "min_component G",
+        name: "Min Component G of white 8x8",
+        Difficulty: "1",
+        description: "Get the min component of a white image",
+        options: ["-c", "min_component", "G"],
+        type: "stdout",
+        input: ["input/W_8x8.bmp"],
+        output:
+          "^\\s*[mM]in_[cC]omponent\\s*G\\s*\\(\\s*0,\\s*0\\s*\\)\\s*:\\s*255\\s*$",
+        coordinates: ["0", "0"],
+        milestone: "statistiques",
+      },
+      {
+        feature: "min_component G",
+        name: "Min Component 2 0 255 ",
+        Difficulty: "3",
+        description: "Get the min component at 2 0",
+        options: ["-c", "min_component", "G"],
+        type: "stdout",
+        input: ["input/minComponentG_2_0_5.bmp"],
+        output:
+          "^\\s*[mM]in_[cC]omponent\\s*G\\s*\\(\\s*2,\\s*0\\s*\\)\\s*:\\s*5\\s*$",
+        coordinates: ["2", "0"],
+        milestone: "statistiques",
+      },
+      {
+        feature: "min_component B",
+        name: "Min Component B of black 8x8",
+        Difficulty: "1",
+        description: "Get the min component of a black image",
+        options: ["-c", "min_component", "B"],
+        type: "stdout",
+        input: ["input/N_8x8.bmp"],
+        output:
+          "^\\s*[mM]in_[cC]omponent\\s*B\\s*\\(\\s*0,\\s*0\\s*\\)\\s*:\\s*0\\s*$",
+        coordinates: ["0", "0"],
+        milestone: "statistiques",
+      },
+      {
+        feature: "min_component B",
+        name: "Min Component B of white 8x8",
+        Difficulty: "1",
+        description: "Get the min component of a white image",
+        options: ["-c", "min_component", "B"],
+        type: "stdout",
+        input: ["input/W_8x8.bmp"],
+        output:
+          "^\\s*[mM]in_[cC]omponent\\s*B\\s*\\(\\s*0,\\s*0\\s*\\)\\s*:\\s*255\\s*$",
+        coordinates: ["0", "0"],
+        milestone: "statistiques",
+      },
+      {
+        feature: "min_component B",
+        name: "Min Component 2 0 255 ",
+        Difficulty: "3",
+        description: "Get the min component at 2 0",
+        options: ["-c", "min_component", "B"],
+        type: "stdout",
+        input: ["input/minComponentB_2_0_5.bmp"],
+        output:
+          "^\\s*[mM]in_[cC]omponent\\s*B\\s*\\(\\s*2,\\s*0\\s*\\)\\s*:\\s*5\\s*$",
+        coordinates: ["2", "0"],
+        milestone: "statistiques",
+      },
+      {
+        feature: "max_component R",
+        name: "Max Component R of black 8x8",
+        Difficulty: "1",
+        description: "Get the max component of a black image",
+        options: ["-c", "max_component", "R"],
+        type: "stdout",
+        input: ["input/N_8x8.bmp"],
+        output:
+          "^\\s*[mM]ax_[cC]omponent\\s*R\\s*\\(\\s*0,\\s*0\\s*\\)\\s*:\\s*0\\s*$",
+        coordinates: ["0", "0"],
+        milestone: "statistiques",
+      },
+      {
+        feature: "max_component R",
+        name: "Max Component R of white 8x8",
+        Difficulty: "1",
+        description: "Get the max component of a white image",
+        options: ["-c", "max_component", "R"],
+        type: "stdout",
+        input: ["input/W_8x8.bmp"],
+        output:
+          "^\\s*[mM]ax_[cC]omponent\\s*R\\s*\\(\\s*0,\\s*0\\s*\\)\\s*:\\s*255\\s*$",
+        coordinates: ["0", "0"],
+        milestone: "statistiques",
+      },
+      {
+        feature: "max_component R",
+        name: "Max Component 2 0 255 ",
+        Difficulty: "3",
+        description: "Get the max component at 2 0",
+        options: ["-c", "max_component", "R"],
+        type: "stdout",
+        input: ["input/maxComponentR_2_0_255.bmp"],
+        output:
+          "^\\s*[mM]ax_[cC]omponent\\s*R\\s*\\(\\s*2,\\s*0\\s*\\)\\s*:\\s*5\\s*$",
+        coordinates: ["2", "0"],
+        milestone: "statistiques",
+      },
+      {
+        feature: "max_component G",
+        name: "Max Component G of black 8x8",
+        Difficulty: "1",
+        description: "Get the max component of a black image",
+        options: ["-c", "max_component", "G"],
+        type: "stdout",
+        input: ["input/N_8x8.bmp"],
+        output:
+          "^\\s*[mM]ax_[cC]omponent\\s*G\\s*\\(\\s*0,\\s*0\\s*\\)\\s*:\\s*0\\s*$",
+        coordinates: ["0", "0"],
+        milestone: "statistiques",
+      },
+      {
+        feature: "max_component G",
+        name: "Max Component G of white 8x8",
+        Difficulty: "1",
+        description: "Get the max component of a white image",
+        options: ["-c", "max_component", "G"],
+        type: "stdout",
+        input: ["input/W_8x8.bmp"],
+        output:
+          "^\\s*[mM]ax_[cC]omponent\\s*G\\s*\\(\\s*0,\\s*0\\s*\\)\\s*:\\s*255\\s*$",
+        coordinates: ["0", "0"],
+        milestone: "statistiques",
+      },
+      {
+        feature: "max_component G",
+        name: "Max Component 2 0 255 ",
+        Difficulty: "3",
+        description: "Get the max component at 2 0",
+        options: ["-c", "max_component", "G"],
+        type: "stdout",
+        input: ["input/maxComponentG_2_0_255.bmp"],
+        output:
+          "^\\s*[mM]ax_[cC]omponent\\s*G\\s*\\(\\s*2,\\s*0\\s*\\)\\s*:\\s*5\\s*$",
+        coordinates: ["2", "0"],
+        milestone: "statistiques",
+      },
+      {
+        feature: "max_component B",
+        name: "Max Component B of black 8x8",
+        Difficulty: "1",
+        description: "Get the max component of a black image",
+        options: ["-c", "max_component", "B"],
+        type: "stdout",
+        input: ["input/N_8x8.bmp"],
+        output:
+          "^\\s*[mM]ax_[cC]omponent\\s*B\\s*\\(\\s*0,\\s*0\\s*\\)\\s*:\\s*0\\s*$",
+        coordinates: ["0", "0"],
+        milestone: "statistiques",
+      },
+      {
+        feature: "max_component B",
+        name: "Max Component B of white 8x8",
+        Difficulty: "1",
+        description: "Get the max component of a white image",
+        options: ["-c", "max_component", "B"],
+        type: "stdout",
+        input: ["input/W_8x8.bmp"],
+        output:
+          "^\\s*[mM]ax_[cC]omponent\\s*B\\s*\\(\\s*0,\\s*0\\s*\\)\\s*:\\s*255\\s*$",
+        coordinates: ["0", "0"],
+        milestone: "statistiques",
+      },
+      {
+        feature: "max_component B",
+        name: "Max Component 2 0 255 ",
+        Difficulty: "3",
+        description: "Get the max component at 2 0",
+        options: ["-c", "max_component", "B"],
+        type: "stdout",
+        input: ["input/maxComponentB_2_0_255.bmp"],
+        output:
+          "^\\s*[mM]ax_[cC]omponent\\s*B\\s*\\(\\s*2,\\s*0\\s*\\)\\s*:\\s*5\\s*$",
+        coordinates: ["2", "0"],
+        milestone: "statistiques",
+      },
+    ],
+    colors: [
+      {
+        feature: "color_red",
+        name: "Convert red image to RED",
+        Difficulty: "1",
+        description: "Test if working on an  red Image ",
+        options: ["-c", "color_red"],
+        type: "image",
+        input: ["input/r_8x8.bmp"],
+        output: ["input/r_8x8.bmp"],
+        coordinates: "",
+        milestone: "colors",
+      },
+      {
+        feature: "color_red",
+        name: "Convert blue image to RED",
+        Difficulty: "1",
+        description: "Test if working on an  blue Image ",
+        options: ["-c", "color_red"],
+        type: "image",
+        input: ["input/b_8x8.bmp"],
+        output: ["input/N_8x8.bmp"],
+        coordinates: "",
+        milestone: "colors",
+      },
+      {
+        feature: "color_red",
+        name: "Convert green Image to RED",
+        Difficulty: "1",
+        description: "Test if working on an  green Image ",
+        options: ["-c", "color_red"],
+        type: "image",
+        input: ["input/g_8x8.bmp"],
+        output: ["input/N_8x8.bmp"],
+        coordinates: "",
+        milestone: "colors",
+      },
+      {
+        feature: "color_red",
+        name: "Convert white Image to RED",
+        Difficulty: "1",
+        description: "Test if working on an  white Image ",
+        options: ["-c", "color_red"],
+        type: "image",
+        input: ["input/W_8x8.bmp"],
+        output: ["input/r_8x8.bmp"],
+        coordinates: "",
+        milestone: "colors",
+      },
+      {
+        feature: "color_red",
+        name: "convert black Image to RED",
+        Difficulty: "1",
+        description: "Test if working on an  black Image ",
+        options: ["-c", "color_red"],
+        type: "image",
+        input: ["input/N_8x8.bmp"],
+        output: ["input/N_8x8.bmp"],
+        coordinates: "",
+        milestone: "colors",
+      },
+      {
+        feature: "color_blue",
+        name: "Convert red image to BLUE",
+        Difficulty: "1",
+        description: "Test if working on an  red Image ",
+        options: ["-c", "color_blue"],
+        type: "image",
+        input: ["input/r_8x8.bmp"],
+        output: ["input/N_8x8.bmp"],
+        coordinates: "",
+        milestone: "colors",
+      },
+      {
+        feature: "color_blue",
+        name: "Convert blue image to BLUE",
+        Difficulty: "1",
+        description: "Test if working on an  blue Image ",
+        options: ["-c", "color_blue"],
+        type: "image",
+        input: ["input/b_8x8.bmp"],
+        output: ["input/b_8x8.bmp"],
+        coordinates: "",
+        milestone: "colors",
+      },
+      {
+        feature: "color_blue",
+        name: "Convert green Image to BLUE",
+        Difficulty: "1",
+        description: "Test if working on an  green Image ",
+        options: ["-c", "color_blue"],
+        type: "image",
+        input: ["input/g_8x8.bmp"],
+        output: ["input/N_8x8.bmp"],
+        coordinates: "",
+        milestone: "colors",
+      },
+      {
+        feature: "color_blue",
+        name: "Convert white Image to BLUE",
+        Difficulty: "1",
+        description: "Test if working on an  white Image ",
+        options: ["-c", "color_blue"],
+        type: "image",
+        input: ["input/W_8x8.bmp"],
+        output: ["input/b_8x8.bmp"],
+        coordinates: "",
+        milestone: "colors",
+      },
+      {
+        feature: "color_blue",
+        name: "convert black Image to BLUE",
+        Difficulty: "1",
+        description: "Test if working on an  black Image ",
+        options: ["-c", "color_blue"],
+        type: "image",
+        input: ["input/N_8x8.bmp"],
+        output: ["input/N_8x8.bmp"],
+        coordinates: "",
+        milestone: "colors",
+      },
+      {
+        feature: "color_green",
+        name: "Convert red image to GREEN",
+        Difficulty: "1",
+        description: "Test if working on an  red Image ",
+        options: ["-c", "color_green"],
+        type: "image",
+        input: ["input/r_8x8.bmp"],
+        output: ["input/N_8x8.bmp"],
+        coordinates: "",
+        milestone: "colors",
+      },
+      {
+        feature: "color_green",
+        name: "Convert blue image to GREEN",
+        Difficulty: "1",
+        description: "Test if working on an  blue Image ",
+        options: ["-c", "color_green"],
+        type: "image",
+        input: ["input/b_8x8.bmp"],
+        output: ["input/N_8x8.bmp"],
+        coordinates: "",
+        milestone: "colors",
+      },
+      {
+        feature: "color_green",
+        name: "Convert green Image to GREEN",
+        Difficulty: "1",
+        description: "Test if working on an  green Image ",
+        options: ["-c", "color_green"],
+        type: "image",
+        input: ["input/g_8x8.bmp"],
+        output: ["input/g_8x8.bmp"],
+        coordinates: "",
+        milestone: "colors",
+      },
+      {
+        feature: "color_green",
+        name: "Convert white Image to GREEN",
+        Difficulty: "1",
+        description: "Test if working on an  white Image ",
+        options: ["-c", "color_green"],
+        type: "image",
+        input: ["input/W_8x8.bmp"],
+        output: ["input/g_8x8.bmp"],
+        coordinates: "",
+        milestone: "colors",
+      },
+      {
+        feature: "color_green",
+        name: "convert black Image to GREEN",
+        Difficulty: "1",
+        description: "Test if working on an  black Image ",
+        options: ["-c", "color_green"],
+        type: "image",
+        input: ["input/N_8x8.bmp"],
+        output: ["input/N_8x8.bmp"],
+        coordinates: "",
+        milestone: "colors",
+      },
+    ],
+  },
 });
 
 ;// CONCATENATED MODULE: ./src/init.js
@@ -4706,7 +4967,7 @@ async function loadTest() {
     `Loaded ${Object.values(tests.milestones).flat().length} tests`
   );
   core.endGroup();
-  return tests ;
+  return tests;
 }
 
 ;// CONCATENATED MODULE: ./src/grader.js
@@ -4715,20 +4976,21 @@ async function loadTest() {
 function evalTest(test) {
   if (test.type === "stdout") {
     test.score = RegExp(test.output).test(test.stdout) ? 1 : 0;
-  } else if ( test.type === "image") {
-    test.score = (+RegExp(/(?<score>\d+)/).exec(test.image_comparator)?.groups.score)/100 ;
-    test.score = isNaN(test.score)?0:test.score ;
-  }else {
+  } else if (test.type === "image") {
+    test.score =
+      +RegExp(/(?<score>\d+)/).exec(test.image_comparator)?.groups.score / 100;
+    test.score = isNaN(test.score) ? 0 : test.score;
+  } else {
     test.score = 0;
   }
   return test;
 }
 
-function computeScore( testsObject ) {
+function computeScore(testsObject) {
   const tests = Object.values(testsObject.milestones).flat();
-  tests.forEach(test => evalTest(test));
+  tests.forEach((test) => evalTest(test));
   core.startGroup("tests results");
-  tests.forEach(test => core.info(`Feature ${test.name} : ${test.score}`));
+  tests.forEach((test) => core.info(`Feature ${test.name} : ${test.score}`));
   core.endGroup();
   core.startGroup("Feature grading");
   Object.entries(
@@ -4739,7 +5001,11 @@ function computeScore( testsObject ) {
   ).forEach(([feature, score]) => core.info(`Feature ${feature} : ${score}`));
   core.endGroup();
 
-  return tests.reduce((accumlateur, test) => accumlateur + test.score, 0) + "/" + tests.length ;
+  return (
+    tests.reduce((accumlateur, test) => accumlateur + test.score, 0) +
+    "/" +
+    tests.length
+  );
 }
 
 ;// CONCATENATED MODULE: external "fs/promises"
@@ -4942,11 +5208,11 @@ async function logSummary(markdown, timestamp) {
 
 function computeSummary(testsObject) {
   const resultat = {};
-  testsObjectToArray(testsObject).forEach(test => {
+  testsObjectToArray(testsObject).forEach((test) => {
     resultat[test.milestone] = resultat[test.milestone] ?? {
       score: 0,
       count: 0,
-      features: []
+      features: [],
     };
     resultat[test.milestone].features[test.feature] = resultat[test.milestone]
       .features[test.feature] ?? {
@@ -4954,7 +5220,7 @@ function computeSummary(testsObject) {
       score: 0,
       count: 0,
       missedTest: [],
-      missedTestOut: []
+      missedTestOut: [],
     };
     const feature = resultat[test.milestone].features[test.feature];
     // Count the test for the milestone
@@ -4980,13 +5246,13 @@ function createMarkdownOutput(resultat) {
     )}%\n`;
     markdown += `## Detail by Feature\n`;
     markdown += tablemark_dist(
-      Object.values(data.features).map(feature => ({
+      Object.values(data.features).map((feature) => ({
         Feature: feature.feature,
         score: `${feature.score}/${feature.count} :  ${Math.floor(
-          (100 * data.score) / data.count
+          (100 * feature.score) / feature.count
         )}%`,
         "missed tests": feature.missedTest.join("<br>").trim(),
-        "stdout": feature.missedTestOut.join("<br>").trim()
+        stdout: feature.missedTestOut.join("<br>").trim(),
       }))
     );
     markdown += "\n";
@@ -5018,15 +5284,12 @@ async function run() {
       buildDirectory: (0,external_path_.resolve)(buildDirectory),
       executablePath: executablePath,
       testPath: (0,external_path_.resolve)(testsDirectory),
-      comparatorPath:  (0,external_path_.resolve)(comparatorPath)
-    }
+      comparatorPath: (0,external_path_.resolve)(comparatorPath),
+    };
     await testFreudVersion(config.executablePath);
-    await testComparator(config) ;
+    await testComparator(config);
     const testsObject = await loadTest();
-    await runTestInParallel(
-      config,
-      testsObject
-    );
+    await runTestInParallel(config, testsObject);
     const score = computeScore(testsObject);
     core.setOutput("grade", score);
 
