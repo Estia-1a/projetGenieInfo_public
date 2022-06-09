@@ -1,4 +1,4 @@
- /**
+/**
  * Same as Promise.all(items.map(item => task(item))), but it waits for
  * the first {batchSize} promises to finish before starting the next batch.
  * https://stackoverflow.com/questions/37213316/execute-batch-of-promises-in-series-once-promise-all-is-done-go-to-the-next-bat
@@ -11,12 +11,15 @@
  * @returns {B[]}
  */
 export default async function batchPromise(task, items, batchSize) {
-    let position = 0;
-    let results = [];
-    while (position < items.length) {
-        const itemsForBatch = items.slice(position, position + batchSize);
-        results = [...results, ...await Promise.all(itemsForBatch.map(item => task(item)))];
-        position += batchSize;
-    }
-    return results;
+  let position = 0;
+  let results = [];
+  while (position < items.length) {
+    const itemsForBatch = items.slice(position, position + batchSize);
+    results = [
+      ...results,
+      ...(await Promise.all(itemsForBatch.map((item) => task(item)))),
+    ];
+    position += batchSize;
+  }
+  return results;
 }

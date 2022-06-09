@@ -11,7 +11,7 @@ beforeEach(() => {
   const doc = yaml.load(
     fs.readFileSync(__dirname + "/action.test.yml", "utf8")
   );
-  Object.keys(doc.inputs).forEach(name => {
+  Object.keys(doc.inputs).forEach((name) => {
     const envVar = `INPUT_${name.replace(/ /g, "_").toUpperCase()}`;
     process.env[envVar] = doc.inputs[name]["default"];
   });
@@ -21,7 +21,7 @@ afterEach(() => {
   const doc = yaml.load(
     fs.readFileSync(__dirname + "/action.test.yml", "utf8")
   );
-  Object.keys(doc.inputs).forEach(name => {
+  Object.keys(doc.inputs).forEach((name) => {
     const envVar = `INPUT_${name.replace(/ /g, "_").toUpperCase()}`;
     delete process.env[envVar];
   });
@@ -35,8 +35,8 @@ test("load test files", () => {
 
 test("batchPromises", async () => {
   const data = await batchPromises(
-    e => {
-      return new Promise(res => setTimeout(() => res(e), e));
+    (e) => {
+      return new Promise((res) => setTimeout(() => res(e), e));
     },
     Array(10)
       .fill(1)

@@ -33,11 +33,11 @@ async function logSummary(markdown, timestamp) {
 
 function computeSummary(testsObject) {
   const resultat = {};
-  testsObjectToArray(testsObject).forEach(test => {
+  testsObjectToArray(testsObject).forEach((test) => {
     resultat[test.milestone] = resultat[test.milestone] ?? {
       score: 0,
       count: 0,
-      features: []
+      features: [],
     };
     resultat[test.milestone].features[test.feature] = resultat[test.milestone]
       .features[test.feature] ?? {
@@ -45,7 +45,7 @@ function computeSummary(testsObject) {
       score: 0,
       count: 0,
       missedTest: [],
-      missedTestOut: []
+      missedTestOut: [],
     };
     const feature = resultat[test.milestone].features[test.feature];
     // Count the test for the milestone
@@ -71,13 +71,13 @@ function createMarkdownOutput(resultat) {
     )}%\n`;
     markdown += `## Detail by Feature\n`;
     markdown += tablemark(
-      Object.values(data.features).map(feature => ({
+      Object.values(data.features).map((feature) => ({
         Feature: feature.feature,
         score: `${feature.score}/${feature.count} :  ${Math.floor(
-          (100 * data.score) / data.count
+          (100 * feature.score) / feature.count
         )}%`,
         "missed tests": feature.missedTest.join("<br>").trim(),
-        "stdout": feature.missedTestOut.join("<br>").trim()
+        stdout: feature.missedTestOut.join("<br>").trim(),
       }))
     );
     markdown += "\n";

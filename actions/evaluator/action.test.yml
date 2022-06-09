@@ -1,29 +1,29 @@
-name: 'Wait'
-description: 'Wait a designated number of milliseconds'
+name: "Wait"
+description: "Wait a designated number of milliseconds"
 inputs:
-  buildDirectory:  # id of input
-    description: 'build directory where to find the exec'
+  buildDirectory: # id of input
+    description: "build directory where to find the exec"
     required: true
-    default: '/Users/dimitri/Documents/workspace/enseignement/2022/1a/GenieInfo/Projet/projetGenieInfo_prof/build'
-  testsDirectory:  # id of input
-    description: 'where to find the test files,'
+    default: "/Users/dimitri/Documents/workspace/enseignement/2022/1a/GenieInfo/Projet/projetGenieInfo_prof/build"
+  testsDirectory: # id of input
+    description: "where to find the test files,"
     required: true
-    default: '/Users/dimitri/Documents/workspace/enseignement/2022/1a/GenieInfo/Projet/projetGenieInfo_prof/images/'
-  entryPoint:  # id of input
-    description: 'name of the json file for all the test'
+    default: "/Users/dimitri/Documents/workspace/enseignement/2022/1a/GenieInfo/Projet/projetGenieInfo_prof/images/"
+  entryPoint: # id of input
+    description: "name of the json file for all the test"
     required: true
-    default: 'test.json'
-  executableName:  # id of input
-    description: 'executable name'
+    default: "test.json"
+  executableName: # id of input
+    description: "executable name"
     required: true
-    default: 'freud'
+    default: "freud"
   comparatorPath:
     description: "path and name of the comparator"
     required: true
-    default: '/Users/dimitri/Documents/workspace/enseignement/2022/1a/GenieInfo/Projet/ProjetGenieInfo_public/image-comparator/dist/image-comparator'
+    default: "/Users/dimitri/Documents/workspace/enseignement/2022/1a/GenieInfo/Projet/ProjetGenieInfo_public/image-comparator/dist/image-comparator"
 outputs:
   grade: # output will be available to future steps
-    description: 'The final grade'
+    description: "The final grade"
 runs:
-  using: 'node16'
-  main: 'dist/index.js'
+  using: "node16"
+  main: "dist/index.js"

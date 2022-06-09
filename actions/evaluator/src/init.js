@@ -8,5 +8,5 @@ export async function loadTest() {
     `Loaded ${Object.values(testsObject.milestones).flat().length} tests`
   );
   core.endGroup();
-  return testsObject ;
+  return testsObject;
 }
