@@ -14,6 +14,7 @@ export async function printReport(testsObject) {
   const markdown = createMarkdownOutput(resultat);
   await logSummary(markdown, timestamp);
   console.table(resultat);
+
   core.setOutput("date", dateString());
   core.setOutput("markdown", markdown);
   core.endGroup();
