@@ -138,16 +138,18 @@ def main(argv):
                 time.sleep(0.1)
 
 
-    
-    # write and add file
-    print("creating .github/issues.json file")
-    try:
-        contents = repo_target.get_contents(".github/issues.json", ref="main")
-        repo_target.update_file(path=contents.path, content=str(dico), message="Updating issue mapping", sha=contents.sha, branch="main")
-    except:
-        repo_target.create_file(path = ".github/issues.json", content = str(dico), message="Creating issue mapping.", branch="main")
+    if created_issues > 0:
+        # write and add/update file
+        print("creating .github/issues.json file")
+        try:
+            contents = repo_target.get_contents(".github/issues.json", ref="main")
+            repo_target.update_file(path=contents.path, content=str(dico), message="Updating issue mapping", sha=contents.sha, branch="main")
+        except:
+            repo_target.create_file(path = ".github/issues.json", content = str(dico), message="Creating issue mapping.", branch="main")
 
-    print(str(created_issues) + "/" + str(len(dico)) + " issues created and mapped.")
+        print(str(created_issues) + "/" + str(len(dico)) + " issues created and mapped.")
+
+
     return
 
 
