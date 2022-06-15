@@ -18,48 +18,83 @@ second_line,"Second line First Pixel Red : 255, 0, 0",1,Check first pixel on the
 second_line,"Second line First Pixel Green : 0, 255, 0",1,Check first pixel on the second line on 32x32 green image,,stdout,g_32x32.bmp,0 255 0,,Tutorial
 second_line,"Second line First Pixel Blue : 0, 0, 255",1,Check first pixel on the second line on 32x32 blue image,,stdout,b_32x32.bmp,0 0 255,,Tutorial
 second_line,Second line First Pixel 21 22 23,3,Check first pixel on the second line on 8x8 image,,stdout,second_line_21_22_23_8x8.bmp,21 22 23,,Tutorial
-print_pixel,"Print Pixel (0,0) : 0,0,0",3,Get the first pixel on 8x8 image,0 0,stdout,get_pixel_x0_y0_n_8x8.bmp,0 0 0,0 0,Tutorial
-print_pixel,"Print Pixel (2,3) : 20,30,26",3,"Get the pixel of coordinate 2,3 on 8x8 image",2 3,stdout,get_pixel_x0_y0_n_8x8.bmp,20 30 26,2 3,Tutorial
-print_pixel,"Print Pixel (3,2) : 30,20,19",3,"Get the pixel of coordinate 2,3 on 8x8 image",3 2,stdout,get_pixel_x0_y0_n_8x8.bmp,30 20 19,3 2,Tutorial
-print_pixel,"Print Pixel (7,7) : 0,0,0",3,"Get the pixel of coordinate 7,7 on 8x8 image",7 7,stdout,get_pixel_x0_y0_n_8x8.bmp,70 70 63,7 7,Tutorial
-max_pixel,Max Pixel black 8x8,1,Get the max pixel of a black image,,stdout,N_8x8.bmp,0 0 0,0 0,statistiques
-max_pixel,Max Pixel white 8x8,1,Get the max pixel of a white image,,stdout,W_8x8.bmp,255 255 255,0 0,statistiques
+print_pixel,"Print Pixel (0,0) : 0,0,0",3,Get the first pixel on 8x8 image,0 0,stdout,get_pixel_x0_y0_black_8x8.bmp,0 0 0,0 0,Tutorial
+print_pixel,"Print Pixel (2,3) : 20,30,26",3,"Get the pixel of coordinate 2,3 on 8x8 image",2 3,stdout,get_pixel_x0_y0_black_8x8.bmp,20 30 26,2 3,Tutorial
+print_pixel,"Print Pixel (3,2) : 30,20,19",3,"Get the pixel of coordinate 2,3 on 8x8 image",3 2,stdout,get_pixel_x0_y0_black_8x8.bmp,30 20 19,3 2,Tutorial
+print_pixel,"Print Pixel (7,7) : 0,0,0",3,"Get the pixel of coordinate 7,7 on 8x8 image",7 7,stdout,get_pixel_x0_y0_black_8x8.bmp,70 70 63,7 7,Tutorial
+max_pixel,Max Pixel black 8x8,1,Get the max pixel of a black image,,stdout,Black_8x8.bmp,0 0 0,0 0,statistiques
+max_pixel,Max Pixel white 8x8,1,Get the max pixel of a white image,,stdout,White_8x8.bmp,255 255 255,0 0,statistiques
 max_pixel,Max Pixel at 6 5,2,Get the max pixel at 6 5,,stdout,maxPixel_6_5_60_50_100_8x8.bmp,60 50 100,6 5,statistiques
 max_pixel,Max Pixel at 3 4,3,Get the max pixel at 3 4,,stdout,maxPixel_3_4_30_40_130_8x8.bmp,30 40 130,3 4,statistiques
-min_pixel,Max Pixel black 8x8,1,Get the min pixel of a black image,,stdout,N_8x8.bmp,0 0 0,0 0,statistiques
-min_pixel,Max Pixel white 8x8,1,Get the min pixel of a white image,,stdout,W_8x8.bmp,255 255 255,0 0,statistiques
+min_pixel,Max Pixel black 8x8,1,Get the min pixel of a black image,,stdout,Black_8x8.bmp,0 0 0,0 0,statistiques
+min_pixel,Max Pixel white 8x8,1,Get the min pixel of a white image,,stdout,White_8x8.bmp,255 255 255,0 0,statistiques
 min_pixel,Max Pixel at 6 5,2,Get the min pixel at 6 5,,stdout,minPixel_6_5_60_50_100_8x8.bmp,60 50 100,6 5,statistiques
 min_pixel,Max Pixel at 3 4,3,Get the min pixel at 3 4,,stdout,minPixel_3_4_30_40_140_8x8.bmp,30 40 140,3 4,statistiques
-min_component R,Min Component R of black 8x8,1,Get the min component of a black image,,stdout,N_8x8.bmp,0,0 0,statistiques
-min_component R,Min Component R of white 8x8,1,Get the min component of a white image,,stdout,W_8x8.bmp,255,0 0,statistiques
+min_component R,Min Component R of black 8x8,1,Get the min component of a black image,,stdout,Black_8x8.bmp,0,0 0,statistiques
+min_component R,Min Component R of white 8x8,1,Get the min component of a white image,,stdout,White_8x8.bmp,255,0 0,statistiques
 min_component R,Min Component 2 0 255 ,3,Get the min component at 2 0,,stdout,minComponentR_2_0_5.bmp,5,2 0,statistiques
-min_component G,Min Component G of black 8x8,1,Get the min component of a black image,,stdout,N_8x8.bmp,0,0 0,statistiques
-min_component G,Min Component G of white 8x8,1,Get the min component of a white image,,stdout,W_8x8.bmp,255,0 0,statistiques
+min_component G,Min Component G of black 8x8,1,Get the min component of a black image,,stdout,Black_8x8.bmp,0,0 0,statistiques
+min_component G,Min Component G of white 8x8,1,Get the min component of a white image,,stdout,White_8x8.bmp,255,0 0,statistiques
 min_component G,Min Component 2 0 255 ,3,Get the min component at 2 0,,stdout,minComponentG_2_0_5.bmp,5,2 0,statistiques
-min_component B,Min Component B of black 8x8,1,Get the min component of a black image,,stdout,N_8x8.bmp,0,0 0,statistiques
-min_component B,Min Component B of white 8x8,1,Get the min component of a white image,,stdout,W_8x8.bmp,255,0 0,statistiques
+min_component B,Min Component B of black 8x8,1,Get the min component of a black image,,stdout,Black_8x8.bmp,0,0 0,statistiques
+min_component B,Min Component B of white 8x8,1,Get the min component of a white image,,stdout,White_8x8.bmp,255,0 0,statistiques
 min_component B,Min Component 2 0 255 ,3,Get the min component at 2 0,,stdout,minComponentB_2_0_5.bmp,5,2 0,statistiques
-max_component R,Max Component R of black 8x8,1,Get the max component of a black image,,stdout,N_8x8.bmp,0,0 0,statistiques
-max_component R,Max Component R of white 8x8,1,Get the max component of a white image,,stdout,W_8x8.bmp,255,0 0,statistiques
+max_component R,Max Component R of black 8x8,1,Get the max component of a black image,,stdout,Black_8x8.bmp,0,0 0,statistiques
+max_component R,Max Component R of white 8x8,1,Get the max component of a white image,,stdout,White_8x8.bmp,255,0 0,statistiques
 max_component R,Max Component 2 0 255 ,3,Get the max component at 2 0,,stdout,maxComponentR_2_0_255.bmp,5,2 0,statistiques
-max_component G,Max Component G of black 8x8,1,Get the max component of a black image,,stdout,N_8x8.bmp,0,0 0,statistiques
-max_component G,Max Component G of white 8x8,1,Get the max component of a white image,,stdout,W_8x8.bmp,255,0 0,statistiques
+max_component G,Max Component G of black 8x8,1,Get the max component of a black image,,stdout,Black_8x8.bmp,0,0 0,statistiques
+max_component G,Max Component G of white 8x8,1,Get the max component of a white image,,stdout,White_8x8.bmp,255,0 0,statistiques
 max_component G,Max Component 2 0 255 ,3,Get the max component at 2 0,,stdout,maxComponentG_2_0_255.bmp,5,2 0,statistiques
-max_component B,Max Component B of black 8x8,1,Get the max component of a black image,,stdout,N_8x8.bmp,0,0 0,statistiques
-max_component B,Max Component B of white 8x8,1,Get the max component of a white image,,stdout,W_8x8.bmp,255,0 0,statistiques
+max_component B,Max Component B of black 8x8,1,Get the max component of a black image,,stdout,Black_8x8.bmp,0,0 0,statistiques
+max_component B,Max Component B of white 8x8,1,Get the max component of a white image,,stdout,White_8x8.bmp,255,0 0,statistiques
 max_component B,Max Component 2 0 255 ,3,Get the max component at 2 0,,stdout,maxComponentB_2_0_255.bmp,5,2 0,statistiques
-color_red,Convert red image to RED,1,Test if working on an  red Image ,,image,r_8x8.bmp,r_8x8.bmp,,colors
-color_red,Convert blue image to RED,1,Test if working on an  blue Image ,,image,b_8x8.bmp,N_8x8.bmp,,colors
-color_red,Convert green Image to RED,1,Test if working on an  green Image ,,image,g_8x8.bmp,N_8x8.bmp,,colors
-color_red,Convert white Image to RED,1,Test if working on an  white Image ,,image,W_8x8.bmp,r_8x8.bmp,,colors
-color_red,convert black Image to RED,1,Test if working on an  black Image ,,image,N_8x8.bmp,N_8x8.bmp,,colors
-color_blue,Convert red image to BLUE,1,Test if working on an  red Image ,,image,r_8x8.bmp,N_8x8.bmp,,colors
-color_blue,Convert blue image to BLUE,1,Test if working on an  blue Image ,,image,b_8x8.bmp,b_8x8.bmp,,colors
-color_blue,Convert green Image to BLUE,1,Test if working on an  green Image ,,image,g_8x8.bmp,N_8x8.bmp,,colors
-color_blue,Convert white Image to BLUE,1,Test if working on an  white Image ,,image,W_8x8.bmp,b_8x8.bmp,,colors
-color_blue,convert black Image to BLUE,1,Test if working on an  black Image ,,image,N_8x8.bmp,N_8x8.bmp,,colors
-color_green,Convert red image to GREEN,1,Test if working on an  red Image ,,image,r_8x8.bmp,N_8x8.bmp,,colors
-color_green,Convert blue image to GREEN,1,Test if working on an  blue Image ,,image,b_8x8.bmp,N_8x8.bmp,,colors
-color_green,Convert green Image to GREEN,1,Test if working on an  green Image ,,image,g_8x8.bmp,g_8x8.bmp,,colors
-color_green,Convert white Image to GREEN,1,Test if working on an  white Image ,,image,W_8x8.bmp,g_8x8.bmp,,colors
-color_green,convert black Image to GREEN,1,Test if working on an  black Image ,,image,N_8x8.bmp,N_8x8.bmp,,colors
+color_red,Convert red image to RED,1,Test if working on an  red Image ,,image,red_8x8.bmp,red_8x8.bmp,,colors
+color_red,Convert blue image to RED,1,Test if working on an  blue Image ,,image,blue_8x8.bmp,Black_8x8.bmp,,colors
+color_red,Convert green Image to RED,1,Test if working on an  green Image ,,image,green_8x8.bmp,Black_8x8.bmp,,colors
+color_red,Convert white Image to RED,1,Test if working on an  white Image ,,image,White_8x8.bmp,red_8x8.bmp,,colors
+color_red,convert black Image to RED,1,Test if working on an  black Image ,,image,Black_8x8.bmp,Black_8x8.bmp,,colors
+color_blue,Convert red image to BLUE,1,Test if working on an  red Image ,,image,red_8x8.bmp,Black_8x8.bmp,,colors
+color_blue,Convert blue image to BLUE,1,Test if working on an  blue Image ,,image,blue_8x8.bmp,blue_8x8.bmp,,colors
+color_blue,Convert green Image to BLUE,1,Test if working on an  green Image ,,image,green_8x8.bmp,Black_8x8.bmp,,colors
+color_blue,Convert white Image to BLUE,1,Test if working on an  white Image ,,image,White_8x8.bmp,blue_8x8.bmp,,colors
+color_blue,convert black Image to BLUE,1,Test if working on an  black Image ,,image,Black_8x8.bmp,Black_8x8.bmp,,colors
+color_green,Convert red image to GREEN,1,Test if working on an  red Image ,,image,red_8x8.bmp,Black_8x8.bmp,,colors
+color_green,Convert blue image to GREEN,1,Test if working on an  blue Image ,,image,blue_8x8.bmp,Black_8x8.bmp,,colors
+color_green,Convert green Image to GREEN,1,Test if working on an  green Image ,,image,green_8x8.bmp,green_8x8.bmp,,colors
+color_green,Convert white Image to GREEN,1,Test if working on an  white Image ,,image,White_8x8.bmp,green_8x8.bmp,,colors
+color_green,convert black Image to GREEN,1,Test if working on an  black Image ,,image,Black_8x8.bmp,Black_8x8.bmp,,colors
+color_gray,Convert red image to GRAY,1,Test if working on an  red Image ,,image,red_8x8.bmp,M85_8x8.bmp,,colors
+color_gray,Convert blue image to GRAY,1,Test if working on an  blue Image ,,image,blue_8x8.bmp,M85_8x8.bmp,,colors
+color_gray,Convert green Image to GRAY,1,Test if working on an  green Image ,,image,green_8x8.bmp,M85_8x8.bmp,,colors
+color_gray,Convert white Image to GRAY,1,Test if working on an  white Image ,,image,White_8x8.bmp,White_8x8.bmp,,colors
+color_gray,convert black Image to GRAY,1,Test if working on an  black Image ,,image,Black_8x8.bmp,Black_8x8.bmp,,colors
+invert,Invert red image,1,Test if working on an  red Image ,,image,r_8x8.bmp,cyan_8x8.bmp,,colors
+invert,Invert blue image,1,Test if working on an  blue Image ,,image,b_8x8.bmp,yellow_8x8.bmp,,colors
+invert,Invert green Image,1,Test if working on an  green Image ,,image,g_8x8.bmp,magenta_8x8.bmp,,colors
+invert,Invert white Image,1,Test if working on an  white Image ,,image,W_8x8.bmp,N_8x8.bmp,,colors
+invert,Invert black Image,1,Test if working on an  black Image ,,image,N_8x8.bmp,W_8x8.bmp,,colors
+color_gray_luminance,Convert red image to GRAY,1,Test if working on an  red Image ,,image,red_8x8.bmp,gray53_8x8.bmp,,colors
+color_gray_luminance,Convert blue image to GRAY,1,Test if working on an  blue Image ,,image,blue_8x8.bmp,gray17_8x8.bmp,,colors
+color_gray_luminance,Convert green Image to GRAY,1,Test if working on an  green Image ,,image,green_8x8.bmp,gray183_8x8.bmp,,colors
+color_gray_luminance,Convert white Image to GRAY,1,Test if working on an  white Image ,,image,White_8x8.bmp,White_8x8.bmp,,colors
+color_gray_luminance,convert black Image to GRAY,1,Test if working on an  black Image ,,image,Black_8x8.bmp,Black_8x8.bmp,,colors
+desaturate,Convert red image to GRAY,1,Test if working on an  red Image ,,image,red_8x8.bmp,gray127_8x8.bmp,,colors
+desaturate,Convert blue image to GRAY,1,Test if working on an  blue Image ,,image,blue_8x8.bmp,gray127_8x8.bmp,,colors
+desaturate,Convert green Image to GRAY,1,Test if working on an  green Image ,,image,green_8x8.bmp,gray127_8x8.bmp,,colors
+desaturate,Convert white Image to GRAY,1,Test if working on an  white Image ,,image,White_8x8.bmp,White_8x8.bmp,,colors
+desaturate,convert black Image to GRAY,1,Test if working on an  black Image ,,image,Black_8x8.bmp,Black_8x8.bmp,,colors
+rotate-cw,rotate square image,1,Take a square image rotate it,,image,rgbw_64x64.bmp,rgbw_64x64_CW.bmp,,transform
+rotate-cw,rotate large image,2,Take an image larger than it is tall,,image,rgbw_64x32.bmp,rgbw_64x32_CW.bmp,,transform
+rotate-cw,rotate high image,2,take an image taller than it is wide,,image,rgbw_32x64.bmp,rgbw_32x64_CW.bmp,,transform
+rotate-acw,rotate square image,1,Take a square image rotate it,,image,rgbw_64x64.bmp,rgbw_64x64_CCW.bmp,,transform
+rotate-acw,rotate large image,2,Take an image larger than it is tall,,image,rgbw_64x32.bmp,rgbw_64x32_CCW.bmp,,transform
+rotate-acw,rotate high image,2,take an image taller than it is wide,,image,rgbw_32x64.bmp,rgbw_32x64_CCW.bmp,,transform
+mirror_horizontal,mirror square image,1,Take a square image rotate it,,image,rgbw_64x64.bmp,rgbw_64x64_HS.bmp,,transform
+mirror_horizontal,mirror large image,2,Take an image larger than it is tall,,image,rgbw_64x32.bmp,rgbw_64x32_HS.bmp,,transform
+mirror_horizontal,mirror high image,2,take an image taller than it is wide,,image,rgbw_32x64.bmp,rgbw_32x64_HS.bmp,,transform
+mirror_vertical,mirror square image,1,Take a square image rotate it,,image,rgbw_64x64.bmp,rgbw_64x64_VS.bmp,,transform
+mirror_vertical,mirror large image,2,Take an image larger than it is tall,,image,rgbw_64x32.bmp,rgbw_64x32_VS.bmp,,transform
+mirror_vertical,mirror high image,2,take an image taller than it is wide,,image,rgbw_32x64.bmp,rgbw_32x64_VS.bmp,,transform
+mirror_total,mirror square image,1,Take a square image rotate it,,image,rgbw_64x64.bmp,rgbw_64x64_MT.bmp,,transform
+mirror_total,mirror large image,2,Take an image larger than it is tall,,image,rgbw_64x32.bmp,rgbw_64x32_MT.bmp,,transform
+mirror_total,mirror high image,2,take an image taller than it is wide,,image,rgbw_32x64.bmp,rgbw_32x64_MT.bmp,,transform

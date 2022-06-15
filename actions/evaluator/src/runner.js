@@ -13,7 +13,7 @@ async function runTest(config, test) {
     options.listeners.stdout = listenerOutput(test, "stdout");
     options.listeners.stderr = listenerOutput(test, "stderr");
     options.silent = true;
-    const cwd = `${config.buildDirectory}/run/${uuid++}`;
+    const cwd = `${config.buildDirectory}/run/${test.feature}/${uuid++}`;
     await io.mkdirP(cwd);
     options.cwd = cwd;
     await exec.exec(
