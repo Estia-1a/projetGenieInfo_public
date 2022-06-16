@@ -239,7 +239,7 @@ export default {
         description: "Get the first pixel on 8x8 image",
         options: ["-c", "print_pixel", "0", "0"],
         type: "stdout",
-        input: ["input/get_pixel_x0_y0_black_8x8.bmp"],
+        input: ["input/get_pixel_x0_y0_n_8x8.bmp"],
         output:
           "^\\s*[pP]rint_[pP]ixel\\s*\\(\\s*0,\\s*0\\s*\\)\\s*:\\s*0,\\s*0,\\s*0\\s*$",
         coordinates: ["0", "0"],
@@ -252,7 +252,7 @@ export default {
         description: "Get the pixel of coordinate 2,3 on 8x8 image",
         options: ["-c", "print_pixel", "2", "3"],
         type: "stdout",
-        input: ["input/get_pixel_x0_y0_black_8x8.bmp"],
+        input: ["input/get_pixel_x0_y0_n_8x8.bmp"],
         output:
           "^\\s*[pP]rint_[pP]ixel\\s*\\(\\s*2,\\s*3\\s*\\)\\s*:\\s*20,\\s*30,\\s*26\\s*$",
         coordinates: ["2", "3"],
@@ -265,7 +265,7 @@ export default {
         description: "Get the pixel of coordinate 2,3 on 8x8 image",
         options: ["-c", "print_pixel", "3", "2"],
         type: "stdout",
-        input: ["input/get_pixel_x0_y0_black_8x8.bmp"],
+        input: ["input/get_pixel_x0_y0_n_8x8.bmp"],
         output:
           "^\\s*[pP]rint_[pP]ixel\\s*\\(\\s*3,\\s*2\\s*\\)\\s*:\\s*30,\\s*20,\\s*19\\s*$",
         coordinates: ["3", "2"],
@@ -278,7 +278,7 @@ export default {
         description: "Get the pixel of coordinate 7,7 on 8x8 image",
         options: ["-c", "print_pixel", "7", "7"],
         type: "stdout",
-        input: ["input/get_pixel_x0_y0_black_8x8.bmp"],
+        input: ["input/get_pixel_x0_y0_n_8x8.bmp"],
         output:
           "^\\s*[pP]rint_[pP]ixel\\s*\\(\\s*7,\\s*7\\s*\\)\\s*:\\s*70,\\s*70,\\s*63\\s*$",
         coordinates: ["7", "7"],
