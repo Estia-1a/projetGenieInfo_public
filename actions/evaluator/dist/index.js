@@ -5424,7 +5424,9 @@ function computeScore(testsObject) {
   core.endGroup();
 
   return (
-    tests.reduce((accumlateur, test) => accumlateur + test.score, 0) +
+    Math.floor(
+      tests.reduce((accumlateur, test) => accumlateur + test.score, 0)
+    ) +
     "/" +
     tests.length
   );
@@ -5675,7 +5677,10 @@ function createMarkdownOutput(resultat) {
           (100 * feature.score) / feature.count
         )}%`,
         "missed tests": feature.missedTest.join("<br>").trim(),
-        stdout: feature.missedTestOut.join("<br>").trim(),
+        stdout: feature.missedTestOut
+          .join("<br>")
+          .trim()
+          .replace(/(.{32})..+/, "$1…"),
       }))
     );
     markdown += "\n";
@@ -5683,7 +5688,7 @@ function createMarkdownOutput(resultat) {
     // markdown += "close #24\n"
     // markdown += "open #17\n"
   });
-  return markdown;
+  return markdown.slice(0, 65535);
 }
 
 ;// CONCATENATED MODULE: ./index.js
