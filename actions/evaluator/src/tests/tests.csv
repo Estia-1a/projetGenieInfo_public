@@ -41,13 +41,13 @@ min_component B,Min Component B of white 8x8,1,Get the min component of a white 
 min_component B,Min Component 2 0 255 ,3,Get the min component at 2 0,,stdout,minComponentB_2_0_5.bmp,5,2 0,statistiques
 max_component R,Max Component R of black 8x8,1,Get the max component of a black image,,stdout,Black_8x8.bmp,0,0 0,statistiques
 max_component R,Max Component R of white 8x8,1,Get the max component of a white image,,stdout,White_8x8.bmp,255,0 0,statistiques
-max_component R,Max Component 2 0 255 ,3,Get the max component at 2 0,,stdout,maxComponentR_2_0_255.bmp,5,2 0,statistiques
+max_component R,Max Component 2 0 255 ,3,Get the max component at 2 0,,stdout,maxComponentR_2_0_255.bmp,250,2 0,statistiques
 max_component G,Max Component G of black 8x8,1,Get the max component of a black image,,stdout,Black_8x8.bmp,0,0 0,statistiques
 max_component G,Max Component G of white 8x8,1,Get the max component of a white image,,stdout,White_8x8.bmp,255,0 0,statistiques
-max_component G,Max Component 2 0 255 ,3,Get the max component at 2 0,,stdout,maxComponentG_2_0_255.bmp,5,2 0,statistiques
+max_component G,Max Component 2 0 255 ,3,Get the max component at 2 0,,stdout,maxComponentG_2_0_255.bmp,250,2 0,statistiques
 max_component B,Max Component B of black 8x8,1,Get the max component of a black image,,stdout,Black_8x8.bmp,0,0 0,statistiques
 max_component B,Max Component B of white 8x8,1,Get the max component of a white image,,stdout,White_8x8.bmp,255,0 0,statistiques
-max_component B,Max Component 2 0 255 ,3,Get the max component at 2 0,,stdout,maxComponentB_2_0_255.bmp,5,2 0,statistiques
+max_component B,Max Component 2 0 255 ,3,Get the max component at 2 0,,stdout,maxComponentB_2_0_255.bmp,250,2 0,statistiques
 color_red,Convert red image to RED,1,Test if working on an  red Image ,,image,red_8x8.bmp,red_8x8.bmp,,colors
 color_red,Convert blue image to RED,1,Test if working on an  blue Image ,,image,blue_8x8.bmp,Black_8x8.bmp,,colors
 color_red,Convert green Image to RED,1,Test if working on an  green Image ,,image,green_8x8.bmp,Black_8x8.bmp,,colors
@@ -68,21 +68,21 @@ color_gray,Convert blue image to GRAY,1,Test if working on an  blue Image ,,imag
 color_gray,Convert green Image to GRAY,1,Test if working on an  green Image ,,image,green_8x8.bmp,M85_8x8.bmp,,colors
 color_gray,Convert white Image to GRAY,1,Test if working on an  white Image ,,image,White_8x8.bmp,White_8x8.bmp,,colors
 color_gray,convert black Image to GRAY,1,Test if working on an  black Image ,,image,Black_8x8.bmp,Black_8x8.bmp,,colors
-invert,Invert red image,1,Test if working on an  red Image ,,image,r_8x8.bmp,cyan_8x8.bmp,,colors
-invert,Invert blue image,1,Test if working on an  blue Image ,,image,b_8x8.bmp,yellow_8x8.bmp,,colors
-invert,Invert green Image,1,Test if working on an  green Image ,,image,g_8x8.bmp,magenta_8x8.bmp,,colors
-invert,Invert white Image,1,Test if working on an  white Image ,,image,W_8x8.bmp,N_8x8.bmp,,colors
-invert,Invert black Image,1,Test if working on an  black Image ,,image,N_8x8.bmp,W_8x8.bmp,,colors
+color_invert,Invert red image,1,Test if working on an  red Image ,,image,r_8x8.bmp,cyan_8x8.bmp,,colors
+color_invert,Invert blue image,1,Test if working on an  blue Image ,,image,b_8x8.bmp,yellow_8x8.bmp,,colors
+color_invert,Invert green Image,1,Test if working on an  green Image ,,image,g_8x8.bmp,magenta_8x8.bmp,,colors
+color_invert,Invert white Image,1,Test if working on an  white Image ,,image,W_8x8.bmp,N_8x8.bmp,,colors
+color_invert,Invert black Image,1,Test if working on an  black Image ,,image,N_8x8.bmp,W_8x8.bmp,,colors
 color_gray_luminance,Convert red image to GRAY,1,Test if working on an  red Image ,,image,red_8x8.bmp,gray53_8x8.bmp,,colors
 color_gray_luminance,Convert blue image to GRAY,1,Test if working on an  blue Image ,,image,blue_8x8.bmp,gray17_8x8.bmp,,colors
 color_gray_luminance,Convert green Image to GRAY,1,Test if working on an  green Image ,,image,green_8x8.bmp,gray183_8x8.bmp,,colors
 color_gray_luminance,Convert white Image to GRAY,1,Test if working on an  white Image ,,image,White_8x8.bmp,White_8x8.bmp,,colors
 color_gray_luminance,convert black Image to GRAY,1,Test if working on an  black Image ,,image,Black_8x8.bmp,Black_8x8.bmp,,colors
-desaturate,Convert red image to GRAY,1,Test if working on an  red Image ,,image,red_8x8.bmp,gray127_8x8.bmp,,colors
-desaturate,Convert blue image to GRAY,1,Test if working on an  blue Image ,,image,blue_8x8.bmp,gray127_8x8.bmp,,colors
-desaturate,Convert green Image to GRAY,1,Test if working on an  green Image ,,image,green_8x8.bmp,gray127_8x8.bmp,,colors
-desaturate,Convert white Image to GRAY,1,Test if working on an  white Image ,,image,White_8x8.bmp,White_8x8.bmp,,colors
-desaturate,convert black Image to GRAY,1,Test if working on an  black Image ,,image,Black_8x8.bmp,Black_8x8.bmp,,colors
+color_desaturate,Convert red image to GRAY,1,Test if working on an  red Image ,,image,red_8x8.bmp,gray127_8x8.bmp,,colors
+color_desaturate,Convert blue image to GRAY,1,Test if working on an  blue Image ,,image,blue_8x8.bmp,gray127_8x8.bmp,,colors
+color_desaturate,Convert green Image to GRAY,1,Test if working on an  green Image ,,image,green_8x8.bmp,gray127_8x8.bmp,,colors
+color_desaturate,Convert white Image to GRAY,1,Test if working on an  white Image ,,image,White_8x8.bmp,White_8x8.bmp,,colors
+color_desaturate,convert black Image to GRAY,1,Test if working on an  black Image ,,image,Black_8x8.bmp,Black_8x8.bmp,,colors
 rotate-cw,rotate square image,1,Take a square image rotate it,,image,rgbw_64x64.bmp,rgbw_64x64_CW.bmp,,transform
 rotate-cw,rotate large image,2,Take an image larger than it is tall,,image,rgbw_64x32.bmp,rgbw_64x32_CW.bmp,,transform
 rotate-cw,rotate high image,2,take an image taller than it is wide,,image,rgbw_32x64.bmp,rgbw_32x64_CW.bmp,,transform
