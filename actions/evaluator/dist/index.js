@@ -5424,9 +5424,7 @@ function computeScore(testsObject) {
   core.endGroup();
 
   return (
-    Math.floor(
-      tests.reduce((accumlateur, test) => accumlateur + test.score, 0)
-    ) +
+    tests.reduce((accumlateur, test) => accumlateur + test.score, 0) +
     "/" +
     tests.length
   );
@@ -5716,7 +5714,7 @@ async function run() {
     const testsObject = await loadTest();
     await runTestInParallel(config, testsObject);
     const score = computeScore(testsObject);
-    core.setOutput("grade", Math.floor(score));
+    core.setOutput("grade", score);
 
     printReport(testsObject);
   } catch (error) {

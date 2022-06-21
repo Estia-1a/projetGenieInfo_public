@@ -29,9 +29,7 @@ export function computeScore(testsObject) {
   core.endGroup();
 
   return (
-    Math.floor(
-      tests.reduce((accumlateur, test) => accumlateur + test.score, 0)
-    ) +
+    Math.floor(tests.reduce((accumlateur, test) => accumlateur + test.score, 0)) +
     "/" +
     tests.length
   );
