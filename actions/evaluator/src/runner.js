@@ -112,8 +112,8 @@ export async function testComparator(config) {
   const { exitCode, stdout } = await exec.getExecOutput(
     config.comparatorPath,
     [
-      resolve(config.testPath, "input/b_32x32.bmp"),
-      resolve(config.testPath, "input/b_32x32.bmp"),
+      resolve(config.testPath, "input/black_8x8.bmp"),
+      resolve(config.testPath, "input/black_8x8.bmp"),
     ],
     { silent: true }
   );

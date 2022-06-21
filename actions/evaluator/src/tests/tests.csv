@@ -3,20 +3,20 @@ dimension,Dimension 64x64,1,Test if the dimension feature is working,,stdout,rgb
 dimension,Dimension 1x1,3,Test if the dimension feature is working for one by one files,,stdout,r_1x1.bmp,1 1,,Tutorial
 dimension,Dimension 32x64,2,Test if the dimension feature is working,,stdout,rgbw_32x64.bmp,32 64,,Tutorial
 dimension,Dimension 64x32,2,Test if the dimension feature is working,,stdout,rgbw_64x32.bmp,64 32,,Tutorial
-first_pixel,"First Pixel 64x64 : 255, 0, 0",1,Check first pixel on 32x32 : should be red,,stdout,rgbw_32x32.bmp,255 0 0,,Tutorial
-first_pixel,"First Pixel Red : 255, 0, 0",1,Check first pixel on 32x32 red image,,stdout,r_32x32.bmp,255 0 0,,Tutorial
-first_pixel,"First Pixel Green : 0, 255, 0",1,Check first pixel on 32x32 green image,,stdout,g_32x32.bmp,0 255 0,,Tutorial
-first_pixel,"First Pixel Blue : 0, 0, 255",1,Check first pixel on 32x32 blue image,,stdout,b_32x32.bmp,0 0 255,,Tutorial
+first_pixel,"First Pixel 64x64 : 255, 0, 0",1,Check first pixel on 32x32 : should be red,,stdout,rgbw_64x64.bmp,255 0 0,,Tutorial
+first_pixel,"First Pixel Red : 255, 0, 0",1,Check first pixel on 32x32 red image,,stdout,red_8x8.bmp,255 0 0,,Tutorial
+first_pixel,"First Pixel Green : 0, 255, 0",1,Check first pixel on 32x32 green image,,stdout,green_8x8.bmp,0 255 0,,Tutorial
+first_pixel,"First Pixel Blue : 0, 0, 255",1,Check first pixel on 32x32 blue image,,stdout,blue_8x8.bmp,0 0 255,,Tutorial
 first_pixel,"First Pixel 1 2 3 : 1, 2, 3",3,Check first pixel on 8x8 image,,stdout,first_pixel_1_2_3_8x8.bmp,1 2 3,,Tutorial
-tenth_pixel,"Tenth Pixel 64x64 : 255, 0, 0",1,Check tenth pixel on 32x32 red image,,stdout,rgbw_32x32.bmp,255 0 0,,Tutorial
-tenth_pixel,"Tenth Pixel Red : 255, 0, 0",1,Check tenth pixel on 32x32 red image,,stdout,r_32x32.bmp,255 0 0,,Tutorial
-tenth_pixel,"Tenth Pixel Green : 0, 255, 0",1,Check tenth pixel on 32x32 green image,,stdout,g_32x32.bmp,0 255 0,,Tutorial
-tenth_pixel,"Tenth Pixel Blue : 0, 0, 255",1,Check tenth pixel on 32x32 blue image,,stdout,b_32x32.bmp,0 0 255,,Tutorial
+tenth_pixel,"Tenth Pixel 64x64 : 255, 0, 0",1,Check tenth pixel on 32x32 red image,,stdout,rgbw_64x64.bmp,255 0 0,,Tutorial
+tenth_pixel,"Tenth Pixel Red : 255, 0, 0",1,Check tenth pixel on 32x32 red image,,stdout,red_8x8.bmp,255 0 0,,Tutorial
+tenth_pixel,"Tenth Pixel Green : 0, 255, 0",1,Check tenth pixel on 32x32 green image,,stdout,green_8x8.bmp,0 255 0,,Tutorial
+tenth_pixel,"Tenth Pixel Blue : 0, 0, 255",1,Check tenth pixel on 32x32 blue image,,stdout,blue_8x8.bmp,0 0 255,,Tutorial
 tenth_pixel,"Tenth Pixel 11 12 13 : 1, 2, 3",3,Check tenth pixel on 10x8 image,,stdout,tenth_pixel_11_12_13_10x8.bmp,11 12 13,,Tutorial
-second_line,"Second line First Pixel 64x64 : 255, 0, 0",1,Check first pixel on the second line on 32x32 : should be red,,stdout,rgbw_32x32.bmp,255 0 0,,Tutorial
-second_line,"Second line First Pixel Red : 255, 0, 0",1,Check first pixel on the second line on 32x32 red image,,stdout,r_32x32.bmp,255 0 0,,Tutorial
-second_line,"Second line First Pixel Green : 0, 255, 0",1,Check first pixel on the second line on 32x32 green image,,stdout,g_32x32.bmp,0 255 0,,Tutorial
-second_line,"Second line First Pixel Blue : 0, 0, 255",1,Check first pixel on the second line on 32x32 blue image,,stdout,b_32x32.bmp,0 0 255,,Tutorial
+second_line,"Second line First Pixel 64x64 : 255, 0, 0",1,Check first pixel on the second line on 32x32 : should be red,,stdout,rgbw_64x64.bmp,255 0 0,,Tutorial
+second_line,"Second line First Pixel Red : 255, 0, 0",1,Check first pixel on the second line on 32x32 red image,,stdout,red_8x8.bmp,255 0 0,,Tutorial
+second_line,"Second line First Pixel Green : 0, 255, 0",1,Check first pixel on the second line on 32x32 green image,,stdout,green_8x8.bmp,0 255 0,,Tutorial
+second_line,"Second line First Pixel Blue : 0, 0, 255",1,Check first pixel on the second line on 32x32 blue image,,stdout,blue_8x8.bmp,0 0 255,,Tutorial
 second_line,Second line First Pixel 21 22 23,3,Check first pixel on the second line on 8x8 image,,stdout,second_line_21_22_23_8x8.bmp,21 22 23,,Tutorial
 print_pixel,"Print Pixel (0,0) : 0,0,0",3,Get the first pixel on 8x8 image,0 0,stdout,get_pixel_x0_y0_n_8x8.bmp,0 0 0,0 0,Tutorial
 print_pixel,"Print Pixel (2,3) : 20,30,26",3,"Get the pixel of coordinate 2,3 on 8x8 image",2 3,stdout,get_pixel_x0_y0_n_8x8.bmp,20 30 26,2 3,Tutorial
@@ -63,16 +63,16 @@ color_green,Convert blue image to GREEN,1,Test if working on an  blue Image ,,im
 color_green,Convert green Image to GREEN,1,Test if working on an  green Image ,,image,green_8x8.bmp,green_8x8.bmp,,colors
 color_green,Convert white Image to GREEN,1,Test if working on an  white Image ,,image,white_8x8.bmp,green_8x8.bmp,,colors
 color_green,convert black Image to GREEN,1,Test if working on an  black Image ,,image,black_8x8.bmp,black_8x8.bmp,,colors
-color_gray,Convert red image to GRAY,1,Test if working on an  red Image ,,image,red_8x8.bmp,M85_8x8.bmp,,colors
-color_gray,Convert blue image to GRAY,1,Test if working on an  blue Image ,,image,blue_8x8.bmp,M85_8x8.bmp,,colors
-color_gray,Convert green Image to GRAY,1,Test if working on an  green Image ,,image,green_8x8.bmp,M85_8x8.bmp,,colors
+color_gray,Convert red image to GRAY,1,Test if working on an  red Image ,,image,red_8x8.bmp,gray85_8x8.bmp,,colors
+color_gray,Convert blue image to GRAY,1,Test if working on an  blue Image ,,image,blue_8x8.bmp,gray85_8x8.bmp,,colors
+color_gray,Convert green Image to GRAY,1,Test if working on an  green Image ,,image,green_8x8.bmp,gray85_8x8.bmp,,colors
 color_gray,Convert white Image to GRAY,1,Test if working on an  white Image ,,image,white_8x8.bmp,white_8x8.bmp,,colors
 color_gray,convert black Image to GRAY,1,Test if working on an  black Image ,,image,black_8x8.bmp,black_8x8.bmp,,colors
-color_invert,Invert red image,1,Test if working on an  red Image ,,image,r_8x8.bmp,cyan_8x8.bmp,,colors
-color_invert,Invert blue image,1,Test if working on an  blue Image ,,image,b_8x8.bmp,yellow_8x8.bmp,,colors
-color_invert,Invert green Image,1,Test if working on an  green Image ,,image,g_8x8.bmp,magenta_8x8.bmp,,colors
-color_invert,Invert white Image,1,Test if working on an  white Image ,,image,W_8x8.bmp,N_8x8.bmp,,colors
-color_invert,Invert black Image,1,Test if working on an  black Image ,,image,N_8x8.bmp,W_8x8.bmp,,colors
+color_invert,Invert red image,1,Test if working on an  red Image ,,image,red_8x8.bmp,cyan_8x8.bmp,,colors
+color_invert,Invert blue image,1,Test if working on an  blue Image ,,image,blue_8x8.bmp,yellow_8x8.bmp,,colors
+color_invert,Invert green Image,1,Test if working on an  green Image ,,image,green_8x8.bmp,magenta_8x8.bmp,,colors
+color_invert,Invert white Image,1,Test if working on an  white Image ,,image,white_8x8.bmp,black_8x8.bmp,,colors
+color_invert,Invert black Image,1,Test if working on an  black Image ,,image,black_8x8.bmp,white_8x8.bmp,,colors
 color_gray_luminance,Convert red image to GRAY,1,Test if working on an  red Image ,,image,red_8x8.bmp,gray53_8x8.bmp,,colors
 color_gray_luminance,Convert blue image to GRAY,1,Test if working on an  blue Image ,,image,blue_8x8.bmp,gray17_8x8.bmp,,colors
 color_gray_luminance,Convert green Image to GRAY,1,Test if working on an  green Image ,,image,green_8x8.bmp,gray183_8x8.bmp,,colors
@@ -83,12 +83,12 @@ color_desaturate,Convert blue image to GRAY,1,Test if working on an  blue Image 
 color_desaturate,Convert green Image to GRAY,1,Test if working on an  green Image ,,image,green_8x8.bmp,gray127_8x8.bmp,,colors
 color_desaturate,Convert white Image to GRAY,1,Test if working on an  white Image ,,image,white_8x8.bmp,white_8x8.bmp,,colors
 color_desaturate,convert black Image to GRAY,1,Test if working on an  black Image ,,image,black_8x8.bmp,black_8x8.bmp,,colors
-rotate-cw,rotate square image,1,Take a square image rotate it,,image,rgbw_64x64.bmp,rgbw_64x64_CW.bmp,,transform
-rotate-cw,rotate large image,2,Take an image larger than it is tall,,image,rgbw_64x32.bmp,rgbw_64x32_CW.bmp,,transform
-rotate-cw,rotate high image,2,take an image taller than it is wide,,image,rgbw_32x64.bmp,rgbw_32x64_CW.bmp,,transform
-rotate-acw,rotate square image,1,Take a square image rotate it,,image,rgbw_64x64.bmp,rgbw_64x64_CCW.bmp,,transform
-rotate-acw,rotate large image,2,Take an image larger than it is tall,,image,rgbw_64x32.bmp,rgbw_64x32_CCW.bmp,,transform
-rotate-acw,rotate high image,2,take an image taller than it is wide,,image,rgbw_32x64.bmp,rgbw_32x64_CCW.bmp,,transform
+rotate_cw,rotate square image,1,Take a square image rotate it,,image,rgbw_64x64.bmp,rgbw_64x64_CW.bmp,,transform
+rotate_cw,rotate large image,2,Take an image larger than it is tall,,image,rgbw_64x32.bmp,rgbw_64x32_CW.bmp,,transform
+rotate_cw,rotate high image,2,take an image taller than it is wide,,image,rgbw_32x64.bmp,rgbw_32x64_CW.bmp,,transform
+rotate_acw,rotate square image,1,Take a square image rotate it,,image,rgbw_64x64.bmp,rgbw_64x64_CCW.bmp,,transform
+rotate_acw,rotate large image,2,Take an image larger than it is tall,,image,rgbw_64x32.bmp,rgbw_64x32_CCW.bmp,,transform
+rotate_acw,rotate high image,2,take an image taller than it is wide,,image,rgbw_32x64.bmp,rgbw_32x64_CCW.bmp,,transform
 mirror_horizontal,mirror square image,1,Take a square image rotate it,,image,rgbw_64x64.bmp,rgbw_64x64_HS.bmp,,transform
 mirror_horizontal,mirror large image,2,Take an image larger than it is tall,,image,rgbw_64x32.bmp,rgbw_64x32_HS.bmp,,transform
 mirror_horizontal,mirror high image,2,take an image taller than it is wide,,image,rgbw_32x64.bmp,rgbw_32x64_HS.bmp,,transform
