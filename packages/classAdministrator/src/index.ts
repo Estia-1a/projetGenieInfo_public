@@ -1,5 +1,6 @@
-import { config } from "dotenv";
+
 import { Octokit } from "octokit";
+import { init } from "./init";
 
 /**
  *
@@ -31,7 +32,5 @@ async function test() {
   console.log("Hello, %s", login);
 }
 
-function init() {
-  config();
-}
+
 run("test");
