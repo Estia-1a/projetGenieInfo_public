@@ -2,6 +2,7 @@ name: Evaluation
 on:
   schedule:
     - cron:  '0 2 * 6 *'
+    - cron:  '0 * 24,25,26 6 *'
   workflow_dispatch:
 env:
   PUBLIC_URL: https://github.com/Estia-1a/projetGenieInfo_public/archive/refs/heads/release/evaluator.zip
@@ -45,10 +46,10 @@ jobs:
             ${{ runner.workspace }}/lib/estia_image
             ${{ runner.workspace }}/lib/getopt
             ${{ runner.workspace }}/lib/image_comparator
-          key: public-evaluator2
+          key: public-evaluator3
       - if: steps.cache-libraries.outputs.cache-hit != 'true'
         name: Build Estia-image Lib
-        uses: ashutoshvarma/action-cmake-build@master
+        uses: Estia-1a/action-cmake-build@master
         with:
           source-dir: ${{ runner.workspace }}/public/estia-image
           build-dir: ${{ runner.workspace }}/public/estia-image/build
@@ -56,7 +57,7 @@ jobs:
           install-build: true
       - if: steps.cache-libraries.outputs.cache-hit != 'true'
         name: Build getopt Lib
-        uses: ashutoshvarma/action-cmake-build@master
+        uses: Estia-1a/action-cmake-build@master
         with:
           source-dir: ${{ runner.workspace }}/public/getopt
           build-dir: ${{ runner.workspace }}/public/getopt/build
@@ -74,13 +75,20 @@ jobs:
       - name: Copy the CMakeLists.txt
         run: |
           cp -f  ${{ runner.workspace }}/public/CMake/CMakeLists.txt $GITHUB_WORKSPACE/CMakeLists.txt
-     # Build student code
+
+      # Build student code
+      - name: Get timestamp
+        run: |
+          echo "RELEASE_DATE=$(date +'%m%d-%H%M%S')" >> ${GITHUB_ENV}
       - name: Build
-        uses: ashutoshvarma/action-cmake-build@master
+        id: buildFreud
+        uses: Estia-1a/action-cmake-build@master
         with:
           build-dir: ${{ runner.workspace }}/build
           configure-options: -DESTIA_IMAGE_PATH=${{ runner.workspace }}/lib/estia_image -DGETOPT_PATH=${{ runner.workspace }}/lib/getopt
           install-build: true
+          log-dir: ${{ github.workspace }}/result/${{env.RELEASE_DATE}}
+          save-log: true
       - name: Run tests
         id: runTests
         uses: Estia-1a/projetGenieInfo_public/actions/evaluator@release/evaluator
@@ -95,12 +103,37 @@ jobs:
         uses: peter-evans/create-pull-request@v4
         with:
            add-paths: result
-           commit-message: Automatic Evaluation from ${{steps.runTests.outputs.date}}
+           commit-message: Automatic Evaluation ${{steps.runTests.outputs.grade}} on ${{steps.runTests.outputs.date}}
            branch: Evaluation/Daily
            branch-suffix: timestamp
            delete-branch: true
-           title: Daily Evaluation ${{steps.runTests.outputs.date}}
+           title: Daily Evaluation ${{steps.runTests.outputs.grade}} on ${{steps.runTests.outputs.date}}
            body: ${{steps.runTests.outputs.markdown}}
+      - name: Get error message
+        id: errorMessage
+        if: ${{ failure() && steps.buildFreud.conclusion == 'failure' }}
+        run : |
+          echo "# Compilation Failed"> $GITHUB_STEP_SUMMARY
+          echo "## make output"          >> $GITHUB_STEP_SUMMARY
+          echo "\`\`\`markdown"  >> $GITHUB_STEP_SUMMARY
+          cat ${{ github.workspace }}/result/${{env.RELEASE_DATE}}/stderr.log  >> $GITHUB_STEP_SUMMARY
+          echo "\`\`\`"  >> $GITHUB_STEP_SUMMARY
+          MESSAGE=$(cat $GITHUB_STEP_SUMMARY)
+          MESSAGE="${MESSAGE//'%'/'%25'}"
+          MESSAGE="${MESSAGE//$'\n'/'%0A'}"
+          MESSAGE="${MESSAGE//$'\r'/'%0D'}"
+          echo "::set-output name=content::$MESSAGE"
+      - name: Create Pull Request
+        if: ${{ failure() && steps.buildFreud.conclusion == 'failure' }}
+        uses: peter-evans/create-pull-request@v4
+        with:
+           add-paths: result
+           commit-message: Compilation failed on ${{env.RELEASE_DATE}}
+           branch: Evaluation/Daily
+           branch-suffix: timestamp
+           delete-branch: true
+           title: Daily Evaluation failed ${{env.RELEASE_DATE}}
+           body: ${{steps.errorMessage.outputs.content}}
       - name: handle no modification
         if: ${{ failure() && steps.abort.conclusion == 'failure' }}
         run: |
