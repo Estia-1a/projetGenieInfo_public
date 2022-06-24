@@ -4486,7 +4486,7 @@ async function testComparator(config) {
       },
       {
         feature: "min_pixel",
-        name: "Max Pixel black 8x8",
+        name: "Min Pixel black 8x8",
         Difficulty: "1",
         description: "Get the min pixel of a black image",
         options: ["-c", "min_pixel"],
@@ -4499,7 +4499,7 @@ async function testComparator(config) {
       },
       {
         feature: "min_pixel",
-        name: "Max Pixel white 8x8",
+        name: "Min Pixel white 8x8",
         Difficulty: "1",
         description: "Get the min pixel of a white image",
         options: ["-c", "min_pixel"],
@@ -4512,7 +4512,7 @@ async function testComparator(config) {
       },
       {
         feature: "min_pixel",
-        name: "Max Pixel at 6 5",
+        name: "Min Pixel at 6 5",
         Difficulty: "2",
         description: "Get the min pixel at 6 5",
         options: ["-c", "min_pixel"],
@@ -4525,7 +4525,7 @@ async function testComparator(config) {
       },
       {
         feature: "min_pixel",
-        name: "Max Pixel at 3 4",
+        name: "Min Pixel at 3 4",
         Difficulty: "3",
         description: "Get the min pixel at 3 4",
         options: ["-c", "min_pixel"],
@@ -4564,7 +4564,7 @@ async function testComparator(config) {
       },
       {
         feature: "min_component R",
-        name: "Min Component 2 0 255 ",
+        name: "Min Component 2 0 5",
         Difficulty: "3",
         description: "Get the min component at 2 0",
         options: ["-c", "min_component", "R"],
@@ -4603,7 +4603,7 @@ async function testComparator(config) {
       },
       {
         feature: "min_component G",
-        name: "Min Component 2 0 255 ",
+        name: "Min Component 2 0 5",
         Difficulty: "3",
         description: "Get the min component at 2 0",
         options: ["-c", "min_component", "G"],
@@ -4642,7 +4642,7 @@ async function testComparator(config) {
       },
       {
         feature: "min_component B",
-        name: "Min Component 2 0 255 ",
+        name: "Min Component 2 0 5",
         Difficulty: "3",
         description: "Get the min component at 2 0",
         options: ["-c", "min_component", "B"],

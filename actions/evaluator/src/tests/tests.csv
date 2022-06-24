@@ -26,19 +26,19 @@ max_pixel,Max Pixel black 8x8,1,Get the max pixel of a black image,,stdout,black
 max_pixel,Max Pixel white 8x8,1,Get the max pixel of a white image,,stdout,white_8x8.bmp,255 255 255,0 0,statistiques
 max_pixel,Max Pixel at 6 5,2,Get the max pixel at 6 5,,stdout,maxPixel_6_5_60_50_100_8x8.bmp,60 50 100,6 5,statistiques
 max_pixel,Max Pixel at 3 4,3,Get the max pixel at 3 4,,stdout,maxPixel_3_4_30_40_130_8x8.bmp,30 40 130,3 4,statistiques
-min_pixel,Max Pixel black 8x8,1,Get the min pixel of a black image,,stdout,black_8x8.bmp,0 0 0,0 0,statistiques
-min_pixel,Max Pixel white 8x8,1,Get the min pixel of a white image,,stdout,white_8x8.bmp,255 255 255,0 0,statistiques
-min_pixel,Max Pixel at 6 5,2,Get the min pixel at 6 5,,stdout,minPixel_6_5_60_50_100_8x8.bmp,60 50 100,6 5,statistiques
-min_pixel,Max Pixel at 3 4,3,Get the min pixel at 3 4,,stdout,minPixel_3_4_30_40_140_8x8.bmp,30 40 140,3 4,statistiques
+min_pixel,Min Pixel black 8x8,1,Get the min pixel of a black image,,stdout,black_8x8.bmp,0 0 0,0 0,statistiques
+min_pixel,Min Pixel white 8x8,1,Get the min pixel of a white image,,stdout,white_8x8.bmp,255 255 255,0 0,statistiques
+min_pixel,Min Pixel at 6 5,2,Get the min pixel at 6 5,,stdout,minPixel_6_5_60_50_100_8x8.bmp,60 50 100,6 5,statistiques
+min_pixel,Min Pixel at 3 4,3,Get the min pixel at 3 4,,stdout,minPixel_3_4_30_40_140_8x8.bmp,30 40 140,3 4,statistiques
 min_component R,Min Component R of black 8x8,1,Get the min component of a black image,,stdout,black_8x8.bmp,0,0 0,statistiques
 min_component R,Min Component R of white 8x8,1,Get the min component of a white image,,stdout,white_8x8.bmp,255,0 0,statistiques
-min_component R,Min Component 2 0 255 ,3,Get the min component at 2 0,,stdout,minComponentR_2_0_5.bmp,5,2 0,statistiques
+min_component R,Min Component 2 0 5,3,Get the min component at 2 0,,stdout,minComponentR_2_0_5.bmp,5,2 0,statistiques
 min_component G,Min Component G of black 8x8,1,Get the min component of a black image,,stdout,black_8x8.bmp,0,0 0,statistiques
 min_component G,Min Component G of white 8x8,1,Get the min component of a white image,,stdout,white_8x8.bmp,255,0 0,statistiques
-min_component G,Min Component 2 0 255 ,3,Get the min component at 2 0,,stdout,minComponentG_2_0_5.bmp,5,2 0,statistiques
+min_component G,Min Component 2 0 5,3,Get the min component at 2 0,,stdout,minComponentG_2_0_5.bmp,5,2 0,statistiques
 min_component B,Min Component B of black 8x8,1,Get the min component of a black image,,stdout,black_8x8.bmp,0,0 0,statistiques
 min_component B,Min Component B of white 8x8,1,Get the min component of a white image,,stdout,white_8x8.bmp,255,0 0,statistiques
-min_component B,Min Component 2 0 255 ,3,Get the min component at 2 0,,stdout,minComponentB_2_0_5.bmp,5,2 0,statistiques
+min_component B,Min Component 2 0 5,3,Get the min component at 2 0,,stdout,minComponentB_2_0_5.bmp,5,2 0,statistiques
 max_component R,Max Component R of black 8x8,1,Get the max component of a black image,,stdout,black_8x8.bmp,0,0 0,statistiques
 max_component R,Max Component R of white 8x8,1,Get the max component of a white image,,stdout,white_8x8.bmp,255,0 0,statistiques
 max_component R,Max Component 2 0 255 ,3,Get the max component at 2 0,,stdout,maxComponentR_2_0_255.bmp,250,2 0,statistiques
