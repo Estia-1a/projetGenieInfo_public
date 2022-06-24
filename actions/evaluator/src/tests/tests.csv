@@ -98,3 +98,6 @@ mirror_vertical,mirror high image,2,take an image taller than it is wide,,image,
 mirror_total,mirror square image,1,Take a square image rotate it,,image,rgbw_64x64.bmp,rgbw_64x64_MT.bmp,,transform
 mirror_total,mirror large image,2,Take an image larger than it is tall,,image,rgbw_64x32.bmp,rgbw_64x32_MT.bmp,,transform
 mirror_total,mirror high image,2,take an image taller than it is wide,,image,rgbw_32x64.bmp,rgbw_32x64_MT.bmp,,transform
+scale_nearest,Double image size,3, Double the size of an input image,,image,rgbw_64x32.bmp,rgbw_64x32_SN2.bmp,,scale
+scale_bilinear,Double image size,3, Double the size of an input image,,image,rgbw_64x32.bmp,rgbw_64x32_SB2.bmp,,scale
+scale_crop,Crop image,3, Crop an image,35 10 15 10,image,rgbw_64x32.bmp,rgbw_64x32_crop_35_10_15_10.bmp,,scale
