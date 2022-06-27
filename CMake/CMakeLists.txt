@@ -1,5 +1,7 @@
 cmake_minimum_required(VERSION 3.15)
 project(freud VERSION 1.0.1 DESCRIPTION "freud is an image analyst")
+set(CMAKE_INSTALL_MESSAGE LAZY)
+set(CMAKE_MESSAGE_LOG_LEVEL "ERROR")
 # Set everything to use our image library
 set(ESTIA_IMAGE_PATH ${CMAKE_SOURCE_DIR}/lib/estia-image/estia-image CACHE STRING "estia_image directory")
 set(GETOPT_PATH ${CMAKE_SOURCE_DIR}/lib/getopt/getopt CACHE STRING "getopt directory")
@@ -12,9 +14,6 @@ include_directories( ${GETOPT_PATH}/include )
 # Need to rerun cmake . -B build to be sure they are in the correct folder
 AUX_SOURCE_DIRECTORY(${CMAKE_SOURCE_DIR}/src/ SOURCE_FILES)
 add_executable( freud ${SOURCE_FILES})
-
-message( ${ESTIA_IMAGE_PATH} )
-message( ${GETOPT_PATH} )
 
 # Find the Library
 find_library(ESTIA_IMAGE_LIB

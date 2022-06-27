@@ -3,7 +3,7 @@ repositories
 dolos*
 node_modules/
 executables/
-
+pgi-*
 # Editors
 .vscode/
 .idea/
