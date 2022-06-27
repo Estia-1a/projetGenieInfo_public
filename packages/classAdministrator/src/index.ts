@@ -92,6 +92,7 @@ async function getAllTeams(octokit: Octokit): Promise<teamsResponse> {
       if (commits.length > 0) {
         team.repository = repository?.name || "";
         classroom.repository.set(team.slug, repository);
+        console.log("git clone " + repository.git_url);
         return true;
       }
     }
@@ -114,7 +115,6 @@ async function getWriteContent(
       owner: classroom.organisation,
       repo: repositoryName,
       path: `src/${path}`,
-      ref: "main",
     });
     if (file instanceof Array && file[0].type === "file") {
       return await writeFile(
@@ -141,7 +141,8 @@ async function getSourceCode(octokit: Octokit) {
       for (const file of files) {
         const time = new Date().getTime();
         await getWriteContent(team, repository.name, file.name);
-        while (new Date().getTime() - time < 30) {}
+        while (new Date().getTime() - time < 100) {}
+        return;
       }
     }
   }
@@ -165,17 +166,20 @@ async function getRooster(octokit: Octokit) {
 //For each folder in the repositories folder, append all files into a single file
 async function prepareDolos() {
   await mkdir(`./dolos`, { recursive: true });
-  const folders = await readdir(`./repositories`);
+  const folders = await readdir(`./repositories/`);
   for (const folder of folders) {
     try {
-      let files = await readdir(`./repositories/${folder}`);
+      let files = await readdir(`./repositories/${folder}/src`);
       files = files.sort();
       const content = await Promise.all(
-        files.map(async (file) =>
-          readFile(`./repositories/${folder}/${file}`, "utf8").then(
-            (data) => `/*${file}*/\n\n ${data}`
-          )
-        )
+        files.map(async (file) => {
+          if (file == "features.c")
+            return readFile(
+              `./repositories/${folder}/src/${file}`,
+              "utf8"
+            ).then((data) => `/*${file}*/\n\n ${data}`);
+          else return "";
+        })
       );
       writeFile(
         `./dolos/${folder}-sources.c`,
@@ -213,9 +217,9 @@ console.log("Running Test Connection");
 if (process.argv.length > 2) {
   await run(process.argv[2]);
 } else {
-  await run("test");
-  //await run("teams");
+  // await run("test");
+  // await run("teams");
   // await run("rooster");
-  await run("source");
+  // await run("source");
   await prepareDolos();
 }
