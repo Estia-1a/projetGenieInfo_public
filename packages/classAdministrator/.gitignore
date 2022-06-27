@@ -2,6 +2,7 @@ result
 repositories
 dolos*
 node_modules/
+executables/
 
 # Editors
 .vscode/
