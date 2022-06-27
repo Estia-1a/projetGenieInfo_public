@@ -1,5 +1,6 @@
 result
-
+repositories
+dolos*
 node_modules/
 
 # Editors

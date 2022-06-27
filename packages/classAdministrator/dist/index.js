@@ -1,45 +1,170 @@
-var __awaiter = (this && this.__awaiter) || function (thisArg, _arguments, P, generator) {
-    function adopt(value) { return value instanceof P ? value : new P(function (resolve) { resolve(value); }); }
-    return new (P || (P = Promise))(function (resolve, reject) {
-        function fulfilled(value) { try { step(generator.next(value)); } catch (e) { reject(e); } }
-        function rejected(value) { try { step(generator["throw"](value)); } catch (e) { reject(e); } }
-        function step(result) { result.done ? resolve(result.value) : adopt(result.value).then(fulfilled, rejected); }
-        step((generator = generator.apply(thisArg, _arguments || [])).next());
-    });
-};
-import { config } from "dotenv";
 import { Octokit } from "octokit";
+import { init } from "./init.js";
+import { writeFile, mkdir, readdir, readFile } from "fs/promises";
+const octokit = new Octokit();
+const classroom = {
+    organisation: "Estia-1a",
+    repositoryPrefix: "pgi-2022",
+    teams: [],
+    repository: new Map(),
+};
 /**
  *
  * @param mode Which mode ro run
  */
-function run(mode) {
-    return __awaiter(this, void 0, void 0, function* () {
-        init();
-        switch (mode) {
-            case "test":
-                test();
-                break;
-            case "rooster":
-                yield getRooster();
+async function run(mode) {
+    const octokit = init();
+    switch (mode) {
+        case "test":
+            await testConnection(octokit);
+            break;
+        case "teams":
+            await getAllTeams(octokit);
+            break;
+        case "rooster":
+            if (classroom.teams.length == 0)
+                await getAllTeams(octokit);
+            await getRooster(octokit);
+            break;
+        case "source":
+            if (classroom.teams.length == 0)
+                await getAllTeams(octokit);
+            await getSourceCode(octokit);
+            break;
+    }
+}
+async function asyncFilter(arr, predicate) {
+    return Promise.all(arr.map(predicate)).then((results) => arr.filter((_v, index) => results[index]));
+}
+//Get all the team that have a repository for the project
+async function getAllTeams(octokit) {
+    const repos = new Map();
+    classroom.repository = repos;
+    //Compare: https://docs.github.com/en/rest/reference/teams#list-organization-teams
+    const teams = (await octokit.paginate(octokit.rest.teams.list, {
+        org: classroom.organisation,
+        per_page: 100,
+    }));
+    //Filter teams that don't have the correct repository
+    classroom.teams = await asyncFilter(teams, async (team) => {
+        const { data: repositories } = await octokit.rest.teams.listReposInOrg({
+            team_slug: team.slug,
+            org: classroom.organisation,
+        });
+        const repository = repositories.find((repo) => repo.name.startsWith(classroom.repositoryPrefix));
+        if (repository?.name) {
+            //get commits from repository
+            const { data: commits } = await octokit.rest.repos.listCommits({
+                owner: classroom.organisation,
+                repo: repository.name,
+            });
+            if (commits.length > 0) {
+                team.repository = repository?.name || "";
+                classroom.repository.set(team.slug, repository);
+                return true;
+            }
         }
+        return false;
     });
+    console.log("Got %d teams", classroom.teams.length);
+    console.log("Got %d repositorys", classroom.repository.size);
+    classroom.teams = teams;
+    return teams;
 }
-function getRooster() {
-    return __awaiter(this, void 0, void 0, function* () {
-        return true;
-    });
+// Get the source code for all the teams
+async function getWriteContent(team, repositoryName, path) {
+    try {
+        const { data: file } = await octokit.rest.repos.getContent({
+            owner: classroom.organisation,
+            repo: repositoryName,
+            path: `src/${path}`,
+            ref: "main",
+        });
+        if (file instanceof Array && file[0].type === "file") {
+            return await writeFile(`./repositories/${team}/${file[0].name}`, Buffer.from(file[0].content || "", "base64"));
+        }
+    }
+    catch (e) {
+        console.log(e);
+        return Promise.resolve();
+    }
 }
-function test() {
-    return __awaiter(this, void 0, void 0, function* () {
-        // Create a personal access token at https://github.com/settings/tokens/new?scopes=repo
-        const octokit = new Octokit({ auth: process.env.GITHUB_TOKEN });
-        // Compare: https://docs.github.com/en/rest/reference/users#get-the-authenticated-user
-        const { data: { login }, } = yield octokit.rest.users.getAuthenticated();
-        console.log("Hello, %s", login);
-    });
+async function getSourceCode(octokit) {
+    for (const [team, repository] of classroom.repository) {
+        mkdir(`./repositories/${team}`, { recursive: true });
+        const { data: files } = await octokit.rest.repos.getContent({
+            owner: classroom.organisation,
+            repo: repository.name,
+            path: "src",
+            ref: "main",
+        });
+        if (files instanceof Array) {
+            for (const file of files) {
+                const time = new Date().getTime();
+                await getWriteContent(team, repository.name, file.name);
+                while (new Date().getTime() - time < 30) { }
+            }
+        }
+    }
 }
-function init() {
-    config();
+async function getRooster(octokit) {
+    //Get all teams
+    if (classroom.teams === undefined)
+        await getAllTeams(octokit);
+    for (const team of classroom.teams) {
+        //Get list of repositories of a team
+        const { data: members } = await octokit.rest.teams.listMembersInOrg({
+            team_slug: team.slug,
+            org: classroom.organisation,
+        });
+        for (const member of members) {
+            console.log(`${member.login} is a member of ${team.repository}`);
+        }
+    }
+    return true;
 }
-run("test");
+//For each folder in the repositories folder, append all files into a single file
+async function prepareDolos() {
+    await mkdir(`./dolos`, { recursive: true });
+    const folders = await readdir(`./repositories`);
+    for (const folder of folders) {
+        try {
+            let files = await readdir(`./repositories/${folder}`);
+            files = files.sort();
+            const content = await Promise.all(files.map(async (file) => readFile(`./repositories/${folder}/${file}`, "utf8").then((data) => `/*${file}*/\n\n ${data}`)));
+            writeFile(`./dolos/${folder}-sources.c`, content.sort().join("\n\n"), "utf8");
+        }
+        catch (error) {
+            //Print the name of the team with an error
+            console.log(`${folder} error ${error}`);
+        }
+    }
+}
+async function testConnection(octokit) {
+    // Compare: https://docs.github.com/en/rest/reference/users#get-the-authenticated-user
+    console.log(process.env.GITHUB_TOKEN);
+    const { data: { login }, } = await octokit.rest.users.getAuthenticated();
+    console.log("Hello, %s", login);
+    const { headers } = await octokit.request("HEAD /");
+    if (headers) {
+        const scopes = headers["x-oauth-scopes"]
+            ?.split(", ")
+            .filter((str) => str.length > 0);
+        if (scopes?.length == 0) {
+            console.error("Github token not set");
+            console.error("export GITHUB_TOKEN=<token>");
+            process.abort();
+        }
+    }
+}
+console.log("Running Test Connection");
+if (process.argv.length > 2) {
+    await run(process.argv[2]);
+}
+else {
+    await run("test");
+    //await run("teams");
+    // await run("rooster");
+    await run("source");
+    await prepareDolos();
+}
