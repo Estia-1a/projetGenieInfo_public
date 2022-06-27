@@ -13,7 +13,7 @@ async function runTest(config, test) {
     options.listeners.stdout = listenerOutput(test, "stdout");
     options.listeners.stderr = listenerOutput(test, "stderr");
     options.silent = true;
-    const cwd = `${config.buildDirectory}/run/${uuid++}`;
+    const cwd = `${config.buildDirectory}/run/${test.feature}/${uuid++}`;
     await io.mkdirP(cwd);
     options.cwd = cwd;
     await exec.exec(
@@ -112,8 +112,8 @@ export async function testComparator(config) {
   const { exitCode, stdout } = await exec.getExecOutput(
     config.comparatorPath,
     [
-      resolve(config.testPath, "input/b_32x32.bmp"),
-      resolve(config.testPath, "input/b_32x32.bmp"),
+      resolve(config.testPath, "input/black_8x8.bmp"),
+      resolve(config.testPath, "input/black_8x8.bmp"),
     ],
     { silent: true }
   );
