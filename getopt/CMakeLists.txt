@@ -1,4 +1,4 @@
-cmake_minimum_required(VERSION 3.20)
+cmake_minimum_required(VERSION 3.16)
 project(getopt VERSION 1.0.1 DESCRIPTION "getopt library to ease the reading and wrinting of paremeters")
 set(INSTALL_DESTINATION ${CMAKE_SOURCE_DIR}/getopt CACHE STRING "Install directory")
 # The meat of the cmake file

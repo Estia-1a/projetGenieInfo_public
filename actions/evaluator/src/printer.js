@@ -13,7 +13,17 @@ export async function printReport(testsObject) {
   const resultat = computeSummary(testsObject);
   const markdown = createMarkdownOutput(resultat);
   await logSummary(markdown, timestamp);
-  console.table(resultat);
+  console.table(resultat, ["score", "count"]);
+
+  console.log(
+    "Summary::",
+    Object.entries(resultat)
+      .map(
+        ([name, milestone]) =>
+          `${name}, ${Math.floor((100 * milestone.score) / milestone.count)}%`
+      )
+      .join(",")
+  );
 
   core.setOutput("date", dateString());
   core.setOutput("markdown", markdown);
