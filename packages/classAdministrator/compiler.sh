@@ -1,4 +1,5 @@
-DESTINATION_DIR=/workspaces/projetGenieInfo_public/packages/classAdministrator/pgi-2022
+ROOT_DIR=$(readlink -f ../..)
+DESTINATION_DIR=$ROOT_DIR/packages/classAdministrator/pgi-$(date '+%Y')
 INSTALL_DIR=$DESTINATION_DIR/executables
 ERROR_DIR=$DESTINATION_DIR/errors
 WARNING_DIR=$DESTINATION_DIR/warnings
@@ -8,13 +9,13 @@ while [ $# -gt 0 ]
 do
     cd $1 
     ## Copy the right makefile 
-    cp /workspaces/projetGenieInfo_public/CMake/CMakeLists.txt .
+    cp $ROOT_DIR/CMake/CMakeLists.txt .
     ## Clean Configuration
     rm -rf build 
     ## Configure cmake
     cmake \
-        -D ESTIA_IMAGE_PATH="/workspaces/projetGenieInfo_public/estia-image/estia-image/" \
-        -D GETOPT_PATH="/workspaces/projetGenieInfo_public/getopt/getopt/" \
+        -D ESTIA_IMAGE_PATH="$ROOT_DIR/estia-image/estia-image/" \
+        -D GETOPT_PATH="$ROOT_DIR/getopt/getopt/" \
         -D INSTALL_DIR=$INSTALL_DIR/$(basename $1)\
         -B build .  > /dev/null 
     ## Build
