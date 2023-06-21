@@ -2,6 +2,7 @@ cmake_minimum_required(VERSION 3.15)
 project(freud VERSION 1.0.1 DESCRIPTION "freud is an image analyst")
 set(CMAKE_INSTALL_MESSAGE LAZY)
 set(CMAKE_MESSAGE_LOG_LEVEL "ERROR")
+
 # Set everything to use our image library
 set(ESTIA_IMAGE_PATH ${CMAKE_SOURCE_DIR}/lib/estia-image/estia-image CACHE STRING "estia_image directory")
 set(GETOPT_PATH ${CMAKE_SOURCE_DIR}/lib/getopt/getopt CACHE STRING "getopt directory")
@@ -32,7 +33,7 @@ find_library(GETOPT_LIB
 target_link_libraries( freud PUBLIC ${ESTIA_IMAGE_LIB})
 target_link_libraries( freud PUBLIC ${GETOPT_LIB})
 
-
+target_compile_options(freud PRIVATE -Wno-implicit-function-declaration )
 include(CheckLibraryExists)
 
 CHECK_LIBRARY_EXISTS(m sin "" HAVE_LIB_M)
