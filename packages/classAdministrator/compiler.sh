@@ -4,10 +4,12 @@ INSTALL_DIR=$DESTINATION_DIR/executables
 ERROR_DIR=$DESTINATION_DIR/errors
 WARNING_DIR=$DESTINATION_DIR/warnings
 
+
 ## While there is argument in the command line echo the argument and remove it from the command line
 while [ $# -gt 0 ]
 do
     cd $1 
+    git reset --hard origin/main --quiet
     ## Copy the right makefile 
     cp $ROOT_DIR/CMake/CMakeLists.txt .
     ## Clean Configuration
@@ -24,7 +26,7 @@ do
     if [ ! -f $INSTALL_DIR/$(basename $1)/freud ]
     then
         # PRint error in red 
-        echo -e "\e[31mError in the build of $(basename $1)\e[0m"
+        echo -e "\033[31mError in the build of $(basename $1)\033[0m"
         mkdir -p $ERROR_DIR/$(basename $1)
         cp  error.log  $ERROR_DIR/$(basename $1)/error.log        
     else
@@ -32,12 +34,12 @@ do
         if [ -s error.log ]
         then
             #echo Build of $(basename $1) is OK in yellow
-            echo -e "\e[33mBuild of $(basename $1) is Ok with warning\e[0m"
+            echo -e "\033[33mBuild of $(basename $1) is Ok with warning\033[0m"
             mkdir -p $WARNING_DIR/$(basename $1)
             cp  error.log $WARNING_DIR/$(basename $1)/error.log
         else 
             #print build of $(basename $1) is OK in green
-            echo -e "\e[32mBuild of $(basename $1) is OK\e[0m"
+            echo -e "\033[32mBuild of $(basename $1) is OK\033[0m"
         fi  
     fi
     cd - > /dev/null
