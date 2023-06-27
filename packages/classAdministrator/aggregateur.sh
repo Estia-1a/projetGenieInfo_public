@@ -55,7 +55,7 @@ for repository in */; do
   # Create the output file for the repository
   touch $OUTPUT_DIR/${repository_name}.c
 
-  black_list="argsparse.c argsparse.h configp.h utils.h"
+  black_list="argsparse.c argsparse.h configp.h utils.h main.c"
   #prefix src/
     # Aggregate the src files
   for src_file in src/*.c; do

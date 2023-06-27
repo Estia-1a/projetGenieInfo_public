@@ -44,7 +44,7 @@ do
     cd "$repo"
     #echo "#Processing $repo_name">> "$OUT"
     
-    git log --pretty=format:"%an,%cn,%ae,$team,\"%p\",\"%-s\",%ci" | grep -v "github" >> "$OUT"
+    git log --pretty=format:"%an,%cn,%ae,$team,\"%p\",\"%-s\",%ci" >> "$OUT"
     # echo empty csv line
     echo "" >> "$OUT"
     cd - >> /dev/null;
