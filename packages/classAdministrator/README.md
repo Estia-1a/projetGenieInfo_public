@@ -7,3 +7,8 @@ The class administrator manages several function
 - Ask the evaluator to grade the students
 - Publish grade per student
 - Publish grade per group
+
+## How to use
+
+./updater.sh -r pgi-2023/repositories -d 2023-06-24
+./compiler.sh repositoryPath/\*

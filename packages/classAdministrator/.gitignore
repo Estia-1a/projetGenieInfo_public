@@ -1,5 +1,6 @@
 result
 repositories
+pgi-*/*/
 dolos*
 node_modules/
 executables/
