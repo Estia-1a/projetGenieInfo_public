@@ -9,7 +9,15 @@ WARNING_DIR=$DESTINATION_DIR/warnings
 while [ $# -gt 0 ]
 do
     cd $1 
-    git reset --hard origin/main --quiet
+    ## Check if the current directory is a git repository
+    if [ ! -d .git ]
+    then
+        echo -e "\033[31m$(basename $1) is not a git repository\033[0m"
+        shift
+        continue
+    fi
+    
+    # git reset --hard origin/main --quiet
     ## Copy the right makefile 
     cp $ROOT_DIR/CMake/CMakeLists.txt .
     ## Clean Configuration
