@@ -17,7 +17,8 @@ async function run() {
     const testsDirectory = core.getInput("testsDirectory");
     const executableName = core.getInput("executableName");
     const comparatorPath = core.getInput("comparatorPath");
-    const executablePath = resolve(buildDirectory, executableName);
+    const executablePath =
+      "timeout 0.5s " + resolve(buildDirectory, executableName);
     const config = {
       buildDirectory: resolve(buildDirectory),
       executablePath: executablePath,
