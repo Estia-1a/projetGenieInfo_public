@@ -22,7 +22,7 @@ done
 if [ -z "$OUT" ]
 then
 
-    OUT="commits_students.csv"
+    OUT="commits_students-$(date '+%Y-%m-%d').csv"
 fi
 cwd=$(pwd)
 OUT="$cwd/$OUT"
@@ -32,15 +32,20 @@ echo "Author,Commiter, email, repo, Parents, Subject" > "$OUT"
 # Loop through repositories in src folder
 for repo in "$SRC"/*
 do
+    # check that repo is a directory containing a .git folder
+    if [ ! -d "$repo/.git" ]
+    then
+        continue
+    fi
     # Get repository name
     repo_name=$(basename "$repo")
     team=${repo_name#pgi-*-}
     # Loop through commits in repository
     cd "$repo"
     #echo "#Processing $repo_name">> "$OUT"
-    git pull 
-    git log --pretty=format:"%an,%cn,%ae,$team,\"%p\",\"%-s\"" | grep -v "github" >> "$OUT"
+    
+    git log --pretty=format:"%an,%cn,%ae,$team,\"%p\",\"%-s\",%ci" | grep -v "github" >> "$OUT"
     # echo empty csv line
     echo "" >> "$OUT"
-    cd -;
+    cd - >> /dev/null;
 done
