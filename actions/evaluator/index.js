@@ -30,6 +30,27 @@ async function run() {
     const testsObject = await loadTest();
     await runTestInParallel(config, testsObject);
     const score = computeScore(testsObject);
+
+    let status = "pass";
+    let tests = Object.values(testsObject.milestones).flat();
+    const result = {
+      version: 1,
+      status,
+      max_score: tests.length,
+      tests: tests.map((test) => {
+        return {
+          name: test.name,
+          status: test.score > 0.8 ? "pass" : "fail",
+          message: test.description,
+          test_code: test.feature,
+          filename: test.input,
+          line_no: 0,
+          execution_time: 0,
+          score: test.score,
+        };
+      }),
+    };
+    core.setOutput("result", btoa(JSON.stringify(result)));
     core.setOutput("grade", score);
 
     printReport(testsObject);
@@ -37,7 +58,46 @@ async function run() {
     core.endGroup();
     core.setFailed(error.message);
     core.setOutput("grade", 0);
+
+    let status = "error";
+    let tests = Object.values(testsObject.milestones).flat();
+    tests = tests.map((test) => {
+      return {
+        name: test.name,
+        status: "fail",
+        message: test.message,
+        test_code: test.feature,
+        filename: test.input,
+        line_no: 0,
+        execution_time: 0,
+        score: 0,
+      };
+    });
+    tests = tests.concat([
+      {
+        name: "Freud Version",
+        status: "fail",
+        message: error.message,
+        test_code: "",
+        filename: "",
+        line_no: 0,
+        execution_time: 0,
+        score: 0,
+      },
+    ]);
+
+    const result = {
+      version: 1,
+      status,
+      max_score: tests.length,
+      tests,
+    };
+    core.setOutput("result", btoa(JSON.stringify(result)));
   }
+}
+
+function btoa(str) {
+  return Buffer.from(str).toString("base64");
 }
 
 //Run a test TODO: implement test that compare a file
