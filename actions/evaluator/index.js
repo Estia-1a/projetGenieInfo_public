@@ -13,6 +13,9 @@ import { printReport } from "./src/printer.js";
 // most @actions toolkit packages have async methods
 async function run() {
   try {
+    console.log("Starting evaluation");
+    console.log("release/evaluator2024.1");
+
     const buildDirectory = core.getInput("buildDirectory");
     const testsDirectory = core.getInput("testsDirectory");
     const executableName = core.getInput("executableName");
