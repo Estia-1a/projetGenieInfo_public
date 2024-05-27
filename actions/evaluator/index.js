@@ -50,6 +50,10 @@ async function run() {
         };
       }),
     };
+    core.startGroup("Test Report");
+    console.log(result);
+    core.endGroup();
+
     core.setOutput("result", btoa(JSON.stringify(result)));
     core.setOutput("grade", score);
 
