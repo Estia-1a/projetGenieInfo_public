@@ -46,9 +46,9 @@ async function run() {
           status: test.score > 0.8 ? "pass" : "fail",
           message: test.description,
           test_code: test.feature,
-          filename: test.input,
+          filename: test.input.join(","),
           line_no: 0,
-          execution_time: 0,
+          execution_time: test.execution_time,
           score: test.score,
         };
       }),

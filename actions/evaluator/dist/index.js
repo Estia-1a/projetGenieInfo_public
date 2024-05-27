@@ -28680,6 +28680,7 @@ async function runTest(config, test) {
     const cwd = `${config.buildDirectory}/run/${test.feature}/${uuid++}`;
     await io.mkdirP(cwd);
     options.cwd = cwd;
+    let time = Date.now();
     await exec.exec(
       config.executablePath,
       [
@@ -28689,6 +28690,8 @@ async function runTest(config, test) {
       ],
       options
     );
+    time = Date.now() - time;
+    test.execution_time = time;
 
     if (test.type == "image") {
       options.listeners.stdout = listenerOutput(test, "image_comparator");
@@ -29169,9 +29172,9 @@ async function run() {
           status: test.score > 0.8 ? "pass" : "fail",
           message: test.description,
           test_code: test.feature,
-          filename: test.input,
+          filename: test.input.join(","),
           line_no: 0,
-          execution_time: 0,
+          execution_time: test.execution_time,
           score: test.score,
         };
       }),
