@@ -28592,6 +28592,8 @@ var __webpack_exports__ = {};
 
 // EXTERNAL MODULE: ./node_modules/@actions/core/lib/core.js
 var core = __nccwpck_require__(2186);
+// EXTERNAL MODULE: external "fs"
+var external_fs_ = __nccwpck_require__(7147);
 // EXTERNAL MODULE: ./node_modules/@actions/io/lib/io.js
 var io = __nccwpck_require__(7436);
 // EXTERNAL MODULE: ./node_modules/@actions/exec/lib/exec.js
@@ -28681,6 +28683,16 @@ async function runTest(config, test) {
     await io.mkdirP(cwd);
     options.cwd = cwd;
     let time = Date.now();
+    console.log(test.name);
+    console.log(
+      "   $ freud ",
+      [
+        "-f",
+        test.input[0], //Todo: change for multiple input test
+        ...test.options,
+      ].join(" ")
+    );
+
     await exec.exec(
       config.executablePath,
       [
@@ -28703,39 +28715,13 @@ async function runTest(config, test) {
         ],
         options
       );
-      console.log(test.name);
-      console.log(
-        "   $ freud ",
-        [
-          "-f",
-          test.input[0], //Todo: change for multiple input test
-          ...test.options,
-        ].join(" ")
-      );
+
       console.log("   >", test.image_comparator.trim());
     } else {
-      console.log(test.name);
-      console.log(
-        "   $ freud ",
-        [
-          "-f",
-          test.input[0], //Todo: change for multiple input test
-          ...test.options,
-        ].join(" ")
-      );
       console.log("   >", test.stdout.trim());
     }
     return test;
   } catch (error) {
-    console.log(test.name);
-    console.log(
-      "   $ freud ",
-      [
-        "-f",
-        test.input[0], //Todo: change for multiple input test
-        ...test.options,
-      ].join(" ")
-    );
     console.log("   >", test.stdout.trim());
     console.log("   >", test.stderr.trim());
     console.log("   >", error);
@@ -29136,6 +29122,7 @@ function createMarkdownOutput(resultat) {
 
 
 
+
 // most @actions toolkit packages have async methods
 async function run() {
   try {
@@ -29146,13 +29133,14 @@ async function run() {
     const testsDirectory = core.getInput("testsDirectory");
     const executableName = core.getInput("executableName");
     const comparatorPath = core.getInput("comparatorPath");
+    console.log("buildDirectory", buildDirectory);
     const executablePath =
       "timeout 0.5s " + (0,external_path_.resolve)(buildDirectory, executableName);
     const config = {
       buildDirectory: (0,external_path_.resolve)(buildDirectory),
       executablePath: executablePath,
       testPath: (0,external_path_.resolve)(testsDirectory),
-      comparatorPath: (0,external_path_.resolve)(comparatorPath),
+      comparatorPath: "timeout 0.5s " + (0,external_path_.resolve)(comparatorPath),
     };
     await testFreudVersion(config.executablePath);
     await testComparator(config);
@@ -29166,6 +29154,7 @@ async function run() {
       version: 1,
       status,
       max_score: tests.length,
+      score,
       tests: tests.map((test) => {
         return {
           name: test.name,
@@ -29179,11 +29168,15 @@ async function run() {
         };
       }),
     };
+    // Save the result as a json file
+
     core.startGroup("Test Report");
     console.log(result);
+
     core.endGroup();
 
     core.setOutput("result", btoa(JSON.stringify(result)));
+    external_fs_.writeFileSync("result.json", JSON.stringify(result, null, 2));
     core.setOutput("grade", score);
 
     printReport(testsObject);
@@ -29223,9 +29216,12 @@ async function run() {
       version: 1,
       status,
       max_score: tests.length,
+      score: 0,
       tests,
     };
+
     core.setOutput("result", btoa(JSON.stringify(result)));
+    external_fs_.writeFileSync("result.json", JSON.stringify(result, null, 2));
   }
 }
 

@@ -1,4 +1,5 @@
 import core from "@actions/core";
+import fs from "fs";
 
 import {
   testFreudVersion,
@@ -20,13 +21,14 @@ async function run() {
     const testsDirectory = core.getInput("testsDirectory");
     const executableName = core.getInput("executableName");
     const comparatorPath = core.getInput("comparatorPath");
+    console.log("buildDirectory", buildDirectory);
     const executablePath =
       "timeout 0.5s " + resolve(buildDirectory, executableName);
     const config = {
       buildDirectory: resolve(buildDirectory),
       executablePath: executablePath,
       testPath: resolve(testsDirectory),
-      comparatorPath: resolve(comparatorPath),
+      comparatorPath: "timeout 0.5s " + resolve(comparatorPath),
     };
     await testFreudVersion(config.executablePath);
     await testComparator(config);
@@ -40,6 +42,7 @@ async function run() {
       version: 1,
       status,
       max_score: tests.length,
+      score,
       tests: tests.map((test) => {
         return {
           name: test.name,
@@ -53,11 +56,15 @@ async function run() {
         };
       }),
     };
+    // Save the result as a json file
+
     core.startGroup("Test Report");
     console.log(result);
+
     core.endGroup();
 
     core.setOutput("result", btoa(JSON.stringify(result)));
+    fs.writeFileSync("result.json", JSON.stringify(result, null, 2));
     core.setOutput("grade", score);
 
     printReport(testsObject);
@@ -97,9 +104,12 @@ async function run() {
       version: 1,
       status,
       max_score: tests.length,
+      score: 0,
       tests,
     };
+
     core.setOutput("result", btoa(JSON.stringify(result)));
+    fs.writeFileSync("result.json", JSON.stringify(result, null, 2));
   }
 }
 
