@@ -29,5 +29,5 @@ outputs:
   date: # output will be available to future steps
     description: "Evaluation date"
 runs:
-  using: "node16"
+  using: "node20"
   main: "dist/index.js"

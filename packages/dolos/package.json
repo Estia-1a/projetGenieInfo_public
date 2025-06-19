@@ -1,0 +1,15 @@
+{
+  "type": "module",
+  "name": "jude",
+  "version": "1.0.0",
+  "description": "Don'T let me down ",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "author": "dhmmasson",
+  "license": "MIT",
+  "dependencies": {
+    "papaparse": "^5.3.2"
+  }
+}

@@ -38,6 +38,7 @@ int write_image_data(const char *filename, unsigned char *data, int width, int h
       case MODE_PNG:
         return stbi_write_png(filename, width, height, RGB_COMP, data, width*RGB_COMP);
     }
+    return stbi_write_bmp("image_out.bmp", width, height, RGB_COMP, data);
     return 0;
 }
 

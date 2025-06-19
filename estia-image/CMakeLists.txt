@@ -1,4 +1,4 @@
-cmake_minimum_required(VERSION 3.20)
+cmake_minimum_required(VERSION 3.15)
 project(estia-image VERSION 2.0.1 DESCRIPTION "estia-image libray to open and write image files")
 set(INSTALL_DESTINATION ${CMAKE_SOURCE_DIR}/estia-image CACHE STRING "Install directory")
 

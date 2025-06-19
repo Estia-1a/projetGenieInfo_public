@@ -16,6 +16,17 @@ async function runTest(config, test) {
     const cwd = `${config.buildDirectory}/run/${test.feature}/${uuid++}`;
     await io.mkdirP(cwd);
     options.cwd = cwd;
+    let time = Date.now();
+    console.log(test.name);
+    console.log(
+      "   $ freud ",
+      [
+        "-f",
+        test.input[0], //Todo: change for multiple input test
+        ...test.options,
+      ].join(" ")
+    );
+
     await exec.exec(
       config.executablePath,
       [
@@ -25,6 +36,8 @@ async function runTest(config, test) {
       ],
       options
     );
+    time = Date.now() - time;
+    test.execution_time = time;
 
     if (test.type == "image") {
       options.listeners.stdout = listenerOutput(test, "image_comparator");
@@ -36,39 +49,13 @@ async function runTest(config, test) {
         ],
         options
       );
-      console.log(test.name);
-      console.log(
-        "   $ freud ",
-        [
-          "-f",
-          test.input[0], //Todo: change for multiple input test
-          ...test.options,
-        ].join(" ")
-      );
+
       console.log("   >", test.image_comparator.trim());
     } else {
-      console.log(test.name);
-      console.log(
-        "   $ freud ",
-        [
-          "-f",
-          test.input[0], //Todo: change for multiple input test
-          ...test.options,
-        ].join(" ")
-      );
       console.log("   >", test.stdout.trim());
     }
     return test;
   } catch (error) {
-    console.log(test.name);
-    console.log(
-      "   $ freud ",
-      [
-        "-f",
-        test.input[0], //Todo: change for multiple input test
-        ...test.options,
-      ].join(" ")
-    );
     console.log("   >", test.stdout.trim());
     console.log("   >", test.stderr.trim());
     console.log("   >", error);

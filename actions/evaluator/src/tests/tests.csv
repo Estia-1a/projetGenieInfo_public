@@ -3,20 +3,20 @@ dimension,Dimension 64x64,1,Test if the dimension feature is working,,stdout,rgb
 dimension,Dimension 1x1,3,Test if the dimension feature is working for one by one files,,stdout,r_1x1.bmp,1 1,,Tutorial
 dimension,Dimension 32x64,2,Test if the dimension feature is working,,stdout,rgbw_32x64.bmp,32 64,,Tutorial
 dimension,Dimension 64x32,2,Test if the dimension feature is working,,stdout,rgbw_64x32.bmp,64 32,,Tutorial
-first_pixel,"First Pixel 64x64 : 255, 0, 0",1,Check first pixel on 32x32 : should be red,,stdout,rgbw_64x64.bmp,255 0 0,,Tutorial
-first_pixel,"First Pixel Red : 255, 0, 0",1,Check first pixel on 32x32 red image,,stdout,red_8x8.bmp,255 0 0,,Tutorial
-first_pixel,"First Pixel Green : 0, 255, 0",1,Check first pixel on 32x32 green image,,stdout,green_8x8.bmp,0 255 0,,Tutorial
-first_pixel,"First Pixel Blue : 0, 0, 255",1,Check first pixel on 32x32 blue image,,stdout,blue_8x8.bmp,0 0 255,,Tutorial
-first_pixel,"First Pixel 1 2 3 : 1, 2, 3",3,Check first pixel on 8x8 image,,stdout,first_pixel_1_2_3_8x8.bmp,1 2 3,,Tutorial
-tenth_pixel,"Tenth Pixel 64x64 : 255, 0, 0",1,Check tenth pixel on 32x32 red image,,stdout,rgbw_64x64.bmp,255 0 0,,Tutorial
-tenth_pixel,"Tenth Pixel Red : 255, 0, 0",1,Check tenth pixel on 32x32 red image,,stdout,red_8x8.bmp,255 0 0,,Tutorial
-tenth_pixel,"Tenth Pixel Green : 0, 255, 0",1,Check tenth pixel on 32x32 green image,,stdout,green_8x8.bmp,0 255 0,,Tutorial
-tenth_pixel,"Tenth Pixel Blue : 0, 0, 255",1,Check tenth pixel on 32x32 blue image,,stdout,blue_8x8.bmp,0 0 255,,Tutorial
-tenth_pixel,"Tenth Pixel 11 12 13 : 1, 2, 3",3,Check tenth pixel on 10x8 image,,stdout,tenth_pixel_11_12_13_10x8.bmp,11 12 13,,Tutorial
-second_line,"Second line First Pixel 64x64 : 255, 0, 0",1,Check first pixel on the second line on 32x32 : should be red,,stdout,rgbw_64x64.bmp,255 0 0,,Tutorial
-second_line,"Second line First Pixel Red : 255, 0, 0",1,Check first pixel on the second line on 32x32 red image,,stdout,red_8x8.bmp,255 0 0,,Tutorial
-second_line,"Second line First Pixel Green : 0, 255, 0",1,Check first pixel on the second line on 32x32 green image,,stdout,green_8x8.bmp,0 255 0,,Tutorial
-second_line,"Second line First Pixel Blue : 0, 0, 255",1,Check first pixel on the second line on 32x32 blue image,,stdout,blue_8x8.bmp,0 0 255,,Tutorial
+first_pixel,"First Pixel 64x64 : 255,0,0",1,Check first pixel on 32x32 : should be red,,stdout,rgbw_64x64.bmp,255 0 0,,Tutorial
+first_pixel,"First Pixel Red : 255,0,0",1,Check first pixel on 32x32 red image,,stdout,red_8x8.bmp,255 0 0,,Tutorial
+first_pixel,"First Pixel Green : 0,255,0",1,Check first pixel on 32x32 green image,,stdout,green_8x8.bmp,0 255 0,,Tutorial
+first_pixel,"First Pixel Blue : 0,0,255",1,Check first pixel on 32x32 blue image,,stdout,blue_8x8.bmp,0 0 255,,Tutorial
+first_pixel,"First Pixel 1 2 3 : 1,2,3",3,Check first pixel on 8x8 image,,stdout,first_pixel_1_2_3_8x8.bmp,1 2 3,,Tutorial
+tenth_pixel,"Tenth Pixel 64x64 : 255,0,0",1,Check tenth pixel on 32x32 red image,,stdout,rgbw_64x64.bmp,255 0 0,,Tutorial
+tenth_pixel,"Tenth Pixel Red : 255,0,0",1,Check tenth pixel on 32x32 red image,,stdout,red_8x8.bmp,255 0 0,,Tutorial
+tenth_pixel,"Tenth Pixel Green : 0,255,0",1,Check tenth pixel on 32x32 green image,,stdout,green_8x8.bmp,0 255 0,,Tutorial
+tenth_pixel,"Tenth Pixel Blue : 0,0,255",1,Check tenth pixel on 32x32 blue image,,stdout,blue_8x8.bmp,0 0 255,,Tutorial
+tenth_pixel,"Tenth Pixel 11 12 13 : 1,2,3",3,Check tenth pixel on 10x8 image,,stdout,tenth_pixel_11_12_13_10x8.bmp,11 12 13,,Tutorial
+second_line,"Second line First Pixel 64x64 : 255,0,0",1,Check first pixel on the second line on 32x32 : should be red,,stdout,rgbw_64x64.bmp,255 0 0,,Tutorial
+second_line,"Second line First Pixel Red : 255,0,0",1,Check first pixel on the second line on 32x32 red image,,stdout,red_8x8.bmp,255 0 0,,Tutorial
+second_line,"Second line First Pixel Green : 0,255,0",1,Check first pixel on the second line on 32x32 green image,,stdout,green_8x8.bmp,0 255 0,,Tutorial
+second_line,"Second line First Pixel Blue : 0,0,255",1,Check first pixel on the second line on 32x32 blue image,,stdout,blue_8x8.bmp,0 0 255,,Tutorial
 second_line,Second line First Pixel 21 22 23,3,Check first pixel on the second line on 8x8 image,,stdout,second_line_21_22_23_8x8.bmp,21 22 23,,Tutorial
 print_pixel,"Print Pixel (0,0) : 0,0,0",3,Get the first pixel on 8x8 image,0 0,stdout,get_pixel_x0_y0_n_8x8.bmp,0 0 0,0 0,Tutorial
 print_pixel,"Print Pixel (2,3) : 20,30,26",3,"Get the pixel of coordinate 2,3 on 8x8 image",2 3,stdout,get_pixel_x0_y0_n_8x8.bmp,20 30 26,2 3,Tutorial
@@ -41,48 +41,48 @@ min_component B,Min Component B of white 8x8,1,Get the min component of a white 
 min_component B,Min Component 2 0 5,3,Get the min component at 2 0,,stdout,minComponentB_2_0_5.bmp,5,2 0,statistiques
 max_component R,Max Component R of black 8x8,1,Get the max component of a black image,,stdout,black_8x8.bmp,0,0 0,statistiques
 max_component R,Max Component R of white 8x8,1,Get the max component of a white image,,stdout,white_8x8.bmp,255,0 0,statistiques
-max_component R,Max Component 2 0 255 ,3,Get the max component at 2 0,,stdout,maxComponentR_2_0_255.bmp,250,2 0,statistiques
+max_component R,"Max Component 2 0 255",3,Get the max component at 2 0,,stdout,maxComponentR_2_0_255.bmp,250,2 0,statistiques
 max_component G,Max Component G of black 8x8,1,Get the max component of a black image,,stdout,black_8x8.bmp,0,0 0,statistiques
 max_component G,Max Component G of white 8x8,1,Get the max component of a white image,,stdout,white_8x8.bmp,255,0 0,statistiques
-max_component G,Max Component 2 0 255 ,3,Get the max component at 2 0,,stdout,maxComponentG_2_0_255.bmp,250,2 0,statistiques
+max_component G,"Max Component 2 0 255",3,Get the max component at 2 0,,stdout,maxComponentG_2_0_255.bmp,250,2 0,statistiques
 max_component B,Max Component B of black 8x8,1,Get the max component of a black image,,stdout,black_8x8.bmp,0,0 0,statistiques
 max_component B,Max Component B of white 8x8,1,Get the max component of a white image,,stdout,white_8x8.bmp,255,0 0,statistiques
-max_component B,Max Component 2 0 255 ,3,Get the max component at 2 0,,stdout,maxComponentB_2_0_255.bmp,250,2 0,statistiques
-color_red,Convert red image to RED,1,Test if working on an  red Image ,,image,red_8x8.bmp,red_8x8.bmp,,colors
-color_red,Convert blue image to RED,1,Test if working on an  blue Image ,,image,blue_8x8.bmp,black_8x8.bmp,,colors
-color_red,Convert green Image to RED,1,Test if working on an  green Image ,,image,green_8x8.bmp,black_8x8.bmp,,colors
-color_red,Convert white Image to RED,1,Test if working on an  white Image ,,image,white_8x8.bmp,red_8x8.bmp,,colors
-color_red,convert black Image to RED,1,Test if working on an  black Image ,,image,black_8x8.bmp,black_8x8.bmp,,colors
-color_blue,Convert red image to BLUE,1,Test if working on an  red Image ,,image,red_8x8.bmp,black_8x8.bmp,,colors
-color_blue,Convert blue image to BLUE,1,Test if working on an  blue Image ,,image,blue_8x8.bmp,blue_8x8.bmp,,colors
-color_blue,Convert green Image to BLUE,1,Test if working on an  green Image ,,image,green_8x8.bmp,black_8x8.bmp,,colors
-color_blue,Convert white Image to BLUE,1,Test if working on an  white Image ,,image,white_8x8.bmp,blue_8x8.bmp,,colors
-color_blue,convert black Image to BLUE,1,Test if working on an  black Image ,,image,black_8x8.bmp,black_8x8.bmp,,colors
-color_green,Convert red image to GREEN,1,Test if working on an  red Image ,,image,red_8x8.bmp,black_8x8.bmp,,colors
-color_green,Convert blue image to GREEN,1,Test if working on an  blue Image ,,image,blue_8x8.bmp,black_8x8.bmp,,colors
-color_green,Convert green Image to GREEN,1,Test if working on an  green Image ,,image,green_8x8.bmp,green_8x8.bmp,,colors
-color_green,Convert white Image to GREEN,1,Test if working on an  white Image ,,image,white_8x8.bmp,green_8x8.bmp,,colors
-color_green,convert black Image to GREEN,1,Test if working on an  black Image ,,image,black_8x8.bmp,black_8x8.bmp,,colors
-color_gray,Convert red image to GRAY,1,Test if working on an  red Image ,,image,red_8x8.bmp,gray85_8x8.bmp,,colors
-color_gray,Convert blue image to GRAY,1,Test if working on an  blue Image ,,image,blue_8x8.bmp,gray85_8x8.bmp,,colors
-color_gray,Convert green Image to GRAY,1,Test if working on an  green Image ,,image,green_8x8.bmp,gray85_8x8.bmp,,colors
-color_gray,Convert white Image to GRAY,1,Test if working on an  white Image ,,image,white_8x8.bmp,white_8x8.bmp,,colors
-color_gray,convert black Image to GRAY,1,Test if working on an  black Image ,,image,black_8x8.bmp,black_8x8.bmp,,colors
-color_invert,Invert red image,1,Test if working on an  red Image ,,image,red_8x8.bmp,cyan_8x8.bmp,,colors
-color_invert,Invert blue image,1,Test if working on an  blue Image ,,image,blue_8x8.bmp,yellow_8x8.bmp,,colors
-color_invert,Invert green Image,1,Test if working on an  green Image ,,image,green_8x8.bmp,magenta_8x8.bmp,,colors
-color_invert,Invert white Image,1,Test if working on an  white Image ,,image,white_8x8.bmp,black_8x8.bmp,,colors
-color_invert,Invert black Image,1,Test if working on an  black Image ,,image,black_8x8.bmp,white_8x8.bmp,,colors
-color_gray_luminance,Convert red image to GRAY,1,Test if working on an  red Image ,,image,red_8x8.bmp,gray53_8x8.bmp,,colors
-color_gray_luminance,Convert blue image to GRAY,1,Test if working on an  blue Image ,,image,blue_8x8.bmp,gray17_8x8.bmp,,colors
-color_gray_luminance,Convert green Image to GRAY,1,Test if working on an  green Image ,,image,green_8x8.bmp,gray183_8x8.bmp,,colors
-color_gray_luminance,Convert white Image to GRAY,1,Test if working on an  white Image ,,image,white_8x8.bmp,white_8x8.bmp,,colors
-color_gray_luminance,convert black Image to GRAY,1,Test if working on an  black Image ,,image,black_8x8.bmp,black_8x8.bmp,,colors
-color_desaturate,Convert red image to GRAY,1,Test if working on an  red Image ,,image,red_8x8.bmp,gray127_8x8.bmp,,colors
-color_desaturate,Convert blue image to GRAY,1,Test if working on an  blue Image ,,image,blue_8x8.bmp,gray127_8x8.bmp,,colors
-color_desaturate,Convert green Image to GRAY,1,Test if working on an  green Image ,,image,green_8x8.bmp,gray127_8x8.bmp,,colors
-color_desaturate,Convert white Image to GRAY,1,Test if working on an  white Image ,,image,white_8x8.bmp,white_8x8.bmp,,colors
-color_desaturate,convert black Image to GRAY,1,Test if working on an  black Image ,,image,black_8x8.bmp,black_8x8.bmp,,colors
+max_component B,"Max Component 2 0 255",3,Get the max component at 2 0,,stdout,maxComponentB_2_0_255.bmp,250,2 0,statistiques
+color_red,Convert red image to RED,1,"Test if working on an  red Image",,image,red_8x8.bmp,red_8x8.bmp,,colors
+color_red,Convert blue image to RED,1,"Test if working on an  blue Image",,image,blue_8x8.bmp,black_8x8.bmp,,colors
+color_red,Convert green Image to RED,1,"Test if working on an  green Image",,image,green_8x8.bmp,black_8x8.bmp,,colors
+color_red,Convert white Image to RED,1,"Test if working on an  white Image",,image,white_8x8.bmp,red_8x8.bmp,,colors
+color_red,convert black Image to RED,1,"Test if working on an  black Image",,image,black_8x8.bmp,black_8x8.bmp,,colors
+color_blue,Convert red image to BLUE,1,"Test if working on an  red Image",,image,red_8x8.bmp,black_8x8.bmp,,colors
+color_blue,Convert blue image to BLUE,1,"Test if working on an  blue Image",,image,blue_8x8.bmp,blue_8x8.bmp,,colors
+color_blue,Convert green Image to BLUE,1,"Test if working on an  green Image",,image,green_8x8.bmp,black_8x8.bmp,,colors
+color_blue,Convert white Image to BLUE,1,"Test if working on an  white Image",,image,white_8x8.bmp,blue_8x8.bmp,,colors
+color_blue,convert black Image to BLUE,1,"Test if working on an  black Image",,image,black_8x8.bmp,black_8x8.bmp,,colors
+color_green,Convert red image to GREEN,1,"Test if working on an  red Image",,image,red_8x8.bmp,black_8x8.bmp,,colors
+color_green,Convert blue image to GREEN,1,"Test if working on an  blue Image",,image,blue_8x8.bmp,black_8x8.bmp,,colors
+color_green,Convert green Image to GREEN,1,"Test if working on an  green Image",,image,green_8x8.bmp,green_8x8.bmp,,colors
+color_green,Convert white Image to GREEN,1,"Test if working on an  white Image",,image,white_8x8.bmp,green_8x8.bmp,,colors
+color_green,convert black Image to GREEN,1,"Test if working on an  black Image",,image,black_8x8.bmp,black_8x8.bmp,,colors
+color_gray,Convert red image to GRAY,1,"Test if working on an  red Image",,image,red_8x8.bmp,gray85_8x8.bmp,,colors
+color_gray,Convert blue image to GRAY,1,"Test if working on an  blue Image",,image,blue_8x8.bmp,gray85_8x8.bmp,,colors
+color_gray,Convert green Image to GRAY,1,"Test if working on an  green Image",,image,green_8x8.bmp,gray85_8x8.bmp,,colors
+color_gray,Convert white Image to GRAY,1,"Test if working on an  white Image",,image,white_8x8.bmp,white_8x8.bmp,,colors
+color_gray,convert black Image to GRAY,1,"Test if working on an  black Image",,image,black_8x8.bmp,black_8x8.bmp,,colors
+color_invert,Invert red image,1,"Test if working on an  red Image",,image,red_8x8.bmp,cyan_8x8.bmp,,colors
+color_invert,Invert blue image,1,"Test if working on an  blue Image",,image,blue_8x8.bmp,yellow_8x8.bmp,,colors
+color_invert,Invert green Image,1,"Test if working on an  green Image",,image,green_8x8.bmp,magenta_8x8.bmp,,colors
+color_invert,Invert white Image,1,"Test if working on an  white Image",,image,white_8x8.bmp,black_8x8.bmp,,colors
+color_invert,Invert black Image,1,"Test if working on an  black Image",,image,black_8x8.bmp,white_8x8.bmp,,colors
+color_gray_luminance,Convert red image to GRAY,1,"Test if working on an  red Image",,image,red_8x8.bmp,gray53_8x8.bmp,,colors
+color_gray_luminance,Convert blue image to GRAY,1,"Test if working on an  blue Image",,image,blue_8x8.bmp,gray17_8x8.bmp,,colors
+color_gray_luminance,Convert green Image to GRAY,1,"Test if working on an  green Image",,image,green_8x8.bmp,gray183_8x8.bmp,,colors
+color_gray_luminance,Convert white Image to GRAY,1,"Test if working on an  white Image",,image,white_8x8.bmp,white_8x8.bmp,,colors
+color_gray_luminance,convert black Image to GRAY,1,"Test if working on an  black Image",,image,black_8x8.bmp,black_8x8.bmp,,colors
+color_desaturate,Convert red image to GRAY,1,"Test if working on an  red Image",,image,red_8x8.bmp,gray127_8x8.bmp,,colors
+color_desaturate,Convert blue image to GRAY,1,"Test if working on an  blue Image",,image,blue_8x8.bmp,gray127_8x8.bmp,,colors
+color_desaturate,Convert green Image to GRAY,1,"Test if working on an  green Image",,image,green_8x8.bmp,gray127_8x8.bmp,,colors
+color_desaturate,Convert white Image to GRAY,1,"Test if working on an  white Image",,image,white_8x8.bmp,white_8x8.bmp,,colors
+color_desaturate,convert black Image to GRAY,1,"Test if working on an  black Image",,image,black_8x8.bmp,black_8x8.bmp,,colors
 rotate_cw,rotate square image,1,Take a square image rotate it,,image,rgbw_64x64.bmp,rgbw_64x64_CW.bmp,,transform
 rotate_cw,rotate large image,2,Take an image larger than it is tall,,image,rgbw_64x32.bmp,rgbw_64x32_CW.bmp,,transform
 rotate_cw,rotate high image,2,take an image taller than it is wide,,image,rgbw_32x64.bmp,rgbw_32x64_CW.bmp,,transform
@@ -98,3 +98,63 @@ mirror_vertical,mirror high image,2,take an image taller than it is wide,,image,
 mirror_total,mirror square image,1,Take a square image rotate it,,image,rgbw_64x64.bmp,rgbw_64x64_MT.bmp,,transform
 mirror_total,mirror large image,2,Take an image larger than it is tall,,image,rgbw_64x32.bmp,rgbw_64x32_MT.bmp,,transform
 mirror_total,mirror high image,2,take an image taller than it is wide,,image,rgbw_32x64.bmp,rgbw_32x64_MT.bmp,,transform
+scale_nearest,scale_nearest 0.3,3,,0.3,image,random_24x3/base.bmp,"random_24x3/scale_nearest_0.3.bmp",,resize
+scale_nearest,scale_nearest 0.5,3,,0.5,image,random_24x3/base.bmp,"random_24x3/scale_nearest_0.5.bmp",,resize
+scale_nearest,scale_nearest 2,3,,2,image,random_24x3/base.bmp,"random_24x3/scale_nearest_2.bmp",,resize
+scale_nearest,scale_nearest 1.3,3,,1.3,image,random_24x3/base.bmp,"random_24x3/scale_nearest_1.3.bmp",,resize
+scale_bilinear,scale_bilinear 0.21,3,,0.21,image,random_24x3/base.bmp,"random_24x3/scale_bilinear_0.21.bmp",,resize
+scale_bilinear,scale_bilinear 0.76,3,,0.76,image,random_24x3/base.bmp,"random_24x3/scale_bilinear_0.76.bmp",,resize
+scale_bilinear,scale_bilinear 1.41,3,,1.41,image,random_24x3/base.bmp,"random_24x3/scale_bilinear_1.41.bmp",,resize
+scale_bilinear,scale_bilinear 2.12,3,,2.12,image,random_24x3/base.bmp,"random_24x3/scale_bilinear_2.12.bmp",,resize
+scale_crop,"scale_crop 0 0 10 10",3,,"0 0 10 10",image,random_24x3/base.bmp,"random_24x3/scale_crop_0_0_10_10.bmp",,resize
+scale_crop,"scale_crop 100 100 90 90",3,,"100 100 90 90",image,random_24x3/base.bmp,"random_24x3/scale_crop_100_100_90_90.bmp",,resize
+scale_crop,scale_crop 1 1 3 3,3,,1 1 3 3,image,random_24x3/base.bmp,"random_24x3/scale_crop_1_1_3_3.bmp",,resize
+scale_crop,"scale_crop 1 1 10 10",3,,"1 1 10 10",image,random_24x3/base.bmp,"random_24x3/scale_crop_1_1_10_10.bmp",,resize
+scale_nearest,scale_nearest 0.3,3,,0.3,image,random_83x86/base.bmp,"random_83x86/scale_nearest_0.3.bmp",,resize
+scale_nearest,scale_nearest 0.5,3,,0.5,image,random_83x86/base.bmp,"random_83x86/scale_nearest_0.5.bmp",,resize
+scale_nearest,scale_nearest 2,3,,2,image,random_83x86/base.bmp,"random_83x86/scale_nearest_2.bmp",,resize
+scale_nearest,scale_nearest 1.3,3,,1.3,image,random_83x86/base.bmp,"random_83x86/scale_nearest_1.3.bmp",,resize
+scale_bilinear,scale_bilinear 0.21,3,,0.21,image,random_83x86/base.bmp,"random_83x86/scale_bilinear_0.21.bmp",,resize
+scale_bilinear,scale_bilinear 0.76,3,,0.76,image,random_83x86/base.bmp,"random_83x86/scale_bilinear_0.76.bmp",,resize
+scale_bilinear,scale_bilinear 1.41,3,,1.41,image,random_83x86/base.bmp,"random_83x86/scale_bilinear_1.41.bmp",,resize
+scale_bilinear,scale_bilinear 2.12,3,,2.12,image,random_83x86/base.bmp,"random_83x86/scale_bilinear_2.12.bmp",,resize
+scale_crop,"scale_crop 0 0 10 10",3,,"0 0 10 10",image,random_83x86/base.bmp,"random_83x86/scale_crop_0_0_10_10.bmp",,resize
+scale_crop,"scale_crop 100 100 90 90",3,,"100 100 90 90",image,random_83x86/base.bmp,"random_83x86/scale_crop_100_100_90_90.bmp",,resize
+scale_crop,scale_crop 1 1 3 3,3,,1 1 3 3,image,random_83x86/base.bmp,"random_83x86/scale_crop_1_1_3_3.bmp",,resize
+scale_crop,"scale_crop 1 1 10 10",3,,"1 1 10 10",image,random_83x86/base.bmp,"random_83x86/scale_crop_1_1_10_10.bmp",,resize
+scale_nearest,scale_nearest 0.3,3,,0.3,image,random_28x64/base.bmp,"random_28x64/scale_nearest_0.3.bmp",,resize
+scale_nearest,scale_nearest 0.5,3,,0.5,image,random_28x64/base.bmp,"random_28x64/scale_nearest_0.5.bmp",,resize
+scale_nearest,scale_nearest 2,3,,2,image,random_28x64/base.bmp,"random_28x64/scale_nearest_2.bmp",,resize
+scale_nearest,scale_nearest 1.3,3,,1.3,image,random_28x64/base.bmp,"random_28x64/scale_nearest_1.3.bmp",,resize
+scale_bilinear,scale_bilinear 0.21,3,,0.21,image,random_28x64/base.bmp,"random_28x64/scale_bilinear_0.21.bmp",,resize
+scale_bilinear,scale_bilinear 0.76,3,,0.76,image,random_28x64/base.bmp,"random_28x64/scale_bilinear_0.76.bmp",,resize
+scale_bilinear,scale_bilinear 1.41,3,,1.41,image,random_28x64/base.bmp,"random_28x64/scale_bilinear_1.41.bmp",,resize
+scale_bilinear,scale_bilinear 2.12,3,,2.12,image,random_28x64/base.bmp,"random_28x64/scale_bilinear_2.12.bmp",,resize
+scale_crop,"scale_crop 0 0 10 10",3,,"0 0 10 10",image,random_28x64/base.bmp,"random_28x64/scale_crop_0_0_10_10.bmp",,resize
+scale_crop,"scale_crop 100 100 90 90",3,,"100 100 90 90",image,random_28x64/base.bmp,"random_28x64/scale_crop_100_100_90_90.bmp",,resize
+scale_crop,scale_crop 1 1 3 3,3,,1 1 3 3,image,random_28x64/base.bmp,"random_28x64/scale_crop_1_1_3_3.bmp",,resize
+scale_crop,"scale_crop 1 1 10 10",3,,"1 1 10 10",image,random_28x64/base.bmp,"random_28x64/scale_crop_1_1_10_10.bmp",,resize
+scale_nearest,scale_nearest 0.3,3,,0.3,image,random_41x22/base.bmp,"random_41x22/scale_nearest_0.3.bmp",,resize
+scale_nearest,scale_nearest 0.5,3,,0.5,image,random_41x22/base.bmp,"random_41x22/scale_nearest_0.5.bmp",,resize
+scale_nearest,scale_nearest 2,3,,2,image,random_41x22/base.bmp,"random_41x22/scale_nearest_2.bmp",,resize
+scale_nearest,scale_nearest 1.3,3,,1.3,image,random_41x22/base.bmp,"random_41x22/scale_nearest_1.3.bmp",,resize
+scale_bilinear,scale_bilinear 0.21,3,,0.21,image,random_41x22/base.bmp,"random_41x22/scale_bilinear_0.21.bmp",,resize
+scale_bilinear,scale_bilinear 0.76,3,,0.76,image,random_41x22/base.bmp,"random_41x22/scale_bilinear_0.76.bmp",,resize
+scale_bilinear,scale_bilinear 1.41,3,,1.41,image,random_41x22/base.bmp,"random_41x22/scale_bilinear_1.41.bmp",,resize
+scale_bilinear,scale_bilinear 2.12,3,,2.12,image,random_41x22/base.bmp,"random_41x22/scale_bilinear_2.12.bmp",,resize
+scale_crop,"scale_crop 0 0 10 10",3,,"0 0 10 10",image,random_41x22/base.bmp,"random_41x22/scale_crop_0_0_10_10.bmp",,resize
+scale_crop,"scale_crop 100 100 90 90",3,,"100 100 90 90",image,random_41x22/base.bmp,"random_41x22/scale_crop_100_100_90_90.bmp",,resize
+scale_crop,scale_crop 1 1 3 3,3,,1 1 3 3,image,random_41x22/base.bmp,"random_41x22/scale_crop_1_1_3_3.bmp",,resize
+scale_crop,"scale_crop 1 1 10 10",3,,"1 1 10 10",image,random_41x22/base.bmp,"random_41x22/scale_crop_1_1_10_10.bmp",,resize
+scale_nearest,scale_nearest 0.3,3,,0.3,image,random_63x71/base.bmp,"random_63x71/scale_nearest_0.3.bmp",,resize
+scale_nearest,scale_nearest 0.5,3,,0.5,image,random_63x71/base.bmp,"random_63x71/scale_nearest_0.5.bmp",,resize
+scale_nearest,scale_nearest 2,3,,2,image,random_63x71/base.bmp,"random_63x71/scale_nearest_2.bmp",,resize
+scale_nearest,scale_nearest 1.3,3,,1.3,image,random_63x71/base.bmp,"random_63x71/scale_nearest_1.3.bmp",,resize
+scale_bilinear,scale_bilinear 0.21,3,,0.21,image,random_63x71/base.bmp,"random_63x71/scale_bilinear_0.21.bmp",,resize
+scale_bilinear,scale_bilinear 0.76,3,,0.76,image,random_63x71/base.bmp,"random_63x71/scale_bilinear_0.76.bmp",,resize
+scale_bilinear,scale_bilinear 1.41,3,,1.41,image,random_63x71/base.bmp,"random_63x71/scale_bilinear_1.41.bmp",,resize
+scale_bilinear,scale_bilinear 2.12,3,,2.12,image,random_63x71/base.bmp,"random_63x71/scale_bilinear_2.12.bmp",,resize
+scale_crop,"scale_crop 0 0 10 10",3,,"0 0 10 10",image,random_63x71/base.bmp,"random_63x71/scale_crop_0_0_10_10.bmp",,resize
+scale_crop,"scale_crop 100 100 90 90",3,,"100 100 90 90",image,random_63x71/base.bmp,"random_63x71/scale_crop_100_100_90_90.bmp",,resize
+scale_crop,scale_crop 1 1 3 3,3,,1 1 3 3,image,random_63x71/base.bmp,"random_63x71/scale_crop_1_1_3_3.bmp",,resize
+scale_crop,"scale_crop 1 1 10 10",3,,"1 1 10 10",image,random_63x71/base.bmp,"random_63x71/scale_crop_1_1_10_10.bmp",,resize
